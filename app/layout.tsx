@@ -16,10 +16,10 @@ export const metadata: Metadata = {
   },
   description: 'This is my portfolio.',
   openGraph: {
-    title: 'My Portfolio',
-    description: 'This is my portfolio.',
+    title: 'Gopalji Gaur',
+    description: 'Gopalji Gaur. Machine Learning Engineer. Builder and innovator. Based in Germany.',
     url: baseUrl,
-    siteName: 'My Portfolio',
+    siteName: 'Goaplji Gaur',
     locale: 'en_US',
     type: 'website',
   },

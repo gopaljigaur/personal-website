@@ -1,8 +1,30 @@
 import { baseUrl } from 'app/sitemap'
 import { getBlogPosts } from 'app/blog/utils'
+import { getProjects } from "app/projects/utils";
 
 export async function GET() {
   let allBlogs = await getBlogPosts()
+  let allProjects = await getProjects()
+
+    const projectItemsXml = allProjects
+    .sort((a, b) => {
+      if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
+        return -1
+      }
+      return 1
+    })
+    .map(
+      (project) =>
+        `<item>
+          <title>${project.metadata.title}</title>
+          <link>${baseUrl}/projects/${project.slug}</link>
+          <description>${project.metadata.summary || ''}</description>
+          <pubDate>${new Date(
+            project.metadata.publishedAt
+          ).toUTCString()}</pubDate>
+        </item>`
+    )
+    .join('\n')
 
   const itemsXml = allBlogs
     .sort((a, b) => {
@@ -31,6 +53,7 @@ export async function GET() {
         <link>${baseUrl}</link>
         <description>This is my portfolio RSS feed</description>
         ${itemsXml}
+        ${projectItemsXml}
     </channel>
   </rss>`
 

@@ -1,21 +1,18 @@
 import { BlogPosts } from 'app/components/posts'
+import Banner from 'app/components/banner'
 
 export default function Page() {
   return (
-    <section>
-      <h1 className="mb-8 text-2xl font-semibold tracking-tighter">
-        My Portfolio
-      </h1>
-      <p className="mb-4">
-        {`I'm a Vim enthusiast and tab advocate, finding unmatched efficiency in
-        Vim's keystroke commands and tabs' flexibility for personal viewing
-        preferences. This extends to my support for static typing, where its
-        early error detection ensures cleaner code, and my preference for dark
-        mode, which eases long coding sessions by reducing eye strain.`}
-      </p>
-      <div className="my-8">
-        <BlogPosts />
-      </div>
-    </section>
+      <section>
+          <Banner>gopaljigaur</Banner>
+          <p className="mb-4">
+              {`Hey, I'm Gopalji, a Machine Learning Engineer based in Germany. In addition to dwelling 
+        among the interconnections of the Neural Networks, I sometimes like to wrap my head around 
+        various web development projects.`}
+          </p>
+          <div className="my-8">
+              <BlogPosts/>
+          </div>
+      </section>
   )
 }
