@@ -29,8 +29,15 @@
   }
 }
 
+@font-face {
+  font-family: 'Custom Sans';
+  font-display: optional;
+  src: url(a34f9d1faa5f3315-s.p.woff2) format('woff2');
+}
+
 html {
   min-width: 360px;
+  font-family: 'Custom Sans', sans-serif;
 }
 
 .prose .anchor {
