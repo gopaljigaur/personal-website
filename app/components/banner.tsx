@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function Banner(props) {
+export function Banner(props) {
     return (
         <span className="inline-flex mb-16">
             <div className="w-[48px] relative self-center">
