@@ -1,5 +1,5 @@
 import { BlogPosts } from 'app/components/posts'
-import Banner from "../components/banner";
+import { Banner } from "../components/banner";
 
 export const metadata = {
   title: 'Blog',

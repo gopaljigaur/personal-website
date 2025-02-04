@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation'
 import { CustomMDX } from 'app/components/mdx'
+import { Banner } from 'app/components/banner'
 import { formatDate, getBlogPosts } from 'app/blog/utils'
 import { baseUrl } from 'app/sitemap'
+import Image from "next/image";
 
 export async function generateStaticParams() {
   let posts = getBlogPosts()
@@ -84,6 +86,16 @@ export default async function Blog(props) {
           }),
         }}
       />
+      <Banner>gopaljigaur</Banner>
+      {
+        post.metadata.image?
+            <Image className="mb-8 rounded-xl"
+                   src={post.metadata.image}
+                   alt={post.metadata.title}
+                   width={800}
+                   height={400}
+            ></Image> : ``
+      }
       <h1 className="title font-semibold text-2xl mt-1 tracking-tighter">
         {post.metadata.title}
       </h1>

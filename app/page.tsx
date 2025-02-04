@@ -1,5 +1,5 @@
 import { BlogPosts } from 'app/components/posts'
-import Banner from 'app/components/banner'
+import { Banner } from 'app/components/banner'
 
 export default function Page() {
   return (
