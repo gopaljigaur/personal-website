@@ -17,10 +17,10 @@ function Code({ children, ...props }) {
     let codeHTML = highlight(children)
 
     return (
-        <div className="relative">
+        <div className="relative p-1 pr-6 pl-4">
             <button
                 onClick={handleCopy}
-                className="absolute top-1 right-1 text-sm p-1 rounded cursor-pointer"
+                className="absolute top-0 right-0 text-sm p-1.5 rounded cursor-pointer bg-neutral-800"
             >
                 {copied ? <GoCheck /> : <GoCopy />}
             </button>
