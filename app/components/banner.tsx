@@ -19,4 +19,4 @@ export function Banner(props) {
             </h1>
         </span>
     );
-};
+}

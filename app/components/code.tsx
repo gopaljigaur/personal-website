@@ -17,12 +17,12 @@ function Code({ children, ...props }) {
     let codeHTML = highlight(children)
 
     return (
-        <div className="relative p-1 pr-6 pl-4">
+        <div className="relative p-1 pr-6 pl-2">
             <button
                 onClick={handleCopy}
-                className="absolute top-0 right-0 text-sm p-1.5 rounded cursor-pointer bg-neutral-800"
+                className="absolute top-0 right-0 text-m p-1.5 rounded cursor-pointer text-neutral-400 hover:bg-neutral-800"
             >
-                {copied ? <GoCheck /> : <GoCopy />}
+                {copied ? <GoCheck className="text-green-600 stroke-1" /> : <GoCopy className="stroke-1"/>}
             </button>
             <code dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />
         </div>
