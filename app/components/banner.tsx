@@ -13,7 +13,7 @@ export function Banner(props) {
                     className="rounded-full bg-gray-200 dark:bg-gray-800 dark:brightness-90 dark:saturate-[0.85] transition"
                 />
             </div>
-            <h1 className="mt-1 ml-5 text-2xl font-semibold relative tracking-tighter">
+            <h1 className="mt-2.5 ml-5 text-2xl font-semibold relative tracking-tight">
                 <span className="mr-5">/</span>
                 {props.children}
             </h1>
