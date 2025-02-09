@@ -1,5 +1,25 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-light-text: #0c161d;
+  --color-light-background: #f8fafc;
+  --color-light-primary: #2c4b68;
+  --color-light-secondary: #cb8099;
+  --color-light-accent: #a76344;
+  --color-light-primary-contrast: #f8fafc;
+  --color-light-secondary-contrast: #0c161d;
+  --color-light-accent-contrast: #f8fafc;
+  --color-dark-text: #e1ecf3;
+  --color-dark-text-secondary: #e1ecf3af;
+  --color-dark-background: #030608;
+  --color-dark-primary: #98b7d4;
+  --color-dark-secondary: #7e344d;
+  --color-dark-accent: #bb795a;
+  --color-dark-primary-contrast: #0c161d;
+  --color-dark-secondary-contrast: #e1ecf3;
+  --color-dark-accent-contrast: #0c161d;
+}
+
 ::selection {
   background-color: #47a3f3;
   color: #fefefe;
@@ -150,4 +170,13 @@ table {
 
 .title {
   text-wrap: balance;
+}
+
+a {
+  transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+  color: var(--color-dark-primary);
+  transition: color 0.2s ease-in-out;
 }

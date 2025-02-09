@@ -1,12 +1,10 @@
 import { BlogPosts } from 'app/components/posts'
 import { MainBanner } from 'app/components/banner'
-import { StatusCard } from 'app/components/status'
 
 export default function Page() {
   return (
       <section>
           <MainBanner />
-          <StatusCard />
           <p className="mb-4">
               {`Hey, I'm Gopalji, a Machine Learning Engineer based in Germany. In addition to dwelling 
         among the interconnections of the Neural Networks, I sometimes like to wrap my head around 

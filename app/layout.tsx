@@ -49,7 +49,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={cx(
-        'text-neutral-800 bg-white dark:text-neutral-400 dark:bg-neutral-950',
+        'text-neutral-800 bg-white dark:text-dark-text-secondary dark:bg-neutral-950',
         inter.className
       )}
     >
