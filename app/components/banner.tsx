@@ -9,7 +9,7 @@ export function MainBanner() {
     return (
         <span className="flex mb-14 dark:text-dark-text text-light-text gap-3 flex-col sm:flex-row sm:items-center">
             <div className="flex-row flex-3 mb-6 sm:mb-0">
-                <Link href={"https://gopalji.me"} className="inline-flex flex-row gap-6 items-center">
+                <Link href={"https://gopalji.me"} className="inline-flex flex-row gap-6">
                     <div className="w-[48px] relative min-w-[48px] mb-3 sm:mb-0">
                         <Image
                             alt='Gopalji Gaur'
@@ -20,7 +20,7 @@ export function MainBanner() {
                             className="rounded-full bg-neutral-200 dark:bg-neutral-800 dark:brightness-90 dark:saturate-[0.85] transition"
                         />
                     </div>
-                    <h1 className="text-4xl font-semibold relative tracking-tight">
+                    <h1 className="text-4xl font-semibold relative tracking-tight mt-1">
                         Gopalji Gaur
                     </h1>
                 </Link>
