@@ -1,6 +1,9 @@
+'use client'
+
 import Image from "next/image";
 import Link from "next/link";
 import {StatusCard} from "./status";
+import {usePathname} from "next/navigation";
 
 export function MainBanner() {
     return (
@@ -45,7 +48,10 @@ export function MainBanner() {
     );
 }
 
-export function Banner(props) {
+export function Banner() {
+    const pathname = usePathname();
+    const pathSegments = pathname.split('/').filter(Boolean);
+    const bannerText = pathSegments[0] || 'gopaljigaur';
     return (
             <span className="inline-flex mb-16">
                 <Link href={'/'}>
@@ -60,10 +66,10 @@ export function Banner(props) {
                         />
                     </div>
                 </Link>
-                <Link href={'/' + props.children} className="flex items-center">
+                <Link href={'/' + bannerText} className="flex items-center dark:text-dark-text text-light-text">
                     <h1 className="ml-1 text-2xl font-semibold relative tracking-tight">
                         <span className="mr-5">/</span>
-                        {props.children}
+                        {bannerText}
                     </h1>
                 </Link>
             </span>
