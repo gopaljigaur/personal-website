@@ -3,18 +3,18 @@ import { ArrowIcon } from 'app/components/footer'
 
 export function StatusCard() {
     return (
-        <div className="status-card mb-14 flex flex-col sm:flex-row gap-8 sm:gap-4">
+        <div className="status-card flex flex-col gap-6 flex-2">
             <div className="status-item flex-1">
-                <div className="status-item__title font-semibold mb-2 bg-gradient-to-tr from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text leading-normal">
+                <div className="status-item__title text-xl font-semibold mb-1 bg-gradient-to-tr from-[var(--color-dark-primary)] to-[var(--color-dark-secondary)] inline-block text-transparent bg-clip-text leading-normal">
                     Current Role
                 </div>
                 <div className="status-item__value dark:text-neutral-100 text-neutral-950">
-                    Machine Learning Engineer
+                    Graduate Research Assistant
                 </div>
             </div>
 
             <div className="status-item flex-1">
-                <div className="status-item__title font-semibold mb-2 bg-gradient-to-tr from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text leading-normal">
+                <div className="status-item__title text-xl font-semibold mb-1 bg-gradient-to-tr from-[var(--color-dark-accent)] to-[var(--color-dark-primary)] inline-block text-transparent bg-clip-text leading-normal">
                     Workplace
                 </div>
                 <div className="status-item__value dark:text-neutral-100 text-neutral-950">

@@ -3,7 +3,7 @@ import { CustomMDX } from 'app/components/mdx'
 import { Banner } from 'app/components/banner'
 import { formatDate, getBlogPosts } from 'app/blog/utils'
 import { baseUrl } from 'app/sitemap'
-import Image from "next/image";
+import Image from 'next/image'
 
 export async function generateStaticParams() {
   let posts = getBlogPosts()
