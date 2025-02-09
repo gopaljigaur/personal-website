@@ -27,8 +27,7 @@ function Table({ data }) {
 }
 
 function CustomLink(props) {
-  let href = props.href
-
+  let href = props?.href || ''
   if (href.startsWith('/')) {
     return (
       <Link href={href} {...props}>
