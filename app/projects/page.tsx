@@ -9,7 +9,7 @@ export const metadata = {
 export default function Page() {
   return (
     <section>
-      <Banner>projects</Banner>
+      <Banner />
       <Projects />
     </section>
   )

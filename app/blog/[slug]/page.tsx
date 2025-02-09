@@ -94,7 +94,7 @@ export default async function Blog(props: { params: any }) {
           }),
         }}
       />
-      <Banner>blog</Banner>
+      <Banner />
       {
         post.metadata.image?
             <Image className="mb-8 rounded-xl"
