@@ -18,6 +18,7 @@
   --color-dark-primary-contrast: #0c161d;
   --color-dark-secondary-contrast: #e1ecf3;
   --color-dark-accent-contrast: #0c161d;
+  --breakpoint-smplus: 43rem;
 }
 
 ::selection {
