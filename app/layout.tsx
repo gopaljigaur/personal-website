@@ -6,6 +6,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Footer from './components/footer'
 import { baseUrl } from './sitemap'
+import { unstable_ViewTransition as ViewTransition } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
   },
 }
 
-const cx = (...classes) => classes.filter(Boolean).join(' ')
+const cx = (...classes: string[]) => classes.filter(Boolean).join(' ')
 
 export default function RootLayout({
   children,
@@ -48,18 +49,18 @@ export default function RootLayout({
     <html
       lang="en"
       className={cx(
-        'text-black bg-white dark:text-white dark:bg-black',
+        'text-neutral-800 bg-white dark:text-dark-text-secondary dark:bg-neutral-950',
         inter.className
       )}
     >
-      <body className="antialiased max-w-2xl mx-4 mt-8 lg:mx-auto">
-        <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
+      <body className="antialiased max-w-2xl mx-4 lg:mx-auto flex flex-col min-h-screen">
+        <main className="flex-auto min-w-0 mt-8 flex flex-col px-2 md:px-0">
           <Navbar />
-          {children}
+          <ViewTransition>{children}</ViewTransition>
+        </main>
           <Footer />
           <Analytics />
           <SpeedInsights />
-        </main>
       </body>
     </html>
   )
