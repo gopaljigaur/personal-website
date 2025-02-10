@@ -1,5 +1,26 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-light-text: #0c161d;
+  --color-light-background: #f8fafc;
+  --color-light-primary: #2c4b68;
+  --color-light-secondary: #cb8099;
+  --color-light-accent: #a76344;
+  --color-light-primary-contrast: #f8fafc;
+  --color-light-secondary-contrast: #0c161d;
+  --color-light-accent-contrast: #f8fafc;
+  --color-dark-text: #e1ecf3;
+  --color-dark-text-secondary: #e1ecf3af;
+  --color-dark-background: #030608;
+  --color-dark-primary: #98b7d4;
+  --color-dark-secondary: #7e344d;
+  --color-dark-accent: #bb795a;
+  --color-dark-primary-contrast: #0c161d;
+  --color-dark-secondary-contrast: #e1ecf3;
+  --color-dark-accent-contrast: #0c161d;
+  --breakpoint-smplus: 43rem;
+}
+
 ::selection {
   background-color: #47a3f3;
   color: #fefefe;
@@ -31,6 +52,9 @@
 
 html {
   scrollbar-gutter: stable;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .prose .anchor {
@@ -48,7 +72,7 @@ html {
 }
 
 .prose a {
-  @apply underline transition-all decoration-neutral-400 dark:decoration-neutral-600 underline-offset-2 decoration-[0.1em];
+  @apply transition-all decoration-neutral-900 dark:decoration-neutral-100 underline-offset-2 decoration-[0.1em] text-neutral-900 dark:text-neutral-100;
 }
 
 .prose .anchor:after {
@@ -84,23 +108,23 @@ html {
 }
 
 .prose p {
-  @apply my-4 text-neutral-800 dark:text-neutral-200;
+  @apply my-4 text-neutral-800 dark:text-neutral-400;
 }
 
 .prose h1 {
-  @apply text-4xl font-medium tracking-tight mt-6 mb-2;
+  @apply text-4xl font-medium tracking-tight mt-6 mb-2 text-neutral-900 dark:text-neutral-100;
 }
 
 .prose h2 {
-  @apply text-xl font-medium tracking-tight mt-6 mb-2;
+  @apply text-xl font-medium tracking-tight mt-6 mb-2 text-neutral-900 dark:text-neutral-100;
 }
 
 .prose h3 {
-  @apply text-xl font-medium tracking-tight mt-6 mb-2;
+  @apply text-xl font-medium tracking-tight mt-6 mb-2 text-neutral-900 dark:text-neutral-100;
 }
 
 .prose h4 {
-  @apply text-lg font-medium tracking-tight mt-6 mb-2;
+  @apply text-lg font-medium tracking-tight mt-6 mb-2 text-neutral-900 dark:text-neutral-100;
 }
 
 .prose strong {
@@ -147,4 +171,13 @@ table {
 
 .title {
   text-wrap: balance;
+}
+
+a {
+  transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+  color: var(--color-dark-primary);
+  transition: color 0.2s ease-in-out;
 }

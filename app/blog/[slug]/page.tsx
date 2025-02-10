@@ -3,21 +3,26 @@ import { CustomMDX } from 'app/components/mdx'
 import { Banner } from 'app/components/banner'
 import { formatDate, getBlogPosts } from 'app/blog/utils'
 import { baseUrl } from 'app/sitemap'
-import Image from "next/image";
+import Image from 'next/image'
 
 export async function generateStaticParams() {
   let posts = getBlogPosts()
-
+  if (!posts) {
+    return []
+  }
   return posts.map((post) => ({
     slug: post.slug,
   }))
 }
 
-export async function generateMetadata(props) {
+export async function generateMetadata(props: { params: any }) {
   const params = await props.params;
+  if (!params.slug) {
+    notFound()
+  }
   let post = getBlogPosts().find((post) => post.slug === params.slug)
   if (!post) {
-    return
+    notFound();
   }
 
   let {
@@ -54,8 +59,11 @@ export async function generateMetadata(props) {
   }
 }
 
-export default async function Blog(props) {
+export default async function Blog(props: { params: any }) {
   const params = await props.params;
+  if (!params.slug) {
+    notFound()
+  }
   let post = getBlogPosts().find((post) => post.slug === params.slug)
 
   if (!post) {
@@ -86,7 +94,7 @@ export default async function Blog(props) {
           }),
         }}
       />
-      <Banner>blog</Banner>
+      <Banner />
       {
         post.metadata.image?
             <Image className="mb-8 rounded-xl"
@@ -96,7 +104,7 @@ export default async function Blog(props) {
                    height={400}
             ></Image> : ``
       }
-      <h1 className="title font-semibold text-2xl mt-1 tracking-tighter">
+      <h1 className="title font-semibold text-3xl mt-1 tracking-tighter text-black dark:text-white">
         {post.metadata.title}
       </h1>
       <div className="flex justify-between items-center mt-2 mb-14 text-sm">
