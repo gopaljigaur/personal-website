@@ -7,10 +7,10 @@ import {usePathname} from "next/navigation";
 
 export function MainBanner() {
     return (
-        <span className="flex mb-14 dark:text-dark-text text-light-text gap-3 flex-col sm:flex-row sm:items-center">
-            <div className="flex-row flex-3 mb-6 sm:mb-0">
+        <span className="flex mb-14 dark:text-dark-text text-light-text gap-6 flex-col smplus:flex-row">
+            <div className="flex-row flex-10 mb-4 smplus:mb-0">
                 <Link href={"https://gopalji.me"} className="inline-flex flex-row gap-6">
-                    <div className="w-[48px] relative min-w-[48px] mb-3 sm:mb-0">
+                    <div className="w-[48px] relative min-w-[48px]">
                         <Image
                             alt='Gopalji Gaur'
                             height={48}
