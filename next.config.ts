@@ -18,6 +18,19 @@ const nextConfig: NextConfig = {
         mdxRs: true,
         viewTransition: true,
         newDevOverlay: true
+    },
+    headers: async () => {
+        return [
+            {
+                source: '/comments.css',
+                headers: [
+                    {
+                        'key': 'Access-Control-Allow-Origin',
+                        'value': 'https://giscus.app'
+                    }
+                ]
+            }
+        ]
     }
 }
 
