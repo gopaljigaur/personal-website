@@ -9,7 +9,7 @@ export function StatusCard() {
                     Current Role
                 </div>
                 <div className="status-item__value dark:text-neutral-100 text-neutral-950">
-                    Graduate Research Assistant
+                    Business Application Developer
                 </div>
             </div>
 
@@ -19,13 +19,13 @@ export function StatusCard() {
                 </div>
                 <div className="status-item__value dark:text-neutral-100 text-neutral-950">
                     <Link
-                        href={'https://ml.informatik.uni-freiburg.de/'}
+                        href={'https://www.everest-systems.com/'}
                         className=""
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         <span className="mr-2">
-                            ML Lab @ University of Freiburg
+                            Everest Systems GmBH
                         </span>
                     <ArrowIcon />
                     </Link>
