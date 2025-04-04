@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@giscus/react": "^3.1.0",
-    "@tailwindcss/postcss": "4.0.5",
+    "@tailwindcss/postcss": "4.1.2",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "next": "15.2.0-canary.47",
@@ -28,7 +28,7 @@
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
     "postcss": "^8.5.3",
-    "tailwindcss": "4.0.5",
+    "tailwindcss": "4.1.2",
     "typescript": "5.7.3"
   }
 }
