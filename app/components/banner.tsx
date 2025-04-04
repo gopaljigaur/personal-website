@@ -30,7 +30,7 @@ export function MainBanner() {
                     </p>
                     <br></br>
                     based in
-                    Freiburg, Germany.
+                    Heidelberg, Germany.
                 </h2>
             </div>
             {/*<div className="flex-1 content-center min-w-[128px] justify-items-start sm:justify-items-end mb-4 sm:mb-0">*/}
