@@ -25,7 +25,7 @@ export function StatusCard() {
                         rel="noopener noreferrer"
                     >
                         <span className="mr-2">
-                            Everest Systems GmBH
+                            Everest Systems
                         </span>
                     <ArrowIcon />
                     </Link>
