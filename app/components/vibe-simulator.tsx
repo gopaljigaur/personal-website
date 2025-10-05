@@ -18,29 +18,19 @@ export function VibeSimulator() {
   const [showPreview, setShowPreview] = useState(false)
   const [buildProgress, setBuildProgress] = useState<string[]>([])
   const [isBuilding, setIsBuilding] = useState(false)
+  const [hasInitialApp, setHasInitialApp] = useState(false)
 
-  const projects = [
-    {
-      trigger: ['todo', 'task', 'list'],
-      name: 'Todo App',
-      steps: ['Analyzing requirements', 'Generating component structure', 'Applying styling', 'Finalizing layout']
-    },
-    {
-      trigger: ['timer', 'countdown', 'clock'],
-      name: 'Timer',
-      steps: ['Creating timer logic', 'Building UI controls', 'Adding functionality', 'Finalizing layout']
-    },
-    {
-      trigger: ['weather', 'forecast'],
-      name: 'Weather Widget',
-      steps: ['Setting up structure', 'Designing layout', 'Adding components', 'Finalizing layout']
-    },
-    {
-      trigger: ['calculator', 'calc', 'math'],
-      name: 'Calculator',
-      steps: ['Building keypad', 'Implementing operations', 'Styling display', 'Finalizing layout']
-    },
-  ]
+  const buildSteps = ['Analyzing request', 'Generating structure', 'Applying styling', 'Finalizing layout']
+
+  const handleReset = () => {
+    setMessages([])
+    setInput('')
+    setGeneratedHtml('')
+    setShowPreview(false)
+    setHasInitialApp(false)
+    setIsBuilding(false)
+    setBuildProgress([])
+  }
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return
@@ -55,40 +45,113 @@ export function VibeSimulator() {
     const userInput = input
     setInput('')
     setIsTyping(true)
-    setShowPreview(false)
 
-    // Check if input matches a project
-    const matchedProject = projects.find(p =>
-      p.trigger.some(trigger => userInput.toLowerCase().includes(trigger))
-    )
+    // If we already have an app, treat this as a modification request
+    if (hasInitialApp) {
+      setTimeout(() => {
+        const aiResponse: Message = {
+          role: 'ai',
+          content: 'Updating app...',
+          timestamp: Date.now(),
+        }
+
+        setMessages(prev => [...prev, aiResponse])
+        setIsTyping(false)
+
+        const steps = ['Analyzing changes', 'Applying modifications', 'Updating preview']
+        setIsBuilding(true)
+        setBuildProgress([])
+
+        // Prepare context with previous HTML and modification request
+        const modificationPrompt = `Current app HTML:\n${generatedHtml}\n\nUser requested change: ${userInput}\n\nPlease modify the HTML accordingly.`
+
+        // Get current theme colors
+        const theme = {
+          bg: getComputedStyle(document.documentElement).getPropertyValue('--color-dark-background') || '#030608',
+          text: getComputedStyle(document.documentElement).getPropertyValue('--color-dark-text') || '#e1ecf3',
+        }
+
+        const apiPromise = fetch('/api/generate-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: modificationPrompt, theme }),
+        })
+
+        const stepDuration = 800
+        steps.forEach((step, index) => {
+          setTimeout(() => {
+            setBuildProgress(prev => [...prev, step])
+          }, index * stepDuration)
+        })
+
+        apiPromise
+          .then(res => res.json())
+          .then(data => {
+            const minDelay = steps.length * stepDuration
+            setTimeout(() => {
+              setGeneratedHtml(data.html || generatedHtml)
+              setShowPreview(true)
+              setIsBuilding(false)
+
+              // Update AI message to show "done"
+              setMessages(prev => prev.map((msg, idx) =>
+                idx === prev.length - 1 && msg.role === 'ai'
+                  ? { ...msg, content: 'Updating app... done.' }
+                  : msg
+              ))
+            }, minDelay)
+          })
+          .catch(() => {
+            setTimeout(() => {
+              setShowPreview(true)
+              setIsBuilding(false)
+
+              // Update AI message to show "done"
+              setMessages(prev => prev.map((msg, idx) =>
+                idx === prev.length - 1 && msg.role === 'ai'
+                  ? { ...msg, content: 'Updating app... done.' }
+                  : msg
+              ))
+            }, steps.length * stepDuration)
+          })
+      }, 1200)
+
+      return
+    }
+
+    // Initial app creation
+    setShowPreview(false)
 
     // Start building animation
     setTimeout(() => {
       const aiResponse: Message = {
         role: 'ai',
-        content: matchedProject
-          ? `Building your ${matchedProject.name}...`
-          : `Creating "${userInput}"...`,
+        content: 'Building your app...',
         timestamp: Date.now(),
       }
 
       setMessages(prev => [...prev, aiResponse])
       setIsTyping(false)
 
-      const steps = matchedProject?.steps || ['Analyzing request', 'Generating structure', 'Applying styling', 'Finalizing layout']
       setIsBuilding(true)
       setBuildProgress([])
+
+      // Get current theme colors
+      const theme = {
+        bg: getComputedStyle(document.documentElement).getPropertyValue('--color-dark-background') || '#030608',
+        text: getComputedStyle(document.documentElement).getPropertyValue('--color-dark-text') || '#e1ecf3',
+      }
 
       // Start API call immediately
       const apiPromise = fetch('/api/generate-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: userInput }),
+        body: JSON.stringify({ prompt: userInput, theme }),
       })
 
       // Animate through build steps while API is processing
       const stepDuration = 800 // ms per step
-      steps.forEach((step, index) => {
+      buildSteps.forEach((step, index) => {
         setTimeout(() => {
           setBuildProgress(prev => [...prev, step])
         }, index * stepDuration)
@@ -99,7 +162,7 @@ export function VibeSimulator() {
         .then(res => res.json())
         .then(data => {
           // Ensure all steps have shown before displaying result
-          const minDelay = steps.length * stepDuration
+          const minDelay = buildSteps.length * stepDuration
           const elapsed = Date.now() - Date.now()
           const delay = Math.max(minDelay - elapsed, 0)
 
@@ -107,6 +170,14 @@ export function VibeSimulator() {
             setGeneratedHtml(data.html || '<div class="p-6 text-center text-neutral-400">Generated preview</div>')
             setShowPreview(true)
             setIsBuilding(false)
+            setHasInitialApp(true)
+
+            // Update AI message to show "done"
+            setMessages(prev => prev.map((msg, idx) =>
+              idx === prev.length - 1 && msg.role === 'ai'
+                ? { ...msg, content: 'Building your app... done.' }
+                : msg
+            ))
           }, delay)
         })
         .catch(err => {
@@ -114,7 +185,14 @@ export function VibeSimulator() {
             setGeneratedHtml('<div class="p-6 text-center text-neutral-400"><div class="text-4xl mb-4">⚠</div><div class="text-lg">Error generating preview</div></div>')
             setShowPreview(true)
             setIsBuilding(false)
-          }, steps.length * stepDuration)
+
+            // Update AI message to show "done"
+            setMessages(prev => prev.map((msg, idx) =>
+              idx === prev.length - 1 && msg.role === 'ai'
+                ? { ...msg, content: 'Building your app... done.' }
+                : msg
+            ))
+          }, buildSteps.length * stepDuration)
         })
     }, 1200)
   }
@@ -132,13 +210,24 @@ export function VibeSimulator() {
         {/* Chat Interface */}
         <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 overflow-hidden flex flex-col h-[500px]">
           <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900">
-            <div className="flex items-center gap-2">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-500" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                <div className="w-3 h-3 rounded-full bg-green-500" />
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                  <div className="w-3 h-3 rounded-full bg-green-500" />
+                </div>
+                <span className="text-xs font-medium ml-2">AI Vibe Coder</span>
               </div>
-              <span className="text-xs font-medium ml-2">AI Vibe Coder</span>
+              {hasInitialApp && (
+                <button
+                  onClick={handleReset}
+                  className="text-xs px-2 py-1 rounded border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
+                  title="Start new app"
+                >
+                  Reset
+                </button>
+              )}
             </div>
           </div>
 
@@ -201,7 +290,7 @@ export function VibeSimulator() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Type what you want to build..."
+                placeholder={hasInitialApp ? "Describe changes..." : "Type what you want to build..."}
                 className="flex-1 px-3 py-2 text-sm rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-neutral-100"
               />
               <button
