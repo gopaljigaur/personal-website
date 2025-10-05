@@ -3,6 +3,8 @@ import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
 import Code from 'app/components/code'
+import { VibeSimulator } from 'app/components/vibe-simulator'
+import { Callout } from 'app/components/callout'
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -90,7 +92,9 @@ let components = {
   Image: RoundedImage,
   a: CustomLink,
   code: Code,
-  table: Table
+  table: Table,
+  VibeSimulator,
+  Callout,
 }
 
 export function CustomMDX(props) {
