@@ -142,6 +142,9 @@ export function VibeSimulator() {
         text: getComputedStyle(document.documentElement).getPropertyValue('--color-dark-text') || '#e1ecf3',
       }
 
+      // Track start time for proper delay calculation
+      const startTime = Date.now()
+
       // Start API call immediately
       const apiPromise = fetch('/api/generate-code', {
         method: 'POST',
@@ -163,7 +166,7 @@ export function VibeSimulator() {
         .then(data => {
           // Ensure all steps have shown before displaying result
           const minDelay = buildSteps.length * stepDuration
-          const elapsed = Date.now() - Date.now()
+          const elapsed = Date.now() - startTime
           const delay = Math.max(minDelay - elapsed, 0)
 
           setTimeout(() => {
