@@ -7,6 +7,7 @@ import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import { Fragment } from 'react'
 import { jsx, jsxs } from 'react/jsx-runtime'
 import { GoCopy, GoCheck, GoArrowUpRight } from 'react-icons/go'
+import type { Root, RootContent } from 'hast'
 
 interface OpenGistCodeProps {
   url: string
@@ -17,19 +18,19 @@ interface GistData {
   language: string
 }
 
-export function Code({ children, language = 'javascript', ...props }) {
+export function Code({ children, ...props }) {
   const [copied, setCopied] = useState(false)
   const [element, setElement] = useState(null)
 
   useEffect(() => {
     const highlight = async () => {
       const hast = await codeToHast(children, {
-        lang: language,
+        lang: props.language,
         theme: 'dark-plus',
       })
 
-      const preElement = hast.children[0]
-      const codeElement = preElement.children[0]
+      const preElement: RootContent = hast.children[0]
+      const codeElement = (preElement as unknown as Root).children[0]
 
       const jsxElement = toJsxRuntime(codeElement, {
         Fragment,
@@ -41,7 +42,7 @@ export function Code({ children, language = 'javascript', ...props }) {
     }
 
     highlight()
-  }, [children, language])
+  }, [children, props.language])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(children).then(() => {
