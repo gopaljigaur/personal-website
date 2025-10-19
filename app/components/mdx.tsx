@@ -39,9 +39,11 @@ function CustomLink(props) {
   }
 
   if (href.startsWith('#')) {
+    // eslint-disable-next-line  jsx-a11y/anchor-has-content
     return <a {...props} />
   }
 
+  // eslint-disable-next-line  jsx-a11y/anchor-has-content
   return <a target="_blank" rel="noopener noreferrer" {...props} />
 }
 

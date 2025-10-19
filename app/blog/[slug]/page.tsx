@@ -16,6 +16,7 @@ export async function generateStaticParams() {
   }))
 }
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 export async function generateMetadata(props: { params: any }) {
   const params = await props.params
   if (!params.slug) {

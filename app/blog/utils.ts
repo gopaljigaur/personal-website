@@ -26,6 +26,7 @@ function parseFrontmatter(fileContent: string) {
   return { metadata: metadata as Metadata, content }
 }
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 function getMDXFiles(dir: any) {
   return fs.readdirSync(dir).filter((file) => path.extname(file) === '.mdx')
 }
