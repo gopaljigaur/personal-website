@@ -1,12 +1,12 @@
 import { baseUrl } from 'app/sitemap'
 import { getBlogPosts } from 'app/blog/utils'
-import { getProjects } from "app/projects/utils";
+import { getProjects } from 'app/projects/utils'
 
 export async function GET() {
-  let allBlogs = await getBlogPosts()
-  let allProjects = await getProjects()
+  const allBlogs = await getBlogPosts()
+  const allProjects = await getProjects()
 
-    const projectItemsXml = allProjects
+  const projectItemsXml = allProjects
     .sort((a, b) => {
       if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
         return -1
@@ -20,9 +20,9 @@ export async function GET() {
           <link>${baseUrl}/projects/${project.slug}</link>
           <description>${project.metadata.summary || ''}</description>
           <pubDate>${new Date(
-            project.metadata.publishedAt
+            project.metadata.publishedAt,
           ).toUTCString()}</pubDate>
-        </item>`
+        </item>`,
     )
     .join('\n')
 
@@ -40,9 +40,9 @@ export async function GET() {
           <link>${baseUrl}/blog/${post.slug}</link>
           <description>${post.metadata.summary || ''}</description>
           <pubDate>${new Date(
-            post.metadata.publishedAt
+            post.metadata.publishedAt,
           ).toUTCString()}</pubDate>
-        </item>`
+        </item>`,
     )
     .join('\n')
 

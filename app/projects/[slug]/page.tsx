@@ -6,7 +6,7 @@ import { baseUrl } from 'app/sitemap'
 import Image from 'next/image'
 
 export async function generateStaticParams() {
-  let posts = getProjects()
+  const posts = getProjects()
   if (!posts) {
     return []
   }
@@ -16,24 +16,24 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(props: { params: any }) {
-  const params = await props.params;
+  const params = await props.params
   if (!params.slug) {
     notFound()
   }
-  let post = getProjects().find((post) => post.slug === params.slug)
+  const post = getProjects().find((post) => post.slug === params.slug)
   if (!post) {
-    notFound();
+    notFound()
   }
 
-  let {
+  const {
     title,
     publishedAt: publishedTime,
     summary: description,
     image,
   } = post.metadata
-  let ogImage = image
-      ? image
-      : `${baseUrl}/og?title=${encodeURIComponent(title)}`
+  const ogImage = image
+    ? image
+    : `${baseUrl}/og?title=${encodeURIComponent(title)}`
 
   return {
     title,
@@ -60,61 +60,63 @@ export async function generateMetadata(props: { params: any }) {
 }
 
 export default async function Projects(props: { params: any }) {
-  const params = await props.params;
+  const params = await props.params
   if (!params.slug) {
     notFound()
   }
-  let post = getProjects().find((post) => post.slug === params.slug)
+  const post = getProjects().find((post) => post.slug === params.slug)
 
   if (!post) {
     notFound()
   }
 
   return (
-      <section>
-        <script
-            type="application/ld+json"
-            suppressHydrationWarning
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                '@context': 'https://schema.org',
-                '@type': 'BlogPosting',
-                headline: post.metadata.title,
-                datePublished: post.metadata.publishedAt,
-                dateModified: post.metadata.publishedAt,
-                description: post.metadata.summary,
-                image: post.metadata.image
-                    ? `${baseUrl}${post.metadata.image}`
-                    : `/og?title=${encodeURIComponent(post.metadata.title)}`,
-                url: `${baseUrl}/blog/${post.slug}`,
-                author: {
-                  '@type': 'Person',
-                  name: 'Gopalji Gaur',
-                },
-              }),
-            }}
-        />
-        <Banner />
-        {
-          post.metadata.image?
-              <Image className="mb-8 rounded-xl"
-                     src={post.metadata.image}
-                     alt={post.metadata.title}
-                     width={800}
-                     height={400}
-              ></Image> : ``
-        }
-        <h1 className="title font-semibold text-3xl mt-1 tracking-tighter text-black dark:text-white">
-          {post.metadata.title}
-        </h1>
-        <div className="flex justify-between items-center mt-2 mb-14 text-sm">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {formatDate(post.metadata.publishedAt)}
-          </p>
-        </div>
-        <article className="prose">
-          <CustomMDX source={post.content} />
-        </article>
-      </section>
+    <section>
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: post.metadata.title,
+            datePublished: post.metadata.publishedAt,
+            dateModified: post.metadata.publishedAt,
+            description: post.metadata.summary,
+            image: post.metadata.image
+              ? `${baseUrl}${post.metadata.image}`
+              : `/og?title=${encodeURIComponent(post.metadata.title)}`,
+            url: `${baseUrl}/blog/${post.slug}`,
+            author: {
+              '@type': 'Person',
+              name: 'Gopalji Gaur',
+            },
+          }),
+        }}
+      />
+      <Banner />
+      {post.metadata.image ? (
+        <Image
+          className="mb-8 rounded-xl"
+          src={post.metadata.image}
+          alt={post.metadata.title}
+          width={800}
+          height={400}
+        ></Image>
+      ) : (
+        ``
+      )}
+      <h1 className="title mt-1 text-3xl font-semibold tracking-tighter text-black dark:text-white">
+        {post.metadata.title}
+      </h1>
+      <div className="mt-2 mb-14 flex items-center justify-between text-sm">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          {formatDate(post.metadata.publishedAt)}
+        </p>
+      </div>
+      <article className="prose">
+        <CustomMDX source={post.content} />
+      </article>
+    </section>
   )
 }
