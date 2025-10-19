@@ -2,15 +2,15 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
-import Code from 'app/components/code'
+import { Code, OpenGistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
 
 function Table({ data }) {
-  let headers = data.headers.map((header, index) => (
+  const headers = data.headers.map((header, index) => (
     <th key={index}>{header}</th>
   ))
-  let rows = data.rows.map((row, index) => (
+  const rows = data.rows.map((row, index) => (
     <tr key={index}>
       {row.map((cell, cellIndex) => (
         <td key={cellIndex}>{cell}</td>
@@ -29,7 +29,7 @@ function Table({ data }) {
 }
 
 function CustomLink(props) {
-  let href = props?.href || ''
+  const href = props?.href || ''
   if (href.startsWith('/')) {
     return (
       <Link href={href} {...props}>
@@ -62,7 +62,7 @@ function slugify(str) {
 
 function createHeading(level) {
   const Heading = ({ children }) => {
-    let slug = slugify(children)
+    const slug = slugify(children)
     return React.createElement(
       `h${level}`,
       { id: slug },
@@ -73,7 +73,7 @@ function createHeading(level) {
           className: 'anchor',
         }),
       ],
-      children
+      children,
     )
   }
 
@@ -82,7 +82,7 @@ function createHeading(level) {
   return Heading
 }
 
-let components = {
+const components = {
   h1: createHeading(1),
   h2: createHeading(2),
   h3: createHeading(3),
@@ -95,6 +95,7 @@ let components = {
   table: Table,
   VibeSimulator,
   Callout,
+  OpenGistCode,
 }
 
 export function CustomMDX(props) {

@@ -18,9 +18,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Service unavailable',
-          html: '<div class="p-6 text-center text-neutral-400"><div class="text-4xl mb-2">⚠️</div><div class="text-sm">Service temporarily unavailable</div></div>'
+          html: '<div class="p-6 text-center text-neutral-400"><div class="text-4xl mb-2">⚠️</div><div class="text-sm">Service temporarily unavailable</div></div>',
         },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -31,9 +31,11 @@ export async function POST(request: NextRequest) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `You are an app mockup generator. First, determine if this is a request to BUILD/CREATE/MAKE an application or UI.
+          contents: [
+            {
+              parts: [
+                {
+                  text: `You are an app mockup generator. First, determine if this is a request to BUILD/CREATE/MAKE an application or UI.
 
 Request: "${prompt}"
 
@@ -85,11 +87,13 @@ Example format for app-building requests:
       </div>
     </div>
   </div>
-</div>`
-            }]
-          }]
+</div>`,
+                },
+              ],
+            },
+          ],
         }),
-      }
+      },
     )
 
     if (!response.ok) {
@@ -97,7 +101,7 @@ Example format for app-building requests:
     }
 
     const data = await response.json()
-    let html = data.candidates[0].content.parts[0].text
+    const html = data.candidates[0].content.parts[0].text
       .replace(/```html\n?/g, '')
       .replace(/```\n?/g, '')
       .trim()
@@ -108,9 +112,9 @@ Example format for app-building requests:
     return NextResponse.json(
       {
         error: 'Failed to generate preview',
-        html: '<div class="p-6 text-center text-neutral-600"><div class="text-4xl mb-2">⚠️</div>Error generating preview. Please try again.</div>'
+        html: '<div class="p-6 text-center text-neutral-600"><div class="text-4xl mb-2">⚠️</div>Error generating preview. Please try again.</div>',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
