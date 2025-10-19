@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import DOMPurify from 'dompurify'
 
 type Message = {
@@ -213,7 +213,7 @@ export function VibeSimulator() {
             )
           }, delay)
         })
-        .catch((err) => {
+        .catch(() => {
           setTimeout(() => {
             setGeneratedHtml(
               '<div class="p-6 text-center text-neutral-400"><div class="text-4xl mb-4">⚠</div><div class="text-lg">Error generating preview</div></div>',

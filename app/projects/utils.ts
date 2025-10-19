@@ -64,7 +64,7 @@ export function formatDate(date: string, includeRelative = false) {
   const monthsAgo = currentDate.getMonth() - targetDate.getMonth()
   const daysAgo = currentDate.getDate() - targetDate.getDate()
 
-  let formattedDate = ''
+  let formattedDate: string
 
   if (yearsAgo > 0) {
     formattedDate = `${yearsAgo}y ago`
