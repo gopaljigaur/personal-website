@@ -17,7 +17,6 @@ const nextConfig: NextConfig = {
     experimental: {
         mdxRs: true,
         viewTransition: true,
-        newDevOverlay: true
     },
     headers: async () => {
         return [

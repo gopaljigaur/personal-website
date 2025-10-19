@@ -1,5 +1,5 @@
 import { Projects } from 'app/components/projects'
-import { Banner } from "app/components/banner";
+import { Banner } from 'app/components/banner'
 
 export const metadata = {
   title: 'Projects',

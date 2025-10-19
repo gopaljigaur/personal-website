@@ -16,10 +16,12 @@ export const metadata: Metadata = {
     default: 'Gopalji Gaur',
     template: '%s | Gopalji Gaur',
   },
-  description: 'Gopalji Gaur. Machine Learning Engineer. Builder and innovator. Based in Germany.',
+  description:
+    'Gopalji Gaur. Machine Learning Engineer. Builder and innovator. Based in Germany.',
   openGraph: {
     title: 'Gopalji Gaur',
-    description: 'Gopalji Gaur. Machine Learning Engineer. Builder and innovator. Based in Germany.',
+    description:
+      'Gopalji Gaur. Machine Learning Engineer. Builder and innovator. Based in Germany.',
     url: baseUrl,
     siteName: 'Goaplji Gaur',
     locale: 'en_US',
@@ -49,18 +51,18 @@ export default function RootLayout({
     <html
       lang="en"
       className={cx(
-        'text-neutral-800 bg-white dark:text-dark-text-secondary dark:bg-neutral-950',
-        inter.className
+        'dark:text-dark-text-secondary bg-white text-neutral-800 dark:bg-neutral-950',
+        inter.className,
       )}
     >
-      <body className="antialiased max-w-2xl mx-4 lg:mx-auto flex flex-col min-h-screen">
-        <main className="flex-auto min-w-0 mt-8 flex flex-col px-2 md:px-0">
+      <body className="mx-4 flex min-h-screen max-w-2xl flex-col antialiased lg:mx-auto">
+        <main className="mt-8 flex min-w-0 flex-auto flex-col px-2 md:px-0">
           <Navbar />
           <ViewTransition>{children}</ViewTransition>
         </main>
-          <Footer />
-          <Analytics />
-          <SpeedInsights />
+        <Footer />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
