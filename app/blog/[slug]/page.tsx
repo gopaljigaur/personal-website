@@ -7,7 +7,7 @@ import { baseUrl } from 'app/sitemap'
 import Image from 'next/image'
 
 export async function generateStaticParams() {
-  let posts = getBlogPosts()
+  const posts = getBlogPosts()
   if (!posts) {
     return []
   }
@@ -16,23 +16,24 @@ export async function generateStaticParams() {
   }))
 }
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 export async function generateMetadata(props: { params: any }) {
-  const params = await props.params;
+  const params = await props.params
   if (!params.slug) {
     notFound()
   }
-  let post = getBlogPosts().find((post) => post.slug === params.slug)
+  const post = getBlogPosts().find((post) => post.slug === params.slug)
   if (!post) {
-    notFound();
+    notFound()
   }
 
-  let {
+  const {
     title,
     publishedAt: publishedTime,
     summary: description,
     image,
   } = post.metadata
-  let ogImage = image
+  const ogImage = image
     ? image
     : `${baseUrl}/og?title=${encodeURIComponent(title)}`
 
@@ -61,11 +62,11 @@ export async function generateMetadata(props: { params: any }) {
 }
 
 export default async function Blog(props: { params: any }) {
-  const params = await props.params;
+  const params = await props.params
   if (!params.slug) {
     notFound()
   }
-  let post = getBlogPosts().find((post) => post.slug === params.slug)
+  const post = getBlogPosts().find((post) => post.slug === params.slug)
 
   if (!post) {
     notFound()
@@ -96,19 +97,21 @@ export default async function Blog(props: { params: any }) {
         }}
       />
       <Banner />
-      {
-        post.metadata.image?
-            <Image className="mb-8 rounded-xl"
-                   src={post.metadata.image}
-                   alt={post.metadata.title}
-                   width={800}
-                   height={400}
-            ></Image> : ``
-      }
-      <h1 className="title font-semibold text-3xl mt-1 tracking-tighter text-black dark:text-white">
+      {post.metadata.image ? (
+        <Image
+          className="mb-8 rounded-xl"
+          src={post.metadata.image}
+          alt={post.metadata.title}
+          width={800}
+          height={400}
+        ></Image>
+      ) : (
+        ``
+      )}
+      <h1 className="title mt-1 text-3xl font-semibold tracking-tighter text-black dark:text-white">
         {post.metadata.title}
       </h1>
-      <div className="flex justify-between items-center mt-2 mb-14 text-sm">
+      <div className="mt-2 mb-14 flex items-center justify-between text-sm">
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           {formatDate(post.metadata.publishedAt)}
         </p>
