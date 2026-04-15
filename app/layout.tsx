@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "./components/footer";
 import { baseUrl } from "./sitemap";
+import { unstable_ViewTransition as ViewTransition } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -57,7 +58,7 @@ export default function RootLayout({
       <body className="mx-4 flex min-h-screen max-w-2xl flex-col antialiased lg:mx-auto">
         <main className="mt-8 flex min-w-0 flex-auto flex-col px-2 md:px-0">
           <Navbar />
-          {children}
+          <ViewTransition>{children}</ViewTransition>
         </main>
         <Footer />
         <Analytics />
