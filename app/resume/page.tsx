@@ -48,7 +48,9 @@ export default function ResumePage() {
             >
               <div>
                 <p className="font-medium">{label}</p>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">{description}</p>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  {description}
+                </p>
               </div>
               <span className="mt-1 ml-4 shrink-0 text-neutral-400 transition-all group-hover:text-neutral-800 dark:group-hover:text-neutral-100">
                 <ArrowIcon />
