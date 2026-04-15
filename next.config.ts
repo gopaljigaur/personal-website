@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
         mdxRs: true,
         viewTransition: true,
     },
+    redirects: async () => [
+        { source: '/cv/ml',       destination: '/cv/CV_Gopalji_Gaur_ML_Engineer.pdf',              permanent: false },
+        { source: '/cv/research', destination: '/cv/CV_Gopalji_Gaur_Research_Engineer.pdf',         permanent: false },
+        { source: '/cv/ai',       destination: '/cv/CV_Gopalji_Gaur_AI_Application_Developer.pdf',  permanent: false },
+        { source: '/cv/software', destination: '/cv/CV_Gopalji_Gaur_Software_Engineer.pdf',         permanent: false },
+        { source: '/cv/data',     destination: '/cv/CV_Gopalji_Gaur_Data_Scientist.pdf',            permanent: false },
+    ],
     headers: async () => {
         return [
             {
