@@ -1,31 +1,30 @@
-import './global.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import { Navbar } from './components/nav'
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
-import Footer from './components/footer'
-import { baseUrl } from './sitemap'
-import { unstable_ViewTransition as ViewTransition } from 'react'
+import "./global.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { Navbar } from "./components/nav";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import Footer from "./components/footer";
+import { baseUrl } from "./sitemap";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: 'Gopalji Gaur',
-    template: '%s | Gopalji Gaur',
+    default: "Gopalji Gaur",
+    template: "%s | Gopalji Gaur",
   },
   description:
-    'Gopalji Gaur. Machine Learning Engineer. Builder and innovator. Based in Germany.',
+    "Gopalji Gaur. Machine Learning Engineer. Builder and innovator. Based in Germany.",
   openGraph: {
-    title: 'Gopalji Gaur',
+    title: "Gopalji Gaur",
     description:
-      'Gopalji Gaur. Machine Learning Engineer. Builder and innovator. Based in Germany.',
+      "Gopalji Gaur. Machine Learning Engineer. Builder and innovator. Based in Germany.",
     url: baseUrl,
-    siteName: 'Goaplji Gaur',
-    locale: 'en_US',
-    type: 'website',
+    siteName: "Goaplji Gaur",
+    locale: "en_US",
+    type: "website",
   },
   robots: {
     index: true,
@@ -33,37 +32,37 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
-}
+};
 
-const cx = (...classes: string[]) => classes.filter(Boolean).join(' ')
+const cx = (...classes: string[]) => classes.filter(Boolean).join(" ");
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html
       lang="en"
       className={cx(
-        'dark:text-dark-text-secondary bg-white text-neutral-800 dark:bg-neutral-950',
+        "dark:text-dark-text-secondary bg-white text-neutral-800 dark:bg-neutral-950",
         inter.className,
       )}
     >
       <body className="mx-4 flex min-h-screen max-w-2xl flex-col antialiased lg:mx-auto">
         <main className="mt-8 flex min-w-0 flex-auto flex-col px-2 md:px-0">
           <Navbar />
-          <ViewTransition>{children}</ViewTransition>
+          {children}
         </main>
         <Footer />
         <Analytics />
         <SpeedInsights />
       </body>
     </html>
-  )
+  );
 }
