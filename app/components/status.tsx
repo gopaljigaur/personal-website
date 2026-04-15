@@ -9,7 +9,7 @@ export function StatusCard() {
           Current Role
         </div>
         <div className="status-item__value text-neutral-950 dark:text-neutral-100">
-          Business Application Developer
+          AI Application Developer
         </div>
       </div>
 
