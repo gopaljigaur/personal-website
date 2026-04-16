@@ -1,39 +1,30 @@
 import fs from 'fs'
 import path from 'path'
+import matter from 'gray-matter'
+import type { Metadata, BlogPost, Heading } from './utils.shared'
 
-type Metadata = {
-  title: string
-  publishedAt: string
-  summary: string
-  image?: string
-}
-
-function parseFrontmatter(fileContent: string) {
-  const frontmatterRegex = /---\s*([\s\S]*?)\s*---/
-  const match = frontmatterRegex.exec(fileContent)
-  const frontMatterBlock = match![1]
-  const content = fileContent.replace(frontmatterRegex, '').trim()
-  const frontMatterLines = frontMatterBlock.trim().split('\n')
-  const metadata: Partial<Metadata> = {}
-
-  frontMatterLines.forEach((line) => {
-    const [key, ...valueArr] = line.split(': ')
-    let value = valueArr.join(': ').trim()
-    value = value.replace(/^['"](.*)['"]$/, '$1') // Remove quotes
-    metadata[key.trim() as keyof Metadata] = value
-  })
-
-  return { metadata: metadata as Metadata, content }
-}
-
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-function getMDXFiles(dir: any) {
+function getMDXFiles(dir: string) {
   return fs.readdirSync(dir).filter((file) => path.extname(file) === '.mdx')
 }
 
-function readMDXFile(filePath: fs.PathOrFileDescriptor) {
+function readMDXFile(filePath: string) {
   const rawContent = fs.readFileSync(filePath, 'utf-8')
-  return parseFrontmatter(rawContent)
+  const { data, content } = matter(rawContent)
+  const metadata: Metadata = {
+    title: data.title ?? '',
+    publishedAt: data.publishedAt ?? '',
+    summary: data.summary ?? '',
+    image: data.image,
+    tags: Array.isArray(data.tags)
+      ? data.tags
+      : typeof data.tags === 'string'
+        ? data.tags
+            .split(',')
+            .map((t: string) => t.trim())
+            .filter(Boolean)
+        : undefined,
+  }
+  return { metadata, content: content.trim() }
 }
 
 function getMDXData(dir: string) {
@@ -50,42 +41,49 @@ function getMDXData(dir: string) {
   })
 }
 
-export function getBlogPosts() {
-  return getMDXData(path.join(process.cwd(), 'app', 'blog', 'posts'))
+function slugify(str: string) {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/&/g, '-and-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')
 }
 
-export function formatDate(date: string, includeRelative = false) {
-  const currentDate = new Date()
-  if (!date.includes('T')) {
-    date = `${date}T00:00:00`
+export function extractHeadings(content: string): Heading[] {
+  const headingRegex = /^(#{2,4})\s+(.+)$/gm
+  const headings: Heading[] = []
+  let match
+  while ((match = headingRegex.exec(content)) !== null) {
+    headings.push({
+      level: match[1].length,
+      text: match[2].trim(),
+      id: slugify(match[2].trim()),
+    })
   }
-  const targetDate = new Date(date)
+  return headings
+}
 
-  const yearsAgo = currentDate.getFullYear() - targetDate.getFullYear()
-  const monthsAgo = currentDate.getMonth() - targetDate.getMonth()
-  const daysAgo = currentDate.getDate() - targetDate.getDate()
+export function getRelatedPosts(
+  currentSlug: string,
+  currentTags: string[],
+  allPosts: BlogPost[],
+  limit = 3,
+): BlogPost[] {
+  if (!currentTags.length) return []
+  return allPosts
+    .filter((p) => p.slug !== currentSlug)
+    .map((p) => ({
+      ...p,
+      _score: (p.metadata.tags ?? []).filter((t) => currentTags.includes(t))
+        .length,
+    }))
+    .filter((p) => p._score > 0)
+    .sort((a, b) => b._score - a._score)
+    .slice(0, limit)
+}
 
-  let formattedDate: string
-
-  if (yearsAgo > 0) {
-    formattedDate = `${yearsAgo}y ago`
-  } else if (monthsAgo > 0) {
-    formattedDate = `${monthsAgo}mo ago`
-  } else if (daysAgo > 0) {
-    formattedDate = `${daysAgo}d ago`
-  } else {
-    formattedDate = 'Today'
-  }
-
-  const fullDate = targetDate.toLocaleString('en-us', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  })
-
-  if (!includeRelative) {
-    return fullDate
-  }
-
-  return `${fullDate} (${formattedDate})`
+export function getBlogPosts() {
+  return getMDXData(path.join(process.cwd(), 'app', 'blog', 'posts'))
 }

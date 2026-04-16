@@ -37,5 +37,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# tina cms (generated, dev-only)
+/tina/__generated__
+/public/admin
+
 *.lock
 pnpm-lock.yaml
