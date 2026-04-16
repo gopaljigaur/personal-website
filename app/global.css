@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@custom-variant dark (&:is(.dark, .dark *));
 
 @theme {
   --color-light-text: #0c161d;
@@ -38,16 +39,12 @@
   --sh-entity: #e25a1c;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --sh-class: #4c97f8;
-    --sh-identifier: white;
-    --sh-keyword: #f47067;
-    --sh-string: #0fa295;
-  }
-  html {
-    color-scheme: dark;
-  }
+.dark {
+  --sh-class: #4c97f8;
+  --sh-identifier: white;
+  --sh-keyword: #f47067;
+  --sh-string: #0fa295;
+  color-scheme: dark;
 }
 
 html {
@@ -58,7 +55,7 @@ html {
 }
 
 .prose .anchor {
-  @apply absolute invisible no-underline;
+  @apply invisible absolute no-underline;
 
   margin-left: -1em;
   padding-right: 0.5em;
@@ -72,7 +69,7 @@ html {
 }
 
 .prose a {
-  @apply transition-all decoration-neutral-900 dark:decoration-neutral-100 underline-offset-2 decoration-[0.1em] text-neutral-900 dark:text-neutral-100;
+  @apply text-neutral-900 decoration-neutral-900 decoration-[0.1em] underline-offset-2 transition-all dark:text-neutral-100 dark:decoration-neutral-100;
 }
 
 .prose .anchor:after {
@@ -85,11 +82,11 @@ html {
 }
 
 .prose pre {
-  @apply bg-neutral-50 dark:bg-neutral-900 rounded-lg overflow-x-auto border border-neutral-200 dark:border-neutral-900 py-2 px-3 text-sm text-wrap;
+  @apply overflow-x-auto rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-wrap dark:border-neutral-900 dark:bg-neutral-900;
 }
 
 .prose code {
-  @apply px-1 py-0.5 rounded-lg;
+  @apply rounded-lg px-1 py-0.5;
 }
 
 .prose pre code {
@@ -112,19 +109,19 @@ html {
 }
 
 .prose h1 {
-  @apply text-4xl font-medium tracking-tight mt-6 mb-2 text-neutral-900 dark:text-neutral-100;
+  @apply mt-6 mb-2 text-4xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100;
 }
 
 .prose h2 {
-  @apply text-xl font-medium tracking-tight mt-6 mb-2 text-neutral-900 dark:text-neutral-100;
+  @apply mt-6 mb-2 text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100;
 }
 
 .prose h3 {
-  @apply text-xl font-medium tracking-tight mt-6 mb-2 text-neutral-900 dark:text-neutral-100;
+  @apply mt-6 mb-2 text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100;
 }
 
 .prose h4 {
-  @apply text-lg font-medium tracking-tight mt-6 mb-2 text-neutral-900 dark:text-neutral-100;
+  @apply mt-6 mb-2 text-lg font-medium tracking-tight text-neutral-900 dark:text-neutral-100;
 }
 
 .prose strong {
@@ -146,6 +143,15 @@ html {
 }
 
 pre::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
@@ -173,11 +179,11 @@ table {
   text-wrap: balance;
 }
 
-a {
+.prose a {
   transition: color 0.2s ease-in-out;
 }
 
-a:hover {
+.prose a:hover {
   color: var(--color-dark-primary);
   transition: color 0.2s ease-in-out;
 }
