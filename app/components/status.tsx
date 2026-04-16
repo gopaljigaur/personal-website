@@ -3,7 +3,7 @@ import { ArrowIcon } from 'app/components/footer'
 
 export function StatusCard() {
   return (
-    <div className="status-card flex flex-8 flex-col gap-6">
+    <div className="status-card flex flex-none flex-col gap-6 pr-2">
       <div className="status-item flex-1">
         <div className="status-item__title mb-1 inline-block bg-gradient-to-tr from-[var(--color-dark-primary)] to-[var(--color-dark-secondary)] bg-clip-text text-xl leading-normal font-semibold text-transparent">
           Current Role

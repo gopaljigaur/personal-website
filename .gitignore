@@ -41,5 +41,9 @@ next-env.d.ts
 /tina/__generated__
 /public/admin
 
+# generated at build time
+/content/embeddings.json
+
 *.lock
 pnpm-lock.yaml
+.env*.local

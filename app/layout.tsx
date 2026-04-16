@@ -75,7 +75,7 @@ export default function RootLayout({
             projects={projects.map((p) => ({
               title: p.title,
               summary: p.summary,
-              href: p.links?.live ?? p.links?.github ?? '/projects',
+              href: p.links?.[0]?.href ?? '/projects',
             }))}
           />
         </Providers>
