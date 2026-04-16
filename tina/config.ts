@@ -17,6 +17,41 @@ export default defineConfig({
   schema: {
     collections: [
       {
+        name: 'misc',
+        label: 'Misc Links',
+        path: 'content',
+        format: 'json',
+        ui: {
+          allowedActions: { create: false, delete: false },
+        },
+        match: { include: 'misc' },
+        fields: [
+          {
+            type: 'object',
+            name: 'links',
+            label: 'Links',
+            list: true,
+            ui: { itemProps: (item) => ({ label: item?.title }) },
+            fields: [
+              {
+                type: 'string',
+                name: 'title',
+                label: 'Title',
+                isTitle: true,
+                required: true,
+              },
+              { type: 'string', name: 'url', label: 'URL', required: true },
+              {
+                type: 'string',
+                name: 'note',
+                label: 'Note',
+                ui: { component: 'textarea' },
+              },
+            ],
+          },
+        ],
+      },
+      {
         name: 'blog',
         label: 'Blog Posts',
         path: 'app/blog/posts',

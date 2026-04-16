@@ -7,8 +7,8 @@ import { usePathname } from 'next/navigation'
 
 export function MainBanner() {
   return (
-    <span className="dark:text-dark-text text-light-text smplus:flex-row mb-14 flex flex-col gap-6">
-      <div className="smplus:mb-0 mb-4 flex-10 flex-row">
+    <span className="dark:text-dark-text text-light-text smplus:flex-row smplus:justify-between mb-14 flex flex-col gap-6">
+      <div className="smplus:mb-0 mb-4 flex-none flex-row">
         <Link
           href={'https://gopalji.me'}
           className="inline-flex flex-row gap-6"

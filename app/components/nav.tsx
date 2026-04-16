@@ -8,6 +8,7 @@ const navItems = {
   '/': { name: 'home' },
   '/blog': { name: 'blog' },
   '/projects': { name: 'projects' },
+  '/misc': { name: 'misc' },
 }
 
 function ThemeToggle() {

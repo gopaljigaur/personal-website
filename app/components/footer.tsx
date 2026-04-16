@@ -1,4 +1,4 @@
-'use client'
+import { ChatWidget } from './chat-widget'
 
 export function ArrowIcon() {
   return (
@@ -21,55 +21,55 @@ export function ArrowIcon() {
 export default function Footer() {
   return (
     <footer className="pb-12">
-      <ul className="font-sm mt-8 flex flex-col space-y-2 space-x-0 text-neutral-600 md:flex-row md:space-y-0 md:space-x-4 dark:text-neutral-400">
-        <li>
-          <a
-            className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
-            rel="noopener noreferrer"
-            target="_blank"
-            href="/rss"
-          >
-            <ArrowIcon />
-            <p className="ml-2 h-7">rss</p>
-          </a>
-        </li>
-        <li>
-          <a
-            className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
-            rel="noopener noreferrer"
-            target="_blank"
-            href="https://github.com/gopaljigaur"
-          >
-            <ArrowIcon />
-            <p className="ml-2 h-7">github</p>
-          </a>
-        </li>
-        <li>
-          <a
-            className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
-            rel="noopener noreferrer"
-            target="_blank"
-            href="https://www.linkedin.com/in/gopaljigaur/"
-          >
-            <ArrowIcon />
-            <p className="ml-2 h-7">linkedin</p>
-          </a>
-        </li>
-        <li>
-          <a
-            className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
-            href="/cv/ml"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <ArrowIcon />
-            <p className="ml-2 h-7">resume</p>
-          </a>
-        </li>
-      </ul>
-      <p className="mt-8 text-neutral-600 dark:text-neutral-300">
-        © {new Date().getFullYear()} Gopalji Gaur
-      </p>
+      <div className="font-sm mt-8 flex items-center text-neutral-600 dark:text-neutral-400">
+        <ul className="flex flex-wrap gap-x-4 gap-y-2">
+          <li>
+            <a
+              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              rel="noopener noreferrer"
+              target="_blank"
+              href="https://github.com/gopaljigaur"
+            >
+              <ArrowIcon />
+              <span className="ml-2">github</span>
+            </a>
+          </li>
+          <li>
+            <a
+              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              rel="noopener noreferrer"
+              target="_blank"
+              href="https://www.linkedin.com/in/gopaljigaur/"
+            >
+              <ArrowIcon />
+              <span className="ml-2">linkedin</span>
+            </a>
+          </li>
+          <li>
+            <a
+              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              href="mailto:contact@gopalji.me"
+            >
+              <ArrowIcon />
+              <span className="ml-2">email</span>
+            </a>
+          </li>
+          <li>
+            <a
+              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              href="/cv/ml"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ArrowIcon />
+              <span className="ml-2">resume</span>
+            </a>
+          </li>
+        </ul>
+        <div className="ml-auto">
+          <ChatWidget />
+        </div>
+      </div>
     </footer>
   )
 }
