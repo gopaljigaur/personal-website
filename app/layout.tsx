@@ -2,6 +2,7 @@ import './global.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Navbar } from './components/nav'
+import { ChatWidget } from './components/chat-widget'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Footer from './components/footer'
@@ -70,6 +71,7 @@ export default function RootLayout({
             <ViewTransition>{children}</ViewTransition>
           </main>
           <Footer />
+          {!!process.env.GEMINI_API_KEY && <ChatWidget />}
           <CommandPalette
             posts={posts}
             projects={projects.map((p) => ({

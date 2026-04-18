@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
-import { ChatWidget } from './chat-widget'
+import { ChatButton } from './chat-widget'
 
 const navItems = {
   '/': { name: 'home' },
@@ -108,7 +108,7 @@ export function Navbar({ chatEnabled }: { chatEnabled?: boolean }) {
           </div>
           <div className="navrow:order-2 navrow:block navrow:min-w-4 navrow:flex-1 order-3 hidden" />
           <div className="navrow:order-3 navrow:ml-0 navrow:gap-2 order-1 ml-2 flex items-center gap-4 sm:gap-3">
-            {chatEnabled && <ChatWidget />}
+            {chatEnabled && <ChatButton />}
             <SearchButton />
             <ThemeToggle />
           </div>

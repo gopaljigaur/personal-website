@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { CustomMDX } from 'app/components/mdx'
 import { TagPill } from 'app/components/tag-pill'
-import { Banner } from 'app/components/banner'
 import Comments from 'app/components/comments'
 import { TableOfContents } from 'app/components/toc'
 import { RelatedPosts } from 'app/components/related-posts'
@@ -60,7 +59,7 @@ export default async function Blog(props: { params: any }) {
   const related = getRelatedPosts(post.slug, post.metadata.tags ?? [], allPosts)
 
   return (
-    <section>
+    <>
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -80,7 +79,6 @@ export default async function Blog(props: { params: any }) {
           }),
         }}
       />
-      <Banner />
       {post.metadata.image && (
         <Image
           className="mb-8 rounded-xl"
@@ -127,6 +125,6 @@ export default async function Blog(props: { params: any }) {
       </div>
       <RelatedPosts posts={related} />
       <Comments />
-    </section>
+    </>
   )
 }
