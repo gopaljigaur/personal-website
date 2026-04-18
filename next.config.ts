@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
   },
   redirects: async () => [
     {
+      source: '/cv',
+      destination: '/cv/ml',
+      permanent: false,
+    },
+    {
       source: '/cv/ml',
       destination: '/cv/CV_Gopalji_Gaur_ML_Engineer.pdf',
       permanent: false,

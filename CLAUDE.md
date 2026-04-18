@@ -22,8 +22,8 @@ Linting is enforced via Husky pre-commit hooks (Prettier + lint-staged). No sepa
 - `app/` — All routing, pages, components, and API routes
   - `app/blog/posts/` — MDX blog post files (frontmatter: `title`, `publishedAt`, `summary`, `image`, `tags[]`)
   - `app/projects/data.ts` — Hardcoded project entries (TypeScript array)
-  - `app/components/` — Shared UI components
-  - `app/lib/` — Utilities: `utils.shared.ts` (usable in both server/client), search helpers
+  - `app/components/` — Shared UI components. `ChatWidget` (modal) is rendered in `app/layout.tsx` and communicates with `ChatButton` (in nav) via a `window.dispatchEvent('openChat')` custom event — this avoids z-index stacking context issues.
+  - `app/lib/` — Utilities: `utils.shared.ts` (usable in both server/client), `search.ts` (embedding search), `profile.ts` (single source of truth for identity/contact data)
   - `app/api/` — Serverless API routes: `/chat`, `/search`, `/generate-code`
   - `app/og/` — OpenGraph image generation
 - `content/` — JSON data: `embeddings.json` (generated), `misc.json` (TinaCMS-managed)
@@ -36,11 +36,16 @@ Linting is enforced via Husky pre-commit hooks (Prettier + lint-staged). No sepa
 - **Projects**: Static TypeScript array in `app/projects/data.ts`.
 - **Misc links**: `content/misc.json`, edited via TinaCMS UI at `/admin`.
 
+### Profile & identity
+
+`app/lib/profile.ts` is the single source of truth for name, title, location, role, workplace, bio, and contact links (email, GitHub, LinkedIn, resume). It is imported by `app/page.tsx`, `app/components/footer.tsx`, `app/components/chat-widget.tsx`, and `scripts/generate-embeddings.ts`. Update it here and everything stays in sync.
+
 ### Semantic search & AI chat
 
-- `pnpm embed` runs `scripts/generate-embeddings.ts`, which calls the Gemini embedding API over all blog/project/misc content and writes `content/embeddings.json`.
+- `pnpm embed` runs `scripts/generate-embeddings.ts`, which indexes profile, blog posts, and projects into `content/embeddings.json`. Misc links are intentionally not indexed.
+- Indexed types: `profile`, `blog`, `project`, `contact`. The `EmbeddingItem` type in both `scripts/generate-embeddings.ts` and `app/lib/search.ts` must stay in sync if new types are added.
 - `/api/search` performs dot-product similarity search against those embeddings.
-- `/api/chat` uses Gemini 2.5 Flash with tool calling — the model can invoke site search mid-conversation. Responses are cached in Vercel KV (24h TTL, keyed by embeddings hash + prompt). Rate-limited per IP (20 req/hour via KV).
+- `/api/chat` uses Gemini 2.5 Flash with tool calling — the model can invoke site search mid-conversation. System prompt is a module-level constant `SYSTEM_PROMPT` (no hardcoded bio/projects — agent discovers everything via search). Responses are cached in Vercel KV (24h TTL, keyed by embeddings hash + prompt). Rate-limited per IP (20 req/hour via KV).
 
 ### Styling
 
@@ -70,5 +75,5 @@ Available for use in blog posts (`app/blog/posts/*.mdx`):
 - MDX page extensions enabled
 - Gravatar remote image patterns allowed
 - View transitions enabled (experimental)
-- Redirect aliases: `/cv/ml`, `/cv/research`, etc. → external CV URLs
+- `/cv` redirects to `/cv/ml`; `/cv/ml`, `/cv/research`, `/cv/ai`, `/cv/software`, `/cv/data` each redirect to their respective PDF
 - CORS headers for Giscus comments CSS

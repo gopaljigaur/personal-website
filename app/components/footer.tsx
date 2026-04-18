@@ -1,3 +1,5 @@
+import { profile } from 'app/lib/profile'
+
 export function ArrowIcon() {
   return (
     <svg
@@ -26,7 +28,7 @@ export default function Footer() {
               className="flex items-center transition-all hover:text-neutral-800 focus-visible:text-neutral-800 focus-visible:outline-none dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
               rel="noopener noreferrer"
               target="_blank"
-              href="https://github.com/gopaljigaur"
+              href={profile.contact.github}
             >
               <ArrowIcon />
               <span className="ml-2">github</span>
@@ -37,7 +39,7 @@ export default function Footer() {
               className="flex items-center transition-all hover:text-neutral-800 focus-visible:text-neutral-800 focus-visible:outline-none dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
               rel="noopener noreferrer"
               target="_blank"
-              href="https://www.linkedin.com/in/gopaljigaur/"
+              href={profile.contact.linkedin}
             >
               <ArrowIcon />
               <span className="ml-2">linkedin</span>
@@ -46,7 +48,7 @@ export default function Footer() {
           <li>
             <a
               className="flex items-center transition-all hover:text-neutral-800 focus-visible:text-neutral-800 focus-visible:outline-none dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
-              href="mailto:contact@gopalji.me"
+              href={`mailto:${profile.contact.email}`}
             >
               <ArrowIcon />
               <span className="ml-2">email</span>
@@ -55,7 +57,7 @@ export default function Footer() {
           <li>
             <a
               className="flex items-center transition-all hover:text-neutral-800 focus-visible:text-neutral-800 focus-visible:outline-none dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
-              href="/cv/ml"
+              href={profile.contact.resume}
               target="_blank"
               rel="noopener noreferrer"
             >
