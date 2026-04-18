@@ -5,9 +5,7 @@ export default function Page() {
     <section>
       <MainBanner />
       <p className="mb-4">
-        {`Hey, I'm Gopalji, a Machine Learning Engineer based in Germany. In addition to dwelling
-        among the interconnections of the Neural Networks, I sometimes like to wrap my head around
-        various web development projects.`}
+        {`I've been into computers and engineering from a very young age. My background is in ML research. I've worked with diffusion models and transformers, and lately most of my time goes into AI agents. I also build things for the web, this site included.`}
       </p>
     </section>
   )

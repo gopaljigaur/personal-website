@@ -1,4 +1,3 @@
-import { Banner } from '../components/banner'
 import { BlogPostsWithFilter } from 'app/components/posts'
 import { getBlogPosts } from 'app/blog/utils'
 
@@ -40,13 +39,10 @@ export default async function Page(props: { searchParams: any }) {
   })
 
   return (
-    <section>
-      <Banner />
-      <BlogPostsWithFilter
-        posts={posts}
-        allTags={allTags}
-        activeTags={activeTags}
-      />
-    </section>
+    <BlogPostsWithFilter
+      posts={posts}
+      allTags={allTags}
+      activeTags={activeTags}
+    />
   )
 }
