@@ -15,7 +15,7 @@ export default function Page() {
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group text-sm"
+              className="group block text-sm"
             >
               <span className="text-neutral-900 dark:text-neutral-100">
                 {title}
@@ -23,7 +23,7 @@ export default function Page() {
               <span className="mx-2 text-neutral-300 dark:text-neutral-600">
                 —
               </span>
-              <span className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300">
+              <span className="break-all text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300">
                 {url}
               </span>
             </a>

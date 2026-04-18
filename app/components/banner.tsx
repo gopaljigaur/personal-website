@@ -13,7 +13,7 @@ export function MainBanner() {
           href={'https://gopalji.me'}
           className="inline-flex flex-row gap-6"
         >
-          <div className="relative w-[48px] min-w-[48px]">
+          <div className="relative w-12 min-w-12">
             <Image
               alt="Gopalji Gaur"
               height={48}
@@ -28,7 +28,7 @@ export function MainBanner() {
           </h1>
         </Link>
         <h2 className="mt-6 text-2xl tracking-tight">
-          <p className="inline-block bg-gradient-to-tr from-[var(--color-dark-secondary)] to-[var(--color-dark-primary)] bg-clip-text leading-normal font-semibold text-transparent">
+          <p className="from-dark-secondary to-dark-primary inline-block bg-gradient-to-tr bg-clip-text leading-normal font-semibold text-transparent">
             Machine Learning Engineer
           </p>
           <br></br>
@@ -56,8 +56,11 @@ export function Banner() {
   const bannerText = pathSegments[0] || 'gopaljigaur'
   return (
     <span className="mb-16 inline-flex">
-      <Link href={'/'}>
-        <div className="relative mr-4 w-[48px] self-center grayscale filter transition-all hover:grayscale-0">
+      <Link
+        href={'/'}
+        className="rounded-full focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:outline-none"
+      >
+        <div className="relative mr-4 w-12 self-center grayscale filter transition-all hover:grayscale-0">
           <Image
             alt="Gopalji Gaur"
             height={48}

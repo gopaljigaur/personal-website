@@ -33,7 +33,7 @@ export function TableOfContents({ headings }: { headings: Heading[] }) {
 
   return (
     <nav className="rounded-lg border border-neutral-200 px-5 py-4 text-sm dark:border-neutral-800">
-      <p className="mb-2 inline-block bg-gradient-to-tr from-[var(--color-dark-secondary)] to-[var(--color-dark-primary)] bg-clip-text font-medium text-transparent">
+      <p className="from-dark-secondary to-dark-primary mb-2 inline-block bg-gradient-to-tr bg-clip-text font-medium text-transparent">
         On this page
       </p>
       <ul className="space-y-1.5">
@@ -41,7 +41,7 @@ export function TableOfContents({ headings }: { headings: Heading[] }) {
           <li key={h.id} style={{ paddingLeft: `${(h.level - 2) * 12}px` }}>
             <a
               href={`#${h.id}`}
-              className={`transition-colors hover:text-neutral-900 dark:hover:text-neutral-100 ${
+              className={`transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100 ${
                 activeId === h.id
                   ? 'text-neutral-700 dark:text-neutral-300'
                   : 'text-neutral-500 dark:text-neutral-400'

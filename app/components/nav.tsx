@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
+import { ChatWidget } from './chat-widget'
 
 const navItems = {
   '/': { name: 'home' },
@@ -17,13 +18,13 @@ function ThemeToggle() {
 
   useEffect(() => setMounted(true), [])
 
-  if (!mounted) return <div className="h-5 w-5" />
+  if (!mounted) return <div className="h-8 w-8" />
 
   return (
     <button
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
       aria-label="Toggle dark mode"
-      className="flex h-5 w-5 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+      className="flex h-8 w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
     >
       {resolvedTheme === 'dark' ? (
         // Sun icon
@@ -61,12 +62,12 @@ function ThemeToggle() {
   )
 }
 
-function CmdKButton() {
+function SearchButton() {
   return (
     <button
       onClick={() => window.dispatchEvent(new Event('openCommandPalette'))}
       aria-label="Open command palette"
-      className="flex cursor-pointer items-center text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+      className="flex cursor-pointer items-center text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -86,15 +87,15 @@ function CmdKButton() {
   )
 }
 
-export function Navbar() {
+export function Navbar({ chatEnabled }: { chatEnabled?: boolean }) {
   return (
     <aside className="mb-16 -ml-[8px] tracking-tight">
       <div className="lg:sticky lg:top-20">
         <nav
-          className="fade relative flex scroll-pr-6 flex-row items-center px-0 pb-0 md:relative md:overflow-auto"
+          className="fade navrow:flex-row navrow:items-center relative flex flex-col items-start px-0 pb-0"
           id="nav"
         >
-          <div className="flex flex-row space-x-0 pr-10">
+          <div className="navrow:order-1 order-2 flex flex-row space-x-0">
             {Object.entries(navItems).map(([path, { name }]) => (
               <Link
                 key={path}
@@ -105,8 +106,10 @@ export function Navbar() {
               </Link>
             ))}
           </div>
-          <div className="ml-auto flex items-center gap-3 pr-1">
-            <CmdKButton />
+          <div className="navrow:order-2 navrow:block navrow:min-w-4 navrow:flex-1 order-3 hidden" />
+          <div className="navrow:order-3 navrow:ml-0 navrow:gap-2 order-1 ml-2 flex items-center gap-4 sm:gap-3">
+            {chatEnabled && <ChatWidget />}
+            <SearchButton />
             <ThemeToggle />
           </div>
         </nav>
