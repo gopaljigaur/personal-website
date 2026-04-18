@@ -1,6 +1,7 @@
 'use client'
 
 import { memo, useEffect, useRef, useState } from 'react'
+import { profile } from 'app/lib/profile'
 import {
   LuMessageSquare,
   LuX,
@@ -136,8 +137,7 @@ export function ChatWidget() {
         const updated = [...prev]
         updated[updated.length - 1] = {
           role: 'assistant',
-          content:
-            'Sorry, something went wrong. Try again or reach out at contact@gopalji.me.',
+          content: `Sorry, something went wrong. Try again or reach out at ${profile.contact.email}.`,
         }
         return updated
       })

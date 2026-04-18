@@ -7,13 +7,14 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
+import { profile, profileText } from '../app/lib/profile.js'
 
 const API_KEY = process.env.GEMINI_API_KEY
 if (!API_KEY) throw new Error('GEMINI_API_KEY is not set')
 
 type EmbeddingItem = {
   id: string
-  type: 'blog' | 'project' | 'misc'
+  type: 'blog' | 'project' | 'profile' | 'contact'
   title: string
   url: string
   text: string
@@ -42,6 +43,15 @@ async function main() {
   const items: EmbeddingItem[] = []
   const root = process.cwd()
 
+  // Profile — homepage identity info
+  items.push({
+    id: 'profile',
+    type: 'profile',
+    title: profile.name,
+    url: '/',
+    text: profileText,
+    embedding: await embed(profileText),
+  })
   // Blog posts — title + summary + tags (not full content)
   const postsDir = path.join(root, 'app/blog/posts')
   for (const file of fs
@@ -83,23 +93,35 @@ async function main() {
     console.log(`✓ project: ${p.title}`)
   }
 
-  // Misc links
-  const misc = JSON.parse(
-    fs.readFileSync(path.join(root, 'content/misc.json'), 'utf-8'),
-  ) as {
-    links: { title: string; url: string; note?: string }[]
-  }
-  for (const link of misc.links) {
-    const text = [link.title, link.note].filter(Boolean).join('. ')
-    items.push({
-      id: `misc-${Buffer.from(link.url).toString('base64').slice(0, 16)}`,
-      type: 'misc',
-      title: link.title,
-      url: link.url,
-      text,
-      embedding: await embed(text),
-    })
-    console.log(`✓ misc: ${link.title}`)
+  // Contact links
+  const contactLinks = [
+    {
+      id: 'contact-email',
+      title: 'Email',
+      text: `Email Gopalji at ${profile.contact.email}`,
+      url: `mailto:${profile.contact.email}`,
+    },
+    {
+      id: 'contact-github',
+      title: 'GitHub',
+      text: `Gopalji's GitHub profile: ${profile.contact.github}`,
+      url: profile.contact.github,
+    },
+    {
+      id: 'contact-linkedin',
+      title: 'LinkedIn',
+      text: `Gopalji's LinkedIn profile: ${profile.contact.linkedin}`,
+      url: profile.contact.linkedin,
+    },
+    {
+      id: 'contact-resume',
+      title: 'Resume',
+      text: `Gopalji's resume / CV: ${profile.contact.resume}`,
+      url: profile.contact.resume,
+    },
+  ]
+  for (const link of contactLinks) {
+    items.push({ ...link, type: 'contact', embedding: await embed(link.text) })
   }
 
   fs.writeFileSync(

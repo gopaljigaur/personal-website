@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 
 export type SearchResult = {
-  type: 'blog' | 'project' | 'misc'
+  type: 'blog' | 'project' | 'profile' | 'contact'
   title: string
   url: string
   text: string
@@ -11,7 +11,7 @@ export type SearchResult = {
 
 type EmbeddingItem = {
   id: string
-  type: 'blog' | 'project' | 'misc'
+  type: 'blog' | 'project' | 'profile' | 'contact'
   title: string
   url: string
   text: string

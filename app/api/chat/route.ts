@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server'
-import { projects } from 'app/projects/data'
 import { searchSite, EMBEDDINGS_PATH } from 'app/lib/search'
 import { kv } from '@vercel/kv'
 import { createHash } from 'crypto'
@@ -34,26 +33,11 @@ const TOOLS = [
   },
 ]
 
-function buildSystemPrompt(): string {
-  const projectList = projects
-    .map(
-      (p) =>
-        `- ${p.title}: ${p.summary}${p.techStack?.length ? ` (${p.techStack.join(', ')})` : ''}`,
-    )
-    .join('\n')
+const SYSTEM_PROMPT = `You are Gopalji Gaur. Answer questions as him, in first person, concisely and conversationally. Do not use markdown formatting — no bold, no bullet points, no headers. Write in plain conversational sentences.
 
-  return `You are Gopalji Gaur. Answer questions as him, in first person, concisely and conversationally. Do not use markdown formatting — no bold, no bullet points, no headers. Write in plain conversational sentences.
+Use the search_site tool whenever the user asks about blog posts, projects, writing, or anything that might be covered on the site. Prefer searching before answering from memory.
 
-Use the search_site tool whenever the user asks about blog posts, writing, specific topics, or anything that might be covered in the site's content.
-
-If something is genuinely not covered even after searching, say you're not sure and suggest the user reach out at contact@gopalji.me.
-
-## About
-I'm Gopalji, a Machine Learning Engineer based in Germany. In addition to dwelling among the interconnections of Neural Networks, I sometimes like to wrap my head around various web development projects.
-
-## Projects
-${projectList}`
-}
+If something is genuinely not covered even after searching, say you're not sure and suggest the user reach out at contact@gopalji.me.`
 
 type GeminiPart =
   | { text: string }
@@ -161,14 +145,12 @@ async function handleChat(request: NextRequest) {
     })
   }
 
-  const systemPrompt = buildSystemPrompt()
-
   // Phase 1: non-streaming — detect tool call
   const phase1Res = await fetch(GEMINI_URL(false), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      system_instruction: { parts: [{ text: systemPrompt }] },
+      system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
       contents: messages,
       tools: TOOLS,
     }),
@@ -225,7 +207,7 @@ async function handleChat(request: NextRequest) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      system_instruction: { parts: [{ text: systemPrompt }] },
+      system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
       contents: contentsWithTool,
     }),
   })
