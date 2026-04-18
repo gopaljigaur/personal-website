@@ -67,12 +67,12 @@ function SearchButton() {
     <button
       onClick={() => window.dispatchEvent(new Event('openCommandPalette'))}
       aria-label="Open command palette"
-      className="flex cursor-pointer items-center text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
+      className="flex h-8 w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="14"
-        height="14"
+        width="16"
+        height="16"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -107,7 +107,7 @@ export function Navbar({ chatEnabled }: { chatEnabled?: boolean }) {
             ))}
           </div>
           <div className="navrow:order-2 navrow:block navrow:min-w-4 navrow:flex-1 order-3 hidden" />
-          <div className="navrow:order-3 navrow:ml-0 navrow:gap-2 order-1 ml-2 flex items-center gap-4 sm:gap-3">
+          <div className="navrow:order-3 navrow:ml-0 navrow:gap-1 order-1 ml-2 flex items-center gap-3 sm:gap-2">
             {chatEnabled && <ChatButton />}
             <SearchButton />
             <ThemeToggle />
