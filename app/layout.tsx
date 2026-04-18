@@ -66,7 +66,7 @@ export default function RootLayout({
       >
         <Providers>
           <main className="mt-8 flex min-w-0 flex-auto flex-col px-2 md:px-0">
-            <Navbar />
+            <Navbar chatEnabled={!!process.env.GEMINI_API_KEY} />
             <ViewTransition>{children}</ViewTransition>
           </main>
           <Footer />

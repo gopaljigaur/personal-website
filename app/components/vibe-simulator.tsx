@@ -242,10 +242,10 @@ export function VibeSimulator() {
   ]
 
   return (
-    <div className="not-prose my-8">
+    <div className="not-prose my-8 min-w-0 overflow-hidden">
       <div className="grid gap-4 md:grid-cols-2">
         {/* Chat Interface */}
-        <div className="flex h-[500px] flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
+        <div className="flex h-125 flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
           <div className="border-b border-neutral-200 bg-neutral-50 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
@@ -278,7 +278,7 @@ export function VibeSimulator() {
                       <button
                         key={i}
                         onClick={() => setInput(ex.text)}
-                        className="rounded-lg border border-neutral-200 px-3 py-2 text-xs transition-colors hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
+                        className="cursor-pointer rounded-lg border border-neutral-200 px-3 py-2 text-xs transition-colors hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
                       >
                         {ex.text}
                       </button>
@@ -309,18 +309,9 @@ export function VibeSimulator() {
                   <div className="flex justify-start">
                     <div className="rounded-lg bg-neutral-100 px-4 py-2 dark:bg-neutral-800">
                       <div className="flex gap-1">
-                        <div
-                          className="h-2 w-2 animate-bounce rounded-full bg-neutral-400"
-                          style={{ animationDelay: '0ms' }}
-                        />
-                        <div
-                          className="h-2 w-2 animate-bounce rounded-full bg-neutral-400"
-                          style={{ animationDelay: '150ms' }}
-                        />
-                        <div
-                          className="h-2 w-2 animate-bounce rounded-full bg-neutral-400"
-                          style={{ animationDelay: '300ms' }}
-                        />
+                        <div className="h-2 w-2 animate-bounce rounded-full bg-neutral-400" />
+                        <div className="h-2 w-2 animate-bounce rounded-full bg-neutral-400 [animation-delay:150ms]" />
+                        <div className="h-2 w-2 animate-bounce rounded-full bg-neutral-400 [animation-delay:300ms]" />
                       </div>
                     </div>
                   </div>
@@ -330,7 +321,7 @@ export function VibeSimulator() {
           </div>
 
           <div className="border-t border-neutral-200 p-3 dark:border-neutral-800">
-            <div className="flex gap-2">
+            <div className="flex min-w-0 gap-2">
               <input
                 type="text"
                 value={input}
@@ -341,7 +332,7 @@ export function VibeSimulator() {
                     ? 'Describe changes...'
                     : 'Type what you want to build...'
                 }
-                className="flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-neutral-900 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:ring-neutral-100"
+                className="flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-base focus:ring-2 focus:ring-neutral-900 focus:outline-none sm:text-sm dark:border-neutral-700 dark:bg-neutral-900 dark:focus:ring-neutral-100"
               />
               <button
                 onClick={handleSend}
@@ -355,7 +346,7 @@ export function VibeSimulator() {
         </div>
 
         {/* Preview Pane */}
-        <div className="flex h-[500px] flex-col overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900">
+        <div className="flex h-125 flex-col overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900">
           <div className="border-b border-neutral-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium">Live Preview</span>

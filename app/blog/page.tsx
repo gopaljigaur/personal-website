@@ -32,7 +32,12 @@ export default async function Page(props: { searchParams: any }) {
 
   const allTags = [
     ...new Set(posts.flatMap((p) => p.metadata.tags ?? [])),
-  ].sort((a, b) => (tagFrequency[b] ?? 0) - (tagFrequency[a] ?? 0))
+  ].sort((a, b) => {
+    const aActive = activeTags.includes(a) ? 1 : 0
+    const bActive = activeTags.includes(b) ? 1 : 0
+    if (bActive !== aActive) return bActive - aActive
+    return (tagFrequency[b] ?? 0) - (tagFrequency[a] ?? 0)
+  })
 
   return (
     <section>

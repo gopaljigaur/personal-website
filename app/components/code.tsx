@@ -65,7 +65,7 @@ export function Code({ children, ...props }) {
     <div className="relative">
       <button
         onClick={handleCopy}
-        className="absolute top-0 right-0 z-10 cursor-pointer rounded p-1.5 text-neutral-400 transition-colors hover:bg-neutral-800"
+        className="absolute top-0 right-0 z-10 cursor-pointer rounded p-2 text-neutral-400 transition-colors hover:bg-neutral-800 focus-visible:ring-2 focus-visible:ring-neutral-500 focus-visible:outline-none"
       >
         {copied ? (
           <GoCheck className="stroke-1 text-green-600" />

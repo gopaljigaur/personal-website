@@ -12,7 +12,7 @@ export function TagPill({
   return (
     <Link
       href={href}
-      className={`rounded-full px-2.5 py-0.5 text-xs transition-colors ${
+      className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs whitespace-nowrap transition-colors ${
         active
           ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
           : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'

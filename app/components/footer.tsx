@@ -1,5 +1,3 @@
-import { ChatWidget } from './chat-widget'
-
 export function ArrowIcon() {
   return (
     <svg
@@ -22,10 +20,10 @@ export default function Footer() {
   return (
     <footer className="pb-12">
       <div className="font-sm mt-8 flex items-center text-neutral-600 dark:text-neutral-400">
-        <ul className="flex flex-wrap gap-x-4 gap-y-2">
+        <ul className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-x-4">
           <li>
             <a
-              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              className="flex items-center transition-all hover:text-neutral-800 focus-visible:text-neutral-800 focus-visible:outline-none dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
               rel="noopener noreferrer"
               target="_blank"
               href="https://github.com/gopaljigaur"
@@ -36,7 +34,7 @@ export default function Footer() {
           </li>
           <li>
             <a
-              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              className="flex items-center transition-all hover:text-neutral-800 focus-visible:text-neutral-800 focus-visible:outline-none dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
               rel="noopener noreferrer"
               target="_blank"
               href="https://www.linkedin.com/in/gopaljigaur/"
@@ -47,7 +45,7 @@ export default function Footer() {
           </li>
           <li>
             <a
-              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              className="flex items-center transition-all hover:text-neutral-800 focus-visible:text-neutral-800 focus-visible:outline-none dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
               href="mailto:contact@gopalji.me"
             >
               <ArrowIcon />
@@ -56,7 +54,7 @@ export default function Footer() {
           </li>
           <li>
             <a
-              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              className="flex items-center transition-all hover:text-neutral-800 focus-visible:text-neutral-800 focus-visible:outline-none dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
               href="/cv/ml"
               target="_blank"
               rel="noopener noreferrer"
@@ -66,9 +64,6 @@ export default function Footer() {
             </a>
           </li>
         </ul>
-        <div className="ml-auto">
-          <ChatWidget />
-        </div>
       </div>
     </footer>
   )

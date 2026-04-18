@@ -47,3 +47,5 @@ next-env.d.ts
 *.lock
 pnpm-lock.yaml
 .env*.local
+
+.playwright-mcp

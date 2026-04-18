@@ -115,6 +115,15 @@ async function setCached(key: string, value: string): Promise<void> {
 }
 
 export async function POST(request: NextRequest) {
+  try {
+    return await handleChat(request)
+  } catch (err) {
+    console.error('[chat] unhandled error:', err)
+    return new Response('Internal server error', { status: 500 })
+  }
+}
+
+async function handleChat(request: NextRequest) {
   if (!process.env.GEMINI_API_KEY)
     return new Response('Service unavailable', { status: 503 })
 

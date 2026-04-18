@@ -45,11 +45,14 @@ export const EMBEDDINGS_PATH = path.join(
   'content/embeddings.json',
 )
 
+let _embeddings: EmbeddingItem[] | null = null
 function loadEmbeddings(): EmbeddingItem[] {
+  if (_embeddings) return _embeddings
   if (!fs.existsSync(EMBEDDINGS_PATH)) return []
-  return JSON.parse(
+  _embeddings = JSON.parse(
     fs.readFileSync(EMBEDDINGS_PATH, 'utf-8'),
   ) as EmbeddingItem[]
+  return _embeddings
 }
 
 export async function searchSite(
@@ -61,6 +64,8 @@ export async function searchSite(
 
   const queryEmbedding = await embedQuery(query)
 
+  const THRESHOLD = 0.55
+
   return items
     .map((item) => ({
       type: item.type,
@@ -69,6 +74,7 @@ export async function searchSite(
       text: item.text,
       score: dot(queryEmbedding, item.embedding),
     }))
+    .filter((item) => item.score >= THRESHOLD)
     .sort((a, b) => b.score - a.score)
     .slice(0, topN)
 }

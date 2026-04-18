@@ -1,10 +1,6 @@
-import { BlogPosts } from 'app/components/posts'
 import { MainBanner } from 'app/components/banner'
-import { getBlogPosts } from 'app/blog/utils'
 
 export default function Page() {
-  const posts = getBlogPosts()
-
   return (
     <section>
       <MainBanner />
@@ -13,9 +9,6 @@ export default function Page() {
         among the interconnections of the Neural Networks, I sometimes like to wrap my head around
         various web development projects.`}
       </p>
-      <div className="my-8">
-        <BlogPosts posts={posts} />
-      </div>
     </section>
   )
 }

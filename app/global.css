@@ -20,6 +20,7 @@
   --color-dark-secondary-contrast: #e1ecf3;
   --color-dark-accent-contrast: #0c161d;
   --breakpoint-smplus: 43rem;
+  --breakpoint-navrow: 28rem;
 }
 
 ::selection {
@@ -52,6 +53,14 @@ html {
   height: 100%;
   margin: 0;
   padding: 0;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
 }
 
 .prose .anchor {
