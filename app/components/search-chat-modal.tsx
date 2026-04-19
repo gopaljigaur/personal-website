@@ -512,15 +512,22 @@ export function SearchChatModal({
     setExpanded(false)
   }
 
-  // Derive modal position from visual viewport so flex-1 works in all cases.
-  // marginTop: 8% of vpHeight, capped at 72px (gives breathing room without wasting space when keyboard shrinks the viewport).
-  // height: fills remaining space, capped at 576px so it doesn't become a full-screen panel on desktop.
-  const vpMarginTop = vpHeight
-    ? Math.round(Math.min(vpHeight * 0.08, 72))
-    : null
+  // When the visual viewport is small the keyboard is likely open — use minimal
+  // margins and fill the full available space so the modal stays usable.
+  const isSmallViewport = vpHeight !== null && vpHeight < 500
+  const vpMarginTop =
+    vpHeight !== null
+      ? isSmallViewport
+        ? 4
+        : Math.round(Math.min(vpHeight * 0.08, 72))
+      : null
   const vpModalHeight =
     vpHeight !== null && vpMarginTop !== null
-      ? Math.min(vpHeight - vpMarginTop - 16, 576)
+      ? expanded
+        ? Math.min(vpHeight - vpMarginTop - 4, 820) // expanded: grow tall too
+        : isSmallViewport
+          ? vpHeight - vpMarginTop - 4 // keyboard open: fill visual viewport
+          : Math.min(vpHeight - vpMarginTop - 16, 576) // desktop: cap height
       : null
 
   return (
