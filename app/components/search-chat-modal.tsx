@@ -290,7 +290,6 @@ export function SearchChatModal({
   const [open, setOpen] = useState(false)
   const [expanded, setExpanded] = useState(false)
   const [tab, setTab] = useState<Tab>('search')
-  const [vpTop, setVpTop] = useState(0)
   const [vpHeight, setVpHeight] = useState<number | null>(null)
   const [isDesktop, setIsDesktop] = useState(false)
   const vpContainerRef = useRef<HTMLDivElement>(null)
@@ -379,23 +378,14 @@ export function SearchChatModal({
     const vp = window.visualViewport
     if (!vp) return
     const update = () => {
-      // Update DOM directly so the container tracks the visual viewport
-      // synchronously, without waiting for React to re-render. This prevents
-      // the modal from lagging behind during keyboard animation on iOS.
       if (vpContainerRef.current) {
-        vpContainerRef.current.style.top = `${vp.offsetTop}px`
         vpContainerRef.current.style.height = `${vp.height}px`
       }
-      setVpTop(vp.offsetTop)
       setVpHeight(vp.height)
     }
     update()
     vp.addEventListener('resize', update)
-    vp.addEventListener('scroll', update)
-    return () => {
-      vp.removeEventListener('resize', update)
-      vp.removeEventListener('scroll', update)
-    }
+    return () => vp.removeEventListener('resize', update)
   }, [])
 
   useEffect(() => {
@@ -558,8 +548,8 @@ export function SearchChatModal({
        */}
       <div
         ref={vpContainerRef}
-        className="fixed inset-x-0 z-50 flex flex-col items-center p-2 sm:py-[8vh]"
-        style={{ top: vpTop, height: vpHeight ?? '100dvh' }}
+        className="fixed inset-x-0 top-0 z-50 flex flex-col items-center p-2 sm:py-[8vh]"
+        style={{ height: vpHeight ?? '100dvh' }}
         onClick={close}
       >
         <div
