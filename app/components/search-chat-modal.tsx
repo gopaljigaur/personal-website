@@ -356,12 +356,8 @@ export function SearchChatModal({
     if (!open) return
     const y = window.scrollY
     window.scrollTo(0, 0)
-    const el = vpContainerRef.current
-    if (el) {
-      el.style.top = '0px'
-      el.style.height = '100dvh'
-    }
-    // Prevent background scroll without position:fixed (which keeps iOS chrome expanded)
+    // overflow:hidden (not position:fixed) lets iOS collapse its chrome so
+    // vp.height correctly reflects the space above the keyboard.
     document.documentElement.style.overscrollBehavior = 'none'
     document.body.style.overflow = 'hidden'
     return () => {
@@ -379,24 +375,23 @@ export function SearchChatModal({
     return () => mq.removeEventListener('change', handler)
   }, [])
 
-  // Track both vp.offsetTop and vp.height directly on the DOM.
   // dvh does not resize on iOS Safari when the keyboard opens — only
   // visualViewport.height reliably reflects the keyboard-adjusted size.
+  // We intentionally skip vp.offsetTop: the input lives inside the modal so
+  // iOS never needs to shift the visual viewport, and a stale offsetTop on
+  // re-open would push the container down, making it appear shrunk.
   useEffect(() => {
     const vp = window.visualViewport
     if (!vp) return
     const update = () => {
       const el = vpContainerRef.current
       if (!el) return
-      el.style.top = `${vp.offsetTop}px`
       el.style.height = `${vp.height}px`
     }
     update()
     vp.addEventListener('resize', update)
-    vp.addEventListener('scroll', update)
     return () => {
       vp.removeEventListener('resize', update)
-      vp.removeEventListener('scroll', update)
     }
   }, [])
 
