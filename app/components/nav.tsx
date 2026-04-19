@@ -22,10 +22,7 @@ function ThemeToggle() {
 
   return (
     <button
-      onClick={() => {
-        navigator.vibrate?.(10)
-        setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
-      }}
+      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
       aria-label="Toggle dark mode"
       className="flex h-8 w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
     >
@@ -37,10 +34,7 @@ function ThemeToggle() {
 function SearchButton() {
   return (
     <button
-      onClick={() => {
-        navigator.vibrate?.(10)
-        window.dispatchEvent(new Event('openCommandPalette'))
-      }}
+      onClick={() => window.dispatchEvent(new Event('openCommandPalette'))}
       aria-label="Open command palette"
       className="flex h-8 w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
     >
