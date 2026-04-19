@@ -1,6 +1,6 @@
 'use client'
 
-import { LuX, LuMinus, LuSquare } from 'react-icons/lu'
+import { LuX, LuMinus, LuMaximize2, LuSquare } from 'react-icons/lu'
 
 export function TitleBar({
   onClose,
