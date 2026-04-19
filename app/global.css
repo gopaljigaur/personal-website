@@ -20,7 +20,7 @@
   --color-dark-secondary-contrast: #e1ecf3;
   --color-dark-accent-contrast: #0c161d;
   --breakpoint-smplus: 43rem;
-  --breakpoint-navrow: 25rem;
+  --breakpoint-navrow: 32rem;
 }
 
 ::selection {

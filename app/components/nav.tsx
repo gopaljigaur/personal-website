@@ -32,14 +32,30 @@ function ThemeToggle() {
 }
 
 function SearchButton() {
+  const onClick = () => window.dispatchEvent(new Event('openCommandPalette'))
   return (
-    <button
-      onClick={() => window.dispatchEvent(new Event('openCommandPalette'))}
-      aria-label="Open command palette"
-      className="flex h-8 w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
-    >
-      <LuSearch size={16} />
-    </button>
+    <>
+      {/* Mobile: icon only */}
+      <button
+        onClick={onClick}
+        aria-label="Open command palette"
+        className="navrow:hidden flex h-8 w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
+      >
+        <LuSearch size={16} />
+      </button>
+      {/* navrow+: fake search bar */}
+      <button
+        onClick={onClick}
+        aria-label="Open command palette"
+        className="navrow:flex hidden cursor-pointer items-center gap-2 rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs text-neutral-400 transition-colors hover:border-neutral-300 hover:text-neutral-600 focus-visible:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-neutral-600 dark:hover:text-neutral-300"
+      >
+        <LuSearch size={12} />
+        <span>Search</span>
+        <kbd className="rounded bg-neutral-100 px-1 py-0.5 text-[10px] font-medium text-neutral-400 dark:bg-neutral-800 dark:text-neutral-500">
+          ⌘K
+        </kbd>
+      </button>
+    </>
   )
 }
 
