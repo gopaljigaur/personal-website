@@ -290,7 +290,6 @@ export function SearchChatModal({
   const [open, setOpen] = useState(false)
   const [expanded, setExpanded] = useState(false)
   const [tab, setTab] = useState<Tab>('search')
-  const [vpHeight, setVpHeight] = useState<number | null>(null)
   const [isDesktop, setIsDesktop] = useState(false)
   const vpContainerRef = useRef<HTMLDivElement>(null)
 
@@ -356,8 +355,15 @@ export function SearchChatModal({
   useEffect(() => {
     if (!open) return
     const y = window.scrollY
-    window.scrollTo(0, document.documentElement.scrollHeight)
-    return () => window.scrollTo(0, y)
+    // Reset container position explicitly — stale offsetTop from a prior open
+    // would otherwise persist since we bypass React state for VP tracking.
+    const el = vpContainerRef.current
+    if (el) el.style.top = '0px'
+    document.body.style.cssText = `position:fixed;top:-${y}px;width:100%;overflow:hidden`
+    return () => {
+      document.body.style.cssText = ''
+      window.scrollTo(0, y)
+    }
   }, [open])
 
   useEffect(() => {
@@ -368,18 +374,24 @@ export function SearchChatModal({
     return () => mq.removeEventListener('change', handler)
   }, [])
 
+  // Update container top+height directly on the DOM — bypassing React state
+  // avoids stale values and eliminates re-renders on every keyboard frame.
   useEffect(() => {
     const vp = window.visualViewport
     if (!vp) return
     const update = () => {
-      if (vpContainerRef.current) {
-        vpContainerRef.current.style.height = `${vp.height}px`
-      }
-      setVpHeight(vp.height)
+      const el = vpContainerRef.current
+      if (!el) return
+      el.style.top = `${vp.offsetTop}px`
+      el.style.height = `${vp.height}px`
     }
     update()
     vp.addEventListener('resize', update)
-    return () => vp.removeEventListener('resize', update)
+    vp.addEventListener('scroll', update)
+    return () => {
+      vp.removeEventListener('resize', update)
+      vp.removeEventListener('scroll', update)
+    }
   }, [])
 
   useEffect(() => {
@@ -542,8 +554,7 @@ export function SearchChatModal({
        */}
       <div
         ref={vpContainerRef}
-        className="fixed inset-x-0 top-0 z-50 flex flex-col items-center p-2 sm:py-[8vh]"
-        style={{ height: vpHeight ?? '100dvh' }}
+        className="fixed inset-x-0 top-0 z-50 flex h-dvh flex-col items-center p-2 sm:py-[8vh]"
         onClick={close}
       >
         <div
