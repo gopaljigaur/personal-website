@@ -3,7 +3,8 @@
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
-import { LuSun, LuMoon, LuSearch } from 'react-icons/lu'
+import { LuSun, LuMoon, LuSearch, LuSparkles } from 'react-icons/lu'
+import { Shortcut } from 'app/components/shortcut'
 
 const navItems = {
   '/': { name: 'home' },
@@ -31,31 +32,56 @@ function ThemeToggle() {
   )
 }
 
+const MODES = [
+  { label: 'Search', icon: 'search' },
+  { label: 'Ask AI', icon: 'ai' },
+] as const
+
 function SearchButton() {
+  const [modeIdx, setModeIdx] = useState(0)
+
+  useEffect(() => {
+    const id = setInterval(
+      () => setModeIdx((i) => (i + 1) % MODES.length),
+      5000,
+    )
+    return () => clearInterval(id)
+  }, [])
+
   const onClick = () => window.dispatchEvent(new Event('openCommandPalette'))
+
   return (
-    <>
-      {/* Mobile: icon only */}
-      <button
-        onClick={onClick}
-        aria-label="Open command palette"
-        className="navrow:hidden flex h-8 w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
-      >
-        <LuSearch size={16} />
-      </button>
-      {/* navrow+: fake search bar */}
-      <button
-        onClick={onClick}
-        aria-label="Open command palette"
-        className="navrow:flex hidden cursor-pointer items-center gap-2 rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs text-neutral-400 transition-colors hover:border-neutral-300 hover:text-neutral-600 focus-visible:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-neutral-600 dark:hover:text-neutral-300"
-      >
-        <LuSearch size={12} />
-        <span>Search</span>
-        <kbd className="rounded bg-neutral-100 px-1 py-0.5 text-[10px] font-medium text-neutral-400 dark:bg-neutral-800 dark:text-neutral-500">
-          ⌘K
-        </kbd>
-      </button>
-    </>
+    <button
+      onClick={onClick}
+      aria-label="Open command palette"
+      className="flex cursor-pointer items-center gap-2 rounded-md border border-neutral-300 bg-neutral-50 px-2.5 py-1 text-xs text-neutral-500 transition-colors hover:border-neutral-400 hover:text-neutral-700 focus-visible:outline-none dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-neutral-500 dark:hover:text-neutral-200"
+    >
+      <span className="relative flex h-3 w-3 items-center justify-center">
+        {MODES.map((m, i) => (
+          <span
+            key={m.label}
+            className={`absolute transition-opacity duration-300 ${i === modeIdx ? 'opacity-100' : 'opacity-0'}`}
+          >
+            {m.icon === 'ai' ? (
+              <LuSparkles size={12} />
+            ) : (
+              <LuSearch size={12} />
+            )}
+          </span>
+        ))}
+      </span>
+      <span className="relative h-4 w-12">
+        {MODES.map((m, i) => (
+          <span
+            key={m.label}
+            className={`absolute left-0 transition-opacity duration-300 ${i === modeIdx ? 'opacity-100' : 'opacity-0'}`}
+          >
+            {m.label}
+          </span>
+        ))}
+      </span>
+      <Shortcut combo="K" />
+    </button>
   )
 }
 

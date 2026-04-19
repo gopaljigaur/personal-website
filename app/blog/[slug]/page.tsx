@@ -117,7 +117,7 @@ export default async function Blog(props: { params: any }) {
         {post.metadata.title}
       </h1>
       <div className="mt-2 mb-6 flex flex-wrap items-center gap-3 text-sm">
-        <p className="text-neutral-600 dark:text-neutral-400">
+        <p className="text-secondary-inv">
           {formatDate(post.metadata.publishedAt)}
         </p>
         {post.metadata.tags && post.metadata.tags.length > 0 && (

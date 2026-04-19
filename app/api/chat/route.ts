@@ -29,6 +29,36 @@ const TOOLS = [
           required: ['query'],
         },
       },
+      {
+        name: 'subscribe_to_newsletter',
+        description:
+          'Subscribe the user to the newsletter mailing list. Call this as soon as the user has provided their email address and confirmed they want to subscribe.',
+        parameters: {
+          type: 'OBJECT',
+          properties: {
+            email: { type: 'STRING', description: "The user's email address" },
+          },
+          required: ['email'],
+        },
+      },
+      {
+        name: 'send_contact_message',
+        description:
+          'Send a contact message to Gopalji on behalf of the user. Call this as soon as you have their name and email — do not wait for anything else.',
+        parameters: {
+          type: 'OBJECT',
+          properties: {
+            name: { type: 'STRING', description: "The user's name" },
+            email: { type: 'STRING', description: "The user's email address" },
+            message: {
+              type: 'STRING',
+              description:
+                'Message summarized from the conversation, or empty string',
+            },
+          },
+          required: ['name', 'email', 'message'],
+        },
+      },
     ],
   },
 ]
@@ -39,11 +69,15 @@ Never mention tools, functions, or any internal mechanisms to the user. Just ans
 
 Search the site whenever the user asks about blog posts, projects, writing, or anything that might be covered on the site. Prefer searching before answering from memory.
 
-If the user wants to reach Gopalji directly, ask for their name and email. As soon as you have both, immediately end your response with this marker — do not ask for anything else:
-__CONTACT_FORM__{"name":"<their name>","email":"<their email>","message":"<summarize from conversation context, or leave empty>"}
+If the user wants to reach Gopalji directly, ask for their name and email. As soon as you have both, call the send_contact_message tool — do not ask for anything else first.
 
-If the user's message is [contact_result:sent], the contact form was submitted successfully — respond naturally, e.g. acknowledge you'll get back to them.
-If the user's message is [contact_result:error], the form submission failed — respond empathetically and suggest they try emailing directly at contact@gopalji.me.
+If the user's message is [contact_result:sent], the message was sent — acknowledge naturally and say you'll be in touch.
+If the user's message is [contact_result:error], it failed — suggest emailing directly at contact@gopalji.me.
+
+When answering about Gopalji's work, projects, or blog posts, warmly mention there's a newsletter and ask if they'd like to stay in the loop — one friendly sentence, no email ask yet. Only if they express interest, ask for their email. Once you have it, call the subscribe_to_newsletter tool.
+
+If the user's message is [newsletter_result:subscribed], the subscription succeeded — thank them warmly.
+If the user's message is [newsletter_result:error], it failed — suggest the newsletter section on the homepage.
 
 If something is genuinely not covered even after searching, say you're not sure and suggest the user reach out at contact@gopalji.me.`
 
@@ -177,15 +211,34 @@ async function handleChat(request: NextRequest) {
       'functionCall' in p,
   )?.functionCall
 
-  if (!functionCall) {
-    const text = candidateParts
+  const textFromParts = (parts: GeminiPart[]) =>
+    parts
       .filter((p): p is { text: string } => 'text' in p)
       .map((p) => p.text)
       .join('')
+
+  if (!functionCall) {
+    const text = textFromParts(candidateParts)
     await setCached(cacheKey, text)
     return new Response(text, {
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     })
+  }
+
+  // Review tools: return structured data to the client for user confirmation
+  if (
+    functionCall.name === 'subscribe_to_newsletter' ||
+    functionCall.name === 'send_contact_message'
+  ) {
+    return new Response(
+      JSON.stringify({
+        type: 'review',
+        tool: functionCall.name,
+        args: functionCall.args,
+        text: textFromParts(candidateParts),
+      }),
+      { headers: { 'Content-Type': 'application/json' } },
+    )
   }
 
   const searchResults = await searchSite(functionCall.args.query)

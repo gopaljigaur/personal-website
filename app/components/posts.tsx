@@ -67,7 +67,7 @@ export function BlogPostsWithFilter({
               <p className="w-35 shrink-0 text-neutral-600 tabular-nums dark:text-neutral-400">
                 {formatDate(post.metadata.publishedAt, false)}
               </p>
-              <p className="tracking-tight text-neutral-900 dark:text-neutral-100">
+              <p className="text-primary-inv tracking-tight">
                 {post.metadata.title}
               </p>
             </div>

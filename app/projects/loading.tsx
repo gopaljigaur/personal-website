@@ -13,7 +13,7 @@ export default function Loading() {
         {tagWidths.map((w, i) => (
           <div
             key={i}
-            className={`h-5 shrink-0 animate-pulse rounded-full bg-neutral-100 dark:bg-neutral-800 ${w}`}
+            className={`bg-subtle-inv h-5 shrink-0 animate-pulse rounded-full ${w}`}
           />
         ))}
       </div>
@@ -24,13 +24,13 @@ export default function Loading() {
             className="flex min-h-56 flex-col rounded-xl border border-neutral-200 p-5 dark:border-neutral-800"
           >
             <div
-              className={`h-5 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800 ${card.titleW}`}
+              className={`bg-subtle-inv h-5 animate-pulse rounded ${card.titleW}`}
             />
             <div className="mt-2 flex flex-1 flex-col gap-2">
               {Array.from({ length: card.summaryLines }, (_, j) => (
                 <div
                   key={j}
-                  className={`h-3 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800 ${j === card.summaryLines - 1 ? 'w-3/4' : 'w-full'}`}
+                  className={`bg-subtle-inv h-3 animate-pulse rounded ${j === card.summaryLines - 1 ? 'w-3/4' : 'w-full'}`}
                 />
               ))}
             </div>
@@ -38,7 +38,7 @@ export default function Loading() {
               {Array.from({ length: card.links }, (_, j) => (
                 <div
                   key={j}
-                  className="h-4 w-12 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800"
+                  className="bg-subtle-inv h-4 w-12 animate-pulse rounded"
                 />
               ))}
             </div>

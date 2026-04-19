@@ -11,6 +11,7 @@ import {
   LuX,
 } from 'react-icons/lu'
 import { TitleBar } from 'app/components/title-bar'
+import { Shortcut } from 'app/components/shortcut'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { profile } from 'app/lib/profile'
@@ -18,10 +19,17 @@ import type { SearchResult } from 'app/lib/search'
 
 type Tab = 'search' | 'chat'
 type ContactFormData = { name: string; email: string; message: string }
+type ReviewData =
+  | { tool: 'subscribe_to_newsletter'; args: { email: string } }
+  | {
+      tool: 'send_contact_message'
+      args: { name: string; email: string; message: string }
+    }
 type Message = {
   role: 'user' | 'assistant'
   content: string
-  contactForm?: ContactFormData
+  review?: ReviewData
+  reviewSent?: boolean
 }
 type Group = 'Pages' | 'Blog' | 'Projects' | 'Contact'
 type Item = {
@@ -129,31 +137,6 @@ const MessageContent = memo(function MessageContent({
     </ReactMarkdown>
   )
 })
-
-const CONTACT_FORM_MARKER = '__CONTACT_FORM__'
-const CONTACT_SENT_MARKER = '__CONTACT_SENT__'
-
-function parseContactForm(content: string): {
-  text: string
-  form: ContactFormData | null
-  sent: boolean
-} {
-  if (content.includes(CONTACT_SENT_MARKER)) {
-    const text = content.slice(0, content.indexOf(CONTACT_SENT_MARKER)).trim()
-    return { text, form: null, sent: true }
-  }
-  const idx = content.indexOf(CONTACT_FORM_MARKER)
-  if (idx === -1) return { text: content, form: null, sent: false }
-  const text = content.slice(0, idx).trim()
-  try {
-    const form = JSON.parse(
-      content.slice(idx + CONTACT_FORM_MARKER.length).trim(),
-    )
-    return { text, form, sent: false }
-  } catch {
-    return { text, form: null, sent: false }
-  }
-}
 
 const inputClass =
   'w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 focus:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-neutral-500'
@@ -263,6 +246,64 @@ function InlineContactForm({
   )
 }
 
+function InlineNewsletterSubscribe({
+  email: initialEmail,
+  onResult,
+}: {
+  email: string
+  onResult: (ok: boolean) => void
+}) {
+  const [email, setEmail] = useState(initialEmail)
+  const [result, setResult] = useState<'subscribed' | 'error' | null>(null)
+
+  async function subscribe() {
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const ok = res.ok
+      setResult(ok ? 'subscribed' : 'error')
+      onResult(ok)
+    } catch {
+      setResult('error')
+      onResult(false)
+    }
+  }
+
+  if (result !== null) {
+    return (
+      <p
+        className={`mt-1 text-xs ${result === 'subscribed' ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}
+      >
+        {result === 'subscribed' ? 'Subscribed!' : 'Failed — try again.'}
+      </p>
+    )
+  }
+
+  return (
+    <div className="from-light-primary/8 to-light-secondary/8 dark:from-dark-primary/8 dark:to-dark-secondary/8 mt-2 flex flex-col gap-3 rounded-xl bg-gradient-to-br px-4 py-4">
+      <Field label="Email" required>
+        <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          type="email"
+          placeholder="you@example.com"
+          className={inputClass}
+        />
+      </Field>
+      <button
+        onClick={subscribe}
+        disabled={!email}
+        className="cursor-pointer self-end rounded-md bg-neutral-900 px-4 py-2 text-xs font-medium text-white transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-neutral-100 dark:text-neutral-900"
+      >
+        Subscribe
+      </button>
+    </div>
+  )
+}
+
 function resultToItem(r: SearchResult): Item {
   const groupMap: Partial<Record<SearchResult['type'], Group>> = {
     blog: 'Blog',
@@ -331,6 +372,14 @@ export function SearchChatModal({
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
         setOpen((o) => !o)
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === '1') {
+        e.preventDefault()
+        setTab('search')
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === '2') {
+        e.preventDefault()
+        setTab('chat')
       }
       if (e.key === 'Escape') setOpen(false)
     }
@@ -489,7 +538,35 @@ export function SearchChatModal({
           })),
         }),
       })
-      if (!res.ok || !res.body) throw new Error()
+      if (!res.ok) throw new Error()
+
+      // Review tool call — server returns JSON for client-side confirmation
+      const contentType = res.headers.get('content-type') ?? ''
+      if (contentType.includes('application/json')) {
+        const data = (await res.json()) as {
+          type: string
+          tool: string
+          args: Record<string, string>
+          text: string
+        }
+        if (data.type === 'review') {
+          setMessages((prev) => {
+            const updated = [...prev]
+            updated[updated.length - 1] = {
+              role: 'assistant',
+              content: data.text,
+              review: {
+                tool: data.tool as ReviewData['tool'],
+                args: data.args as never,
+              },
+            }
+            return updated
+          })
+        }
+        return
+      }
+
+      if (!res.body) throw new Error()
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
       while (true) {
@@ -499,12 +576,9 @@ export function SearchChatModal({
         setMessages((prev) => {
           const updated = [...prev]
           const last = updated[updated.length - 1]
-          const raw = last.content + chunk
-          const { form } = parseContactForm(raw)
           updated[updated.length - 1] = {
-            role: 'assistant',
-            content: raw,
-            ...(form ? { contactForm: form } : {}),
+            ...last,
+            content: last.content + chunk,
           }
           return updated
         })
@@ -563,13 +637,13 @@ export function SearchChatModal({
             />
             <div className="px-3 pt-2 pb-3">
               <div className="flex h-9 w-full items-center justify-center rounded-lg bg-neutral-100 p-[3px] text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
-                {(['search', 'chat'] as Tab[]).map((t) => (
+                {(['search', 'chat'] as Tab[]).map((t, i) => (
                   <button
                     key={t}
                     onClick={() => setTab(t)}
                     className={`relative inline-flex h-full flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-transparent px-2 text-sm font-medium whitespace-nowrap transition-all ${
                       tab === t
-                        ? 'bg-white text-neutral-900 shadow-sm dark:border-transparent dark:bg-neutral-700/60 dark:text-neutral-100'
+                        ? 'bg-white text-neutral-900 shadow-sm dark:border-neutral-600 dark:bg-neutral-600 dark:text-neutral-100'
                         : 'text-neutral-900/60 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
                     }`}
                   >
@@ -579,6 +653,7 @@ export function SearchChatModal({
                       <LuSparkles size={14} />
                     )}
                     {t === 'search' ? 'Search' : 'Ask AI'}
+                    <Shortcut combo={String(i + 1)} />
                   </button>
                 ))}
               </div>
@@ -595,10 +670,10 @@ export function SearchChatModal({
                   SKELETON_WIDTHS.map(([tw, sw], i) => (
                     <li key={i} className="flex flex-col gap-1.5 px-4 py-2.5">
                       <div
-                        className={`h-3.5 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800 ${tw}`}
+                        className={`bg-subtle-inv h-3.5 animate-pulse rounded ${tw}`}
                       />
                       <div
-                        className={`h-3 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800 ${sw}`}
+                        className={`bg-subtle-inv h-3 animate-pulse rounded ${sw}`}
                       />
                     </li>
                   ))}
@@ -621,14 +696,14 @@ export function SearchChatModal({
                       <button
                         className={`flex w-full cursor-pointer flex-col px-4 py-3 text-left text-sm transition-colors ${
                           i === selected
-                            ? 'bg-neutral-100 dark:bg-neutral-800'
+                            ? 'bg-subtle-inv'
                             : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
                         }`}
                         onClick={() => navigate(item)}
                         onMouseEnter={() => setSelected(i)}
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                          <span className="text-primary-inv font-medium">
                             <Highlight text={item.title} query={query} />
                           </span>
                           <span
@@ -638,7 +713,7 @@ export function SearchChatModal({
                           </span>
                         </div>
                         {item.subtitle && (
-                          <span className="mt-0.5 line-clamp-1 text-xs text-neutral-500 dark:text-neutral-400">
+                          <span className="text-muted-inv mt-0.5 line-clamp-1 text-xs">
                             <Highlight text={item.subtitle} query={query} />
                           </span>
                         )}
@@ -673,65 +748,77 @@ export function SearchChatModal({
                 {messages.map((m, i) => {
                   if (
                     m.role === 'user' &&
-                    m.content.startsWith('[contact_result:')
+                    (m.content.startsWith('[contact_result:') ||
+                      m.content.startsWith('[newsletter_result:'))
                   )
                     return null
-                  const { text, form, sent } =
-                    m.role === 'assistant'
-                      ? parseContactForm(m.content)
-                      : { text: m.content, form: null, sent: false }
+
                   return (
                     <div
                       key={i}
                       className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
                     >
-                      {(text || (!form && !sent)) && (
+                      {(m.content || !m.review) && (
                         <div
                           className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
                             m.role === 'user'
-                              ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
+                              ? 'btn-primary-inv'
                               : 'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200'
                           }`}
                         >
-                          {text ? (
-                            <MessageContent text={text} />
+                          {m.content ? (
+                            <MessageContent text={m.content} />
                           ) : (
                             <ThinkingDots />
                           )}
                         </div>
                       )}
-                      {sent && (
-                        <p className="mt-1 text-xs text-green-600 dark:text-green-400">
-                          Message sent.
-                        </p>
-                      )}
-                      {form && (
-                        <div className="w-full max-w-[85%]">
-                          <InlineContactForm
-                            initial={form}
-                            onResult={(ok) => {
-                              setMessages((prev) =>
-                                prev.map((msg, j) =>
-                                  j === i
-                                    ? {
-                                        ...msg,
-                                        content: msg.content.replace(
-                                          CONTACT_FORM_MARKER,
-                                          CONTACT_SENT_MARKER,
-                                        ),
-                                      }
-                                    : msg,
-                                ),
-                              )
-                              send(
-                                ok
-                                  ? '[contact_result:sent]'
-                                  : '[contact_result:error]',
-                              )
-                            }}
-                          />
-                        </div>
-                      )}
+                      {m.review &&
+                        !m.reviewSent &&
+                        m.review.tool === 'send_contact_message' && (
+                          <div className="w-full max-w-[85%]">
+                            <InlineContactForm
+                              initial={m.review.args}
+                              onResult={(ok) => {
+                                setMessages((prev) =>
+                                  prev.map((msg, j) =>
+                                    j === i
+                                      ? { ...msg, reviewSent: true }
+                                      : msg,
+                                  ),
+                                )
+                                send(
+                                  ok
+                                    ? '[contact_result:sent]'
+                                    : '[contact_result:error]',
+                                )
+                              }}
+                            />
+                          </div>
+                        )}
+                      {m.review &&
+                        !m.reviewSent &&
+                        m.review.tool === 'subscribe_to_newsletter' && (
+                          <div className="w-full max-w-[85%]">
+                            <InlineNewsletterSubscribe
+                              email={m.review.args.email}
+                              onResult={(ok) => {
+                                setMessages((prev) =>
+                                  prev.map((msg, j) =>
+                                    j === i
+                                      ? { ...msg, reviewSent: true }
+                                      : msg,
+                                  ),
+                                )
+                                send(
+                                  ok
+                                    ? '[newsletter_result:subscribed]'
+                                    : '[newsletter_result:error]',
+                                )
+                              }}
+                            />
+                          </div>
+                        )}
                     </div>
                   )
                 })}

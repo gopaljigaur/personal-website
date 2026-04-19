@@ -8,7 +8,7 @@ export default function Loading() {
         {tagWidths.map((w, i) => (
           <div
             key={i}
-            className={`h-5 shrink-0 animate-pulse rounded-full bg-neutral-100 dark:bg-neutral-800 ${w}`}
+            className={`bg-subtle-inv h-5 shrink-0 animate-pulse rounded-full ${w}`}
           />
         ))}
       </div>
@@ -16,7 +16,7 @@ export default function Loading() {
         {titleWidths.map((w, i) => (
           <div key={i} className="mb-4 flex flex-col space-y-1">
             <div className="flex w-full flex-col space-x-0 md:flex-row md:space-x-2">
-              <div className="h-4 w-35 shrink-0 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800" />
+              <div className="bg-subtle-inv h-4 w-35 shrink-0 animate-pulse rounded" />
               <div
                 className={`mt-1 h-4 animate-pulse rounded bg-neutral-100 md:mt-0 dark:bg-neutral-800 ${w}`}
               />

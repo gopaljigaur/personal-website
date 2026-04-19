@@ -159,9 +159,7 @@ export default function BlogPostClient({
         {post.title}
       </h1>
       <div className="mt-2 mb-6 flex flex-wrap items-center gap-3 text-sm">
-        <p className="text-neutral-600 dark:text-neutral-400">
-          {formatDate(post.publishedAt)}
-        </p>
+        <p className="text-secondary-inv">{formatDate(post.publishedAt)}</p>
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {(post.tags.filter(Boolean) as string[]).map((tag) => (

@@ -161,7 +161,7 @@ export function ChatWidget() {
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3 dark:border-neutral-800">
-          <span className="flex items-center gap-1.5 text-sm font-medium text-neutral-900 dark:text-neutral-100">
+          <span className="text-primary-inv flex items-center gap-1.5 text-sm font-medium">
             <LuSparkles
               size={13}
               className="text-neutral-400 dark:text-neutral-500"
@@ -206,7 +206,7 @@ export function ChatWidget() {
               <div
                 className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
                   m.role === 'user'
-                    ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
+                    ? 'btn-primary-inv'
                     : 'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200'
                 }`}
               >
