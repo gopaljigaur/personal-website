@@ -290,6 +290,7 @@ export function SearchChatModal({
   const [open, setOpen] = useState(false)
   const [expanded, setExpanded] = useState(false)
   const [tab, setTab] = useState<Tab>('search')
+  const [vpTop, setVpTop] = useState(0)
   const [vpHeight, setVpHeight] = useState<number | null>(null)
 
   // Search state
@@ -354,10 +355,17 @@ export function SearchChatModal({
   useEffect(() => {
     const vp = window.visualViewport
     if (!vp) return
-    const update = () => setVpHeight(vp.height)
+    const update = () => {
+      setVpTop(vp.offsetTop)
+      setVpHeight(vp.height)
+    }
     update()
     vp.addEventListener('resize', update)
-    return () => vp.removeEventListener('resize', update)
+    vp.addEventListener('scroll', update)
+    return () => {
+      vp.removeEventListener('resize', update)
+      vp.removeEventListener('scroll', update)
+    }
   }, [])
 
   useEffect(() => {
@@ -499,268 +507,272 @@ export function SearchChatModal({
 
   if (!open) return null
 
+  const close = () => {
+    setOpen(false)
+    setExpanded(false)
+  }
+
   return (
-    <div
-      className={`fixed right-0 left-0 z-50 flex items-start justify-center ${expanded ? 'pt-[2vh] sm:pt-[5vh]' : 'pt-[5vh] sm:pt-[15vh]'}`}
-      style={{ top: 0, height: vpHeight ?? '100dvh' }}
-      onClick={() => {
-        setOpen(false)
-        setExpanded(false)
-      }}
-    >
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+    <>
       <div
-        className={`relative mx-4 flex max-h-[calc(100%-2rem)] flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl transition-[max-width] duration-200 dark:border-neutral-800 dark:bg-neutral-900 ${expanded ? 'w-full max-w-3xl' : 'w-full max-w-lg'}`}
-        onClick={(e) => e.stopPropagation()}
+        className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+        onClick={close}
+      />
+      <div
+        className={`fixed right-0 left-0 z-50 flex items-start justify-center ${expanded ? 'pt-[2vh] sm:pt-[5vh]' : 'pt-[5vh] sm:pt-[15vh]'}`}
+        style={{ top: vpTop, height: vpHeight ?? '100dvh' }}
+        onClick={close}
       >
-        {/* Header */}
-        <div className="shrink-0 border-b border-neutral-200 dark:border-neutral-800">
-          <TitleBar
-            onClose={() => {
-              setOpen(false)
-              setExpanded(false)
-            }}
-            expanded={expanded}
-            onExpand={() => setExpanded((e) => !e)}
-          />
-          <div className="px-3 pt-2 pb-3">
-            <div className="flex h-9 w-full items-center justify-center rounded-lg bg-neutral-100 p-[3px] text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
-              {(['search', 'chat'] as Tab[]).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTab(t)}
-                  className={`relative inline-flex h-full flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-transparent px-2 text-sm font-medium whitespace-nowrap transition-all ${
-                    tab === t
-                      ? 'bg-white text-neutral-900 shadow-sm dark:border-transparent dark:bg-neutral-700/60 dark:text-neutral-100'
-                      : 'text-neutral-900/60 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
-                  }`}
-                >
-                  {t === 'search' ? (
-                    <LuSearch size={14} />
-                  ) : (
-                    <LuSparkles size={14} />
-                  )}
-                  {t === 'search' ? 'Search' : 'Ask AI'}
-                </button>
-              ))}
+        <div
+          className={`relative mx-4 flex max-h-[calc(100%-2rem)] flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl transition-[max-width] duration-200 dark:border-neutral-800 dark:bg-neutral-900 ${expanded ? 'w-full max-w-3xl' : 'w-full max-w-lg'}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="shrink-0 border-b border-neutral-200 dark:border-neutral-800">
+            <TitleBar
+              onClose={close}
+              expanded={expanded}
+              onExpand={() => setExpanded((e) => !e)}
+            />
+            <div className="px-3 pt-2 pb-3">
+              <div className="flex h-9 w-full items-center justify-center rounded-lg bg-neutral-100 p-[3px] text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
+                {(['search', 'chat'] as Tab[]).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setTab(t)}
+                    className={`relative inline-flex h-full flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-transparent px-2 text-sm font-medium whitespace-nowrap transition-all ${
+                      tab === t
+                        ? 'bg-white text-neutral-900 shadow-sm dark:border-transparent dark:bg-neutral-700/60 dark:text-neutral-100'
+                        : 'text-neutral-900/60 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
+                    }`}
+                  >
+                    {t === 'search' ? (
+                      <LuSearch size={14} />
+                    ) : (
+                      <LuSparkles size={14} />
+                    )}
+                    {t === 'search' ? 'Search' : 'Ask AI'}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Content area */}
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          {tab === 'search' && (
-            <ul
-              className={`py-2 ${showNudge ? 'flex h-full items-center justify-center' : ''}`}
-            >
-              {showSkeleton &&
-                SKELETON_WIDTHS.map(([tw, sw], i) => (
-                  <li key={i} className="flex flex-col gap-1.5 px-4 py-2.5">
-                    <div
-                      className={`h-3.5 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800 ${tw}`}
-                    />
-                    <div
-                      className={`h-3 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800 ${sw}`}
-                    />
-                  </li>
-                ))}
-              {showNudge && (
-                <li className="flex flex-col items-center gap-3">
-                  <span className="text-sm text-neutral-400">No results</span>
-                  <button
-                    onClick={() => switchToChat(query)}
-                    className="flex cursor-pointer items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
-                  >
-                    <LuSparkles size={11} />
-                    Ask AI instead
-                  </button>
-                </li>
-              )}
-              {!showSkeleton &&
-                !showNudge &&
-                filtered.map((item, i) => (
-                  <li key={item.href}>
-                    <button
-                      className={`flex w-full cursor-pointer flex-col px-4 py-3 text-left text-sm transition-colors ${
-                        i === selected
-                          ? 'bg-neutral-100 dark:bg-neutral-800'
-                          : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
-                      }`}
-                      onClick={() => navigate(item)}
-                      onMouseEnter={() => setSelected(i)}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                          <Highlight text={item.title} query={query} />
-                        </span>
-                        <span
-                          className={`mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-xs font-medium ${GROUP_STYLE[item.group]}`}
-                        >
-                          {item.group}
-                        </span>
-                      </div>
-                      {item.subtitle && (
-                        <span className="mt-0.5 line-clamp-1 text-xs text-neutral-500 dark:text-neutral-400">
-                          <Highlight text={item.subtitle} query={query} />
-                        </span>
-                      )}
-                    </button>
-                  </li>
-                ))}
-            </ul>
-          )}
-
-          {tab === 'chat' && (
-            <div className="flex flex-col gap-3 p-4">
-              <div className="flex justify-start">
-                <div className="max-w-[85%] rounded-lg bg-neutral-100 px-3 py-2 text-sm text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200">
-                  {
-                    "Hey, I'm Gopalji! Ask me about my work, projects, or whatever's on your mind :)"
-                  }
-                </div>
-              </div>
-              {messages.length === 0 && (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {SUGGESTIONS.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setChatInput(s)}
-                      className="cursor-pointer rounded-full border border-neutral-200 px-3 py-1.5 text-xs text-neutral-500 transition-colors hover:border-neutral-400 hover:text-neutral-700 dark:border-neutral-700 dark:text-neutral-400 dark:hover:border-neutral-500 dark:hover:text-neutral-200"
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {messages.map((m, i) => {
-                if (
-                  m.role === 'user' &&
-                  m.content.startsWith('[contact_result:')
-                )
-                  return null
-                const { text, form, sent } =
-                  m.role === 'assistant'
-                    ? parseContactForm(m.content)
-                    : { text: m.content, form: null, sent: false }
-                return (
-                  <div
-                    key={i}
-                    className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
-                  >
-                    {(text || (!form && !sent)) && (
+          {/* Content area */}
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            {tab === 'search' && (
+              <ul
+                className={`py-2 ${showNudge ? 'flex h-full items-center justify-center' : ''}`}
+              >
+                {showSkeleton &&
+                  SKELETON_WIDTHS.map(([tw, sw], i) => (
+                    <li key={i} className="flex flex-col gap-1.5 px-4 py-2.5">
                       <div
-                        className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
-                          m.role === 'user'
-                            ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
-                            : 'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200'
+                        className={`h-3.5 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800 ${tw}`}
+                      />
+                      <div
+                        className={`h-3 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800 ${sw}`}
+                      />
+                    </li>
+                  ))}
+                {showNudge && (
+                  <li className="flex flex-col items-center gap-3">
+                    <span className="text-sm text-neutral-400">No results</span>
+                    <button
+                      onClick={() => switchToChat(query)}
+                      className="flex cursor-pointer items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
+                    >
+                      <LuSparkles size={11} />
+                      Ask AI instead
+                    </button>
+                  </li>
+                )}
+                {!showSkeleton &&
+                  !showNudge &&
+                  filtered.map((item, i) => (
+                    <li key={item.href}>
+                      <button
+                        className={`flex w-full cursor-pointer flex-col px-4 py-3 text-left text-sm transition-colors ${
+                          i === selected
+                            ? 'bg-neutral-100 dark:bg-neutral-800'
+                            : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
                         }`}
+                        onClick={() => navigate(item)}
+                        onMouseEnter={() => setSelected(i)}
                       >
-                        {text ? (
-                          <MessageContent text={text} />
-                        ) : (
-                          <ThinkingDots />
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                            <Highlight text={item.title} query={query} />
+                          </span>
+                          <span
+                            className={`mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-xs font-medium ${GROUP_STYLE[item.group]}`}
+                          >
+                            {item.group}
+                          </span>
+                        </div>
+                        {item.subtitle && (
+                          <span className="mt-0.5 line-clamp-1 text-xs text-neutral-500 dark:text-neutral-400">
+                            <Highlight text={item.subtitle} query={query} />
+                          </span>
                         )}
-                      </div>
-                    )}
-                    {sent && (
-                      <p className="mt-1 text-xs text-green-600 dark:text-green-400">
-                        Message sent.
-                      </p>
-                    )}
-                    {form && (
-                      <div className="w-full max-w-[85%]">
-                        <InlineContactForm
-                          initial={form}
-                          onResult={(ok) => {
-                            setMessages((prev) =>
-                              prev.map((msg, j) =>
-                                j === i
-                                  ? {
-                                      ...msg,
-                                      content: msg.content.replace(
-                                        CONTACT_FORM_MARKER,
-                                        CONTACT_SENT_MARKER,
-                                      ),
-                                    }
-                                  : msg,
-                              ),
-                            )
-                            send(
-                              ok
-                                ? '[contact_result:sent]'
-                                : '[contact_result:error]',
-                            )
-                          }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-              {messages.length > 0 && (
-                <div className="flex justify-end pt-4">
-                  <button
-                    onClick={() => setMessages([])}
-                    disabled={loading}
-                    className="flex cursor-pointer items-center gap-1.5 text-xs text-neutral-400 transition-colors hover:text-neutral-600 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:text-neutral-300"
-                  >
-                    <LuRotateCcw size={11} />
-                    New conversation
-                  </button>
-                </div>
-              )}
-              <div ref={bottomRef} />
-            </div>
-          )}
-        </div>
+                      </button>
+                    </li>
+                  ))}
+              </ul>
+            )}
 
-        {/* Input area — fixed height, same on both tabs */}
-        <div className="flex h-[52px] shrink-0 items-center gap-2 border-t border-neutral-200 px-4 dark:border-neutral-800">
-          {tab === 'search' && (
-            <>
-              <input
-                ref={searchInputRef}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={onSearchKeyDown}
-                placeholder="Search pages, posts, projects…"
-                className="min-w-0 flex-1 bg-transparent text-base text-neutral-900 outline-none placeholder:text-neutral-400 sm:text-sm dark:text-neutral-100"
-              />
-              <button
-                onClick={() => {
-                  setQuery('')
-                  searchInputRef.current?.focus()
-                }}
-                aria-label="Clear search"
-                className={`flex cursor-pointer items-center justify-center p-1.5 text-neutral-400 transition-colors hover:text-neutral-700 focus-visible:outline-none dark:hover:text-neutral-200 ${query ? 'visible' : 'invisible'}`}
-              >
-                <LuX size={12} />
-              </button>
-            </>
-          )}
-          {tab === 'chat' && (
-            <>
-              <input
-                ref={chatInputRef}
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && send()}
-                placeholder="Ask something..."
-                disabled={loading}
-                className="min-w-0 flex-1 bg-transparent text-base text-neutral-900 outline-none placeholder:text-neutral-400 disabled:opacity-50 sm:text-sm dark:text-neutral-100"
-              />
-              <button
-                onClick={() => send()}
-                disabled={!chatInput.trim() || loading}
-                aria-label="Send message"
-                className="cursor-pointer text-neutral-400 transition-colors hover:text-neutral-900 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-30 dark:hover:text-neutral-100"
-              >
-                <LuSendHorizontal size={14} />
-              </button>
-            </>
-          )}
+            {tab === 'chat' && (
+              <div className="flex flex-col gap-3 p-4">
+                <div className="flex justify-start">
+                  <div className="max-w-[85%] rounded-lg bg-neutral-100 px-3 py-2 text-sm text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200">
+                    {
+                      "Hey, I'm Gopalji! Ask me about my work, projects, or whatever's on your mind :)"
+                    }
+                  </div>
+                </div>
+                {messages.length === 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {SUGGESTIONS.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => setChatInput(s)}
+                        className="cursor-pointer rounded-full border border-neutral-200 px-3 py-1.5 text-xs text-neutral-500 transition-colors hover:border-neutral-400 hover:text-neutral-700 dark:border-neutral-700 dark:text-neutral-400 dark:hover:border-neutral-500 dark:hover:text-neutral-200"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {messages.map((m, i) => {
+                  if (
+                    m.role === 'user' &&
+                    m.content.startsWith('[contact_result:')
+                  )
+                    return null
+                  const { text, form, sent } =
+                    m.role === 'assistant'
+                      ? parseContactForm(m.content)
+                      : { text: m.content, form: null, sent: false }
+                  return (
+                    <div
+                      key={i}
+                      className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
+                    >
+                      {(text || (!form && !sent)) && (
+                        <div
+                          className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
+                            m.role === 'user'
+                              ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
+                              : 'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200'
+                          }`}
+                        >
+                          {text ? (
+                            <MessageContent text={text} />
+                          ) : (
+                            <ThinkingDots />
+                          )}
+                        </div>
+                      )}
+                      {sent && (
+                        <p className="mt-1 text-xs text-green-600 dark:text-green-400">
+                          Message sent.
+                        </p>
+                      )}
+                      {form && (
+                        <div className="w-full max-w-[85%]">
+                          <InlineContactForm
+                            initial={form}
+                            onResult={(ok) => {
+                              setMessages((prev) =>
+                                prev.map((msg, j) =>
+                                  j === i
+                                    ? {
+                                        ...msg,
+                                        content: msg.content.replace(
+                                          CONTACT_FORM_MARKER,
+                                          CONTACT_SENT_MARKER,
+                                        ),
+                                      }
+                                    : msg,
+                                ),
+                              )
+                              send(
+                                ok
+                                  ? '[contact_result:sent]'
+                                  : '[contact_result:error]',
+                              )
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+                {messages.length > 0 && (
+                  <div className="flex justify-end pt-4">
+                    <button
+                      onClick={() => setMessages([])}
+                      disabled={loading}
+                      className="flex cursor-pointer items-center gap-1.5 text-xs text-neutral-400 transition-colors hover:text-neutral-600 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:text-neutral-300"
+                    >
+                      <LuRotateCcw size={11} />
+                      New conversation
+                    </button>
+                  </div>
+                )}
+                <div ref={bottomRef} />
+              </div>
+            )}
+          </div>
+
+          {/* Input area — fixed height, same on both tabs */}
+          <div className="flex h-[52px] shrink-0 items-center gap-2 border-t border-neutral-200 px-4 dark:border-neutral-800">
+            {tab === 'search' && (
+              <>
+                <input
+                  ref={searchInputRef}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={onSearchKeyDown}
+                  placeholder="Search pages, posts, projects…"
+                  className="min-w-0 flex-1 bg-transparent text-base text-neutral-900 outline-none placeholder:text-neutral-400 sm:text-sm dark:text-neutral-100"
+                />
+                <button
+                  onClick={() => {
+                    setQuery('')
+                    searchInputRef.current?.focus()
+                  }}
+                  aria-label="Clear search"
+                  className={`flex cursor-pointer items-center justify-center p-1.5 text-neutral-400 transition-colors hover:text-neutral-700 focus-visible:outline-none dark:hover:text-neutral-200 ${query ? 'visible' : 'invisible'}`}
+                >
+                  <LuX size={12} />
+                </button>
+              </>
+            )}
+            {tab === 'chat' && (
+              <>
+                <input
+                  ref={chatInputRef}
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && send()}
+                  placeholder="Ask something..."
+                  disabled={loading}
+                  className="min-w-0 flex-1 bg-transparent text-base text-neutral-900 outline-none placeholder:text-neutral-400 disabled:opacity-50 sm:text-sm dark:text-neutral-100"
+                />
+                <button
+                  onClick={() => send()}
+                  disabled={!chatInput.trim() || loading}
+                  aria-label="Send message"
+                  className="cursor-pointer text-neutral-400 transition-colors hover:text-neutral-900 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-30 dark:hover:text-neutral-100"
+                >
+                  <LuSendHorizontal size={14} />
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
