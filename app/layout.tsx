@@ -10,6 +10,7 @@ import { SearchChatModal } from './components/search-chat-modal'
 import { getBlogPosts } from './blog/utils'
 import { projects } from './projects/data'
 import { baseUrl } from './sitemap'
+import { profile } from './lib/profile'
 import { ViewTransition } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -46,6 +47,28 @@ export const metadata: Metadata = {
 
 const cx = (...classes: string[]) => classes.filter(Boolean).join(' ')
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      url: baseUrl,
+      name: profile.name,
+      description: `${profile.name}. ${profile.title}. Based in ${profile.location}.`,
+    },
+    {
+      '@type': 'Person',
+      name: profile.name,
+      url: baseUrl,
+      jobTitle: profile.title,
+      worksFor: { '@type': 'Organization', name: profile.workplace },
+      sameAs: [profile.contact.github, profile.contact.linkedin].filter(
+        Boolean,
+      ),
+    },
+  ],
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -58,6 +81,13 @@ export default function RootLayout({
   }))
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={cx(
           'dark:text-dark-text-secondary mx-4 flex min-h-screen max-w-2xl flex-col bg-white text-neutral-800 antialiased lg:mx-auto dark:bg-neutral-950',

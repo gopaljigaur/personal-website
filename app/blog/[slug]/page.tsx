@@ -25,10 +25,11 @@ export async function generateMetadata(props: { params: any }) {
     publishedAt: publishedTime,
     summary: description,
     image,
+    tags,
   } = post.metadata
   const ogImage = image
     ? image
-    : `${baseUrl}/og?title=${encodeURIComponent(title)}`
+    : `${baseUrl}/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(description)}&tags=${encodeURIComponent((tags ?? []).join(','))}`
 
   return {
     title,
