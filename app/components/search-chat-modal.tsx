@@ -532,7 +532,7 @@ export function SearchChatModal({
         onClick={close}
       >
         <div
-          className={`flex w-full flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl transition-[max-width] duration-200 dark:border-neutral-800 dark:bg-neutral-900 ${expanded ? 'max-w-3xl' : 'max-w-lg sm:max-h-[36rem]'}`}
+          className={`flex w-full flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl transition-[max-width,max-height] duration-200 dark:border-neutral-800 dark:bg-neutral-900 ${expanded ? 'max-w-3xl sm:max-h-[56rem]' : 'max-w-lg sm:max-h-[36rem]'}`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
