@@ -355,15 +355,10 @@ export function SearchChatModal({
   useEffect(() => {
     if (!open) return
     const y = window.scrollY
-    // Scroll to top so iOS collapses its bottom toolbar, maximising vp.height.
     window.scrollTo(0, 0)
     const el = vpContainerRef.current
     if (el) el.style.top = '0px'
-    document.body.style.cssText = `position:fixed;top:0;width:100%;overflow:hidden`
-    return () => {
-      document.body.style.cssText = ''
-      window.scrollTo(0, y)
-    }
+    return () => window.scrollTo(0, y)
   }, [open])
 
   useEffect(() => {
@@ -374,16 +369,15 @@ export function SearchChatModal({
     return () => mq.removeEventListener('change', handler)
   }, [])
 
-  // Update container top+height directly on the DOM — bypassing React state
-  // avoids stale values and eliminates re-renders on every keyboard frame.
+  // Track visualViewport.offsetTop (iOS shifts the viewport when keyboard opens)
+  // and pin the container to it. Height is handled by CSS h-dvh which updates
+  // natively as iOS collapses/expands its toolbars and keyboard.
   useEffect(() => {
     const vp = window.visualViewport
     if (!vp) return
     const update = () => {
       const el = vpContainerRef.current
-      if (!el) return
-      el.style.top = `${vp.offsetTop}px`
-      el.style.height = `${vp.height}px`
+      if (el) el.style.top = `${vp.offsetTop}px`
     }
     update()
     vp.addEventListener('resize', update)
@@ -541,17 +535,9 @@ export function SearchChatModal({
   return (
     <>
       <div
-        className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+        className="fixed inset-0 z-50 [touch-action:none] bg-black/40 backdrop-blur-sm"
         onClick={close}
       />
-      {/*
-       * Container tracks the visual viewport exactly (top + height from JS).
-       * Padding provides the margins — p-2 on mobile, py-[8vh] on desktop.
-       * The modal uses flex-1 to fill whatever space remains after padding,
-       * capped by max-h on desktop. A flex item resolved by flex-grow has a
-       * definite height even when clamped by max-h, so flex-1 min-h-0 inside
-       * the modal works correctly in all cases.
-       */}
       <div
         ref={vpContainerRef}
         className="fixed inset-x-0 top-0 z-50 flex h-dvh flex-col items-center p-2 sm:py-[8vh]"
