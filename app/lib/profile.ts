@@ -1,16 +1,18 @@
+import profileData from 'content/profile.json'
+
 export const profile = {
-  name: 'Gopalji Gaur',
-  title: 'Machine Learning Engineer',
-  location: 'Heidelberg, Germany',
-  role: 'AI Application Developer',
-  workplace: 'Everest Systems',
-  workplaceUrl: 'https://www.everest-systems.com/',
-  bio: `I've been into computers and engineering from a very young age. My background is in ML research. I've worked with diffusion models and transformers, and lately most of my time goes into AI agents. I also build things for the web, this site included.`,
+  name: profileData.name,
+  title: profileData.title,
+  location: profileData.location,
+  role: profileData.role,
+  workplace: profileData.workplace,
+  workplaceUrl: profileData.workplaceUrl,
+  bio: profileData.bio,
   contact: {
-    email: 'contact@gopalji.me',
-    github: 'https://github.com/gopaljigaur',
-    linkedin: 'https://www.linkedin.com/in/gopaljigaur/',
-    resume: 'https://gopalji.me/cv',
+    email: profileData.email,
+    github: profileData.github,
+    linkedin: profileData.linkedin,
+    resume: profileData.resume,
   },
 }
 

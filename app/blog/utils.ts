@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
+import { slugify } from './utils.shared'
 import type { Metadata, BlogPost, Heading } from './utils.shared'
 
 function getMDXFiles(dir: string) {
@@ -39,16 +40,6 @@ function getMDXData(dir: string) {
       content,
     }
   })
-}
-
-function slugify(str: string) {
-  return str
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/&/g, '-and-')
-    .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-')
 }
 
 export function extractHeadings(content: string): Heading[] {

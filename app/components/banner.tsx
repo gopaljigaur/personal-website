@@ -4,8 +4,17 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { StatusCard } from './status'
 import { usePathname } from 'next/navigation'
+import profileData from 'content/profile.json'
 
-export function MainBanner() {
+export function MainBanner({
+  name = profileData.name,
+  title = profileData.title,
+  location = profileData.location,
+}: {
+  name?: string
+  title?: string
+  location?: string
+} = {}) {
   return (
     <span className="dark:text-dark-text text-light-text smplus:flex-row smplus:justify-between mb-14 flex flex-col gap-6">
       <div className="smplus:mb-0 mb-4 flex-none flex-row">
@@ -15,7 +24,7 @@ export function MainBanner() {
         >
           <div className="relative w-12 min-w-12">
             <Image
-              alt="Gopalji Gaur"
+              alt={name}
               height={48}
               width={48}
               priority={true}
@@ -24,15 +33,15 @@ export function MainBanner() {
             />
           </div>
           <h1 className="relative mt-1 text-4xl font-semibold tracking-tight">
-            Gopalji Gaur
+            {name}
           </h1>
         </Link>
         <h2 className="mt-6 text-2xl tracking-tight">
           <p className="from-dark-secondary to-dark-primary inline-block bg-gradient-to-tr bg-clip-text leading-normal font-semibold text-transparent">
-            Machine Learning Engineer
+            {title}
           </p>
           <br></br>
-          based in Heidelberg, Germany.
+          based in {location}.
         </h2>
       </div>
       {/*<div className="flex-1 content-center min-w-[128px] justify-items-start sm:justify-items-end mb-4 sm:mb-0">*/}

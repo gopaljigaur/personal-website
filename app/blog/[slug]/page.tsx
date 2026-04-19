@@ -8,6 +8,8 @@ import { RelatedPosts } from 'app/components/related-posts'
 import { getBlogPosts, extractHeadings, getRelatedPosts } from 'app/blog/utils'
 import { formatDate } from 'app/blog/utils.shared'
 import { baseUrl } from 'app/sitemap'
+import { client } from '../../../tina/__generated__/client'
+import BlogPostClient from './blog-post-client'
 
 export async function generateStaticParams() {
   return getBlogPosts().map((post) => ({ slug: post.slug }))
@@ -55,8 +57,29 @@ export default async function Blog(props: { params: any }) {
   const post = allPosts.find((p) => p.slug === params.slug)
   if (!post) notFound()
 
-  const headings = extractHeadings(post.content)
   const related = getRelatedPosts(post.slug, post.metadata.tags ?? [], allPosts)
+
+  if (process.env.NODE_ENV === 'development') {
+    try {
+      const tinaData = await client.queries.blog({
+        relativePath: `${params.slug}.mdx`,
+      })
+      return (
+        <BlogPostClient
+          query={tinaData.query}
+          variables={tinaData.variables}
+          data={tinaData.data}
+          related={related}
+          slug={params.slug}
+        />
+      )
+    } catch {
+      // TinaCMS server not running — fall through to static rendering
+    }
+  }
+
+  // Production fallback: static server-side rendering
+  const headings = extractHeadings(post.content)
 
   return (
     <>

@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
   },
   redirects: async () => [
     {
+      source: '/admin',
+      destination: '/admin/index.html',
+      permanent: false,
+    },
+    {
       source: '/cv',
       destination: '/cv/ml',
       permanent: false,
