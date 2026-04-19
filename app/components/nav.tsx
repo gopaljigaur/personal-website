@@ -27,7 +27,7 @@ function ThemeToggle() {
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       aria-label="Toggle dark mode"
-      className="flex cursor-pointer items-center gap-0.5 rounded-md border border-neutral-300 bg-neutral-50 px-1 py-1 transition-colors hover:border-neutral-400 focus-visible:outline-none dark:border-neutral-600 dark:bg-neutral-900 dark:hover:border-neutral-500"
+      className="flex cursor-pointer items-center gap-0.5 rounded-md bg-neutral-100 px-1 py-1 transition-colors focus-visible:outline-none dark:bg-neutral-800"
     >
       {(
         [
@@ -75,7 +75,7 @@ function SearchButton() {
     <button
       onClick={onClick}
       aria-label="Open command palette"
-      className="flex cursor-pointer items-center gap-2 rounded-md border border-neutral-300 bg-neutral-50 px-2.5 py-1 text-xs text-neutral-500 transition-colors hover:border-neutral-400 hover:text-neutral-700 focus-visible:outline-none dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-neutral-500 dark:hover:text-neutral-200"
+      className="flex cursor-pointer items-center gap-2 rounded-md bg-neutral-100 px-2.5 py-1 text-xs text-neutral-500 transition-colors hover:text-neutral-700 focus-visible:outline-none dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
     >
       <span className="relative flex h-3 w-3 items-center justify-center">
         {MODES.map((m, i) => (
