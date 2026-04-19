@@ -1,12 +1,11 @@
 import { MainBanner } from 'app/components/banner'
 import { profile } from 'app/lib/profile'
 import HomeClient from './home-client'
-// @ts-ignore
-import { client } from '../tina/__generated__/client'
-
 export default async function Page() {
   if (process.env.NODE_ENV === 'development') {
     try {
+      // @ts-ignore
+      const { client } = await import('../tina/__generated__/client')
       const tinaData = await client.queries.profile({
         relativePath: 'profile.json',
       })
