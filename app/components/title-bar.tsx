@@ -59,23 +59,13 @@ export function TitleBar({
           aria-label="Expand"
           className={`flex h-3.5 w-3.5 items-center justify-center rounded-full transition-opacity ${onExpand ? 'cursor-pointer bg-[#28c840] hover:opacity-80' : 'cursor-not-allowed bg-[#28c840]/40'}`}
         >
-          {expanded ? (
-            <LuMinus
-              size={8}
-              strokeWidth={4}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className={`block text-[#006413] ${onExpand ? 'opacity-0 group-hover:opacity-100' : 'opacity-0'}`}
-            />
-          ) : (
-            <LuPlus
-              size={8}
-              strokeWidth={4}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className={`block text-[#006413] ${onExpand ? 'opacity-0 group-hover:opacity-100' : 'opacity-0'}`}
-            />
-          )}
+          <LuPlus
+            size={8}
+            strokeWidth={4}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`block text-[#006413] ${onExpand ? 'opacity-0 group-hover:opacity-100' : 'opacity-0'}`}
+          />
         </button>
         {title && (
           <span className="ml-2 text-xs font-medium text-neutral-600 dark:text-neutral-400">
