@@ -196,3 +196,24 @@ table {
   color: var(--color-dark-primary);
   transition: color 0.2s ease-in-out;
 }
+
+@layer utilities {
+  .text-primary-inv {
+    @apply text-neutral-900 dark:text-neutral-100;
+  }
+  .text-secondary-inv {
+    @apply text-neutral-600 dark:text-neutral-400;
+  }
+  .text-muted-inv {
+    @apply text-neutral-500 dark:text-neutral-400;
+  }
+  .bg-subtle-inv {
+    @apply bg-neutral-100 dark:bg-neutral-800;
+  }
+  .bg-brand-tint {
+    @apply from-light-primary/8 to-light-secondary/8 dark:from-dark-primary/8 dark:to-dark-secondary/8 bg-gradient-to-br;
+  }
+  .btn-primary-inv {
+    @apply bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900;
+  }
+}

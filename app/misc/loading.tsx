@@ -11,11 +11,11 @@ export default function Loading() {
         <li key={i} className="block text-sm">
           <div className="flex items-center gap-2">
             <div
-              className={`h-4 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800 ${row.titleW}`}
+              className={`bg-subtle-inv h-4 animate-pulse rounded ${row.titleW}`}
             />
-            <div className="h-4 w-3 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800" />
+            <div className="bg-subtle-inv h-4 w-3 animate-pulse rounded" />
             <div
-              className={`h-4 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800 ${row.urlW}`}
+              className={`bg-subtle-inv h-4 animate-pulse rounded ${row.urlW}`}
             />
           </div>
         </li>

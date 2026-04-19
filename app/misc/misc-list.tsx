@@ -13,9 +13,7 @@ export function MiscLinksList({
             rel="noopener noreferrer"
             className="group block text-sm"
           >
-            <span className="text-neutral-900 dark:text-neutral-100">
-              {title}
-            </span>
+            <span className="text-primary-inv">{title}</span>
             <span className="mx-2 text-neutral-300 dark:text-neutral-600">
               —
             </span>

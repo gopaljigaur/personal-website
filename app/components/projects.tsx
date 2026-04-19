@@ -25,10 +25,8 @@ function ProjectCard({ project }: { project: Project }) {
           className="mb-4 rounded-lg object-cover"
         />
       )}
-      <p className="font-medium text-neutral-900 dark:text-neutral-100">
-        {project.title}
-      </p>
-      <p className="mt-2 flex-1 text-sm text-neutral-600 dark:text-neutral-400">
+      <p className="text-primary-inv font-medium">{project.title}</p>
+      <p className="text-secondary-inv mt-2 flex-1 text-sm">
         {project.summary}
       </p>
       {project.links && project.links.length > 0 && (

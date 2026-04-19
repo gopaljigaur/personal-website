@@ -254,7 +254,7 @@ export function VibeSimulator() {
           <div className="flex-1 overflow-y-auto p-4">
             <div className="flex min-h-full flex-col space-y-3">
               {messages.length === 0 && (
-                <div className="flex flex-1 flex-col justify-center py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                <div className="text-muted-inv flex flex-1 flex-col justify-center py-12 text-center text-sm">
                   <p className="mb-4">Describe what you want to build</p>
                   <div className="mx-auto grid max-w-sm grid-cols-2 gap-2">
                     {examples.map((ex, i) => (

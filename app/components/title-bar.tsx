@@ -68,7 +68,7 @@ export function TitleBar({
           />
         </button>
         {title && (
-          <span className="ml-2 text-xs font-medium text-neutral-600 dark:text-neutral-400">
+          <span className="text-secondary-inv ml-2 text-xs font-medium">
             {title}
           </span>
         )}
@@ -79,7 +79,7 @@ export function TitleBar({
   return (
     <div className={`flex h-9 w-full items-stretch ${className}`}>
       {title && (
-        <span className="flex flex-1 items-center pl-3 text-xs font-medium text-neutral-600 dark:text-neutral-400">
+        <span className="text-secondary-inv flex flex-1 items-center pl-3 text-xs font-medium">
           {title}
         </span>
       )}

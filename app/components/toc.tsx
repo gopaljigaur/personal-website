@@ -56,7 +56,7 @@ export function TableOfContents({ headings }: { headings: Heading[] }) {
               className={`transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100 ${
                 activeId === h.id
                   ? 'text-neutral-700 dark:text-neutral-300'
-                  : 'text-neutral-500 dark:text-neutral-400'
+                  : 'text-muted-inv'
               }`}
             >
               {h.text}

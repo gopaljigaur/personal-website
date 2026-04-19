@@ -154,9 +154,7 @@ export function OpenGistCode({ url }: OpenGistCodeProps) {
         <div key={index} className="group relative overflow-hidden rounded-lg">
           {/* Title bar */}
           <div className="flex items-center justify-between border-b border-neutral-200 bg-neutral-100 px-4 py-2 dark:border-neutral-700 dark:bg-neutral-800/50">
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">
-              {file.filename}
-            </span>
+            <span className="text-muted-inv text-sm">{file.filename}</span>
             <a
               href={
                 data.allFiles
