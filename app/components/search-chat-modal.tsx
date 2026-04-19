@@ -424,25 +424,26 @@ export function SearchChatModal({
     return () => mq.removeEventListener('change', handler)
   }, [])
 
-  // dvh does not resize on iOS Safari when the keyboard opens — only
-  // visualViewport.height reliably reflects the keyboard-adjusted size.
-  // We intentionally skip vp.offsetTop: the input lives inside the modal so
-  // iOS never needs to shift the visual viewport, and a stale offsetTop on
-  // re-open would push the container down, making it appear shrunk.
+  // Re-run on `open` so values are never stale on re-open.
+  // offsetTop handles Android (keyboard shifts the visual viewport down from top);
+  // height handles iOS (keyboard shrinks the visual viewport from the bottom).
   useEffect(() => {
     const vp = window.visualViewport
-    if (!vp) return
+    if (!vp || !open) return
     const update = () => {
       const el = vpContainerRef.current
       if (!el) return
+      el.style.top = `${vp.offsetTop}px`
       el.style.height = `${vp.height}px`
     }
     update()
     vp.addEventListener('resize', update)
+    vp.addEventListener('scroll', update)
     return () => {
       vp.removeEventListener('resize', update)
+      vp.removeEventListener('scroll', update)
     }
-  }, [])
+  }, [open])
 
   useEffect(() => {
     setSelected(0)
