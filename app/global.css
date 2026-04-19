@@ -20,7 +20,7 @@
   --color-dark-secondary-contrast: #e1ecf3;
   --color-dark-accent-contrast: #0c161d;
   --breakpoint-smplus: 43rem;
-  --breakpoint-navrow: 32rem;
+  --breakpoint-navrow: 34.375rem;
 }
 
 ::selection {
@@ -211,7 +211,7 @@ table {
     @apply bg-neutral-100 dark:bg-neutral-800;
   }
   .bg-brand-tint {
-    @apply from-light-primary/8 to-light-secondary/8 dark:from-dark-primary/8 dark:to-dark-secondary/8 bg-gradient-to-br;
+    @apply from-light-primary/8 to-light-secondary/8 dark:from-dark-primary/15 dark:to-dark-secondary/15 bg-gradient-to-br;
   }
   .btn-primary-inv {
     @apply bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900;

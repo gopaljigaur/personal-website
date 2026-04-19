@@ -19,15 +19,36 @@ function ThemeToggle() {
 
   useEffect(() => setMounted(true), [])
 
-  if (!mounted) return <div className="h-8 w-8" />
+  if (!mounted) return <div className="h-[30px] w-[3.25rem]" />
+
+  const isDark = resolvedTheme === 'dark'
 
   return (
     <button
-      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
       aria-label="Toggle dark mode"
-      className="flex h-8 w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
+      className="flex cursor-pointer items-center gap-0.5 rounded-md border border-neutral-300 bg-neutral-50 px-1 py-1 transition-colors hover:border-neutral-400 focus-visible:outline-none dark:border-neutral-600 dark:bg-neutral-900 dark:hover:border-neutral-500"
     >
-      {resolvedTheme === 'dark' ? <LuSun size={16} /> : <LuMoon size={16} />}
+      {(
+        [
+          { icon: <LuSun size={12} />, value: 'light' },
+          { icon: <LuMoon size={12} />, value: 'dark' },
+        ] as const
+      ).map(({ icon, value }) => {
+        const active = isDark ? value === 'dark' : value === 'light'
+        return (
+          <span
+            key={value}
+            className={`flex items-center justify-center rounded px-1.5 py-1 transition-colors ${
+              active
+                ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-700 dark:text-neutral-100'
+                : 'text-neutral-400 dark:text-neutral-300'
+            }`}
+          >
+            {icon}
+          </span>
+        )
+      })}
     </button>
   )
 }
@@ -70,17 +91,19 @@ function SearchButton() {
           </span>
         ))}
       </span>
-      <span className="relative h-4 w-12">
+      <span className="relative h-5 w-12">
         {MODES.map((m, i) => (
           <span
             key={m.label}
-            className={`absolute left-0 transition-opacity duration-300 ${i === modeIdx ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-0 flex items-center transition-opacity duration-300 ${i === modeIdx ? 'opacity-100' : 'opacity-0'}`}
           >
             {m.label}
           </span>
         ))}
       </span>
-      <Shortcut combo="K" />
+      <span className="min-w-[2.5rem]">
+        <Shortcut combo="K" />
+      </span>
     </button>
   )
 }
