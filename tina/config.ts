@@ -46,6 +46,23 @@ export default defineConfig({
             label: 'Bio',
             ui: { component: 'textarea' },
           },
+          {
+            type: 'string',
+            name: 'siteDescription',
+            label: 'Description',
+            ui: { component: 'textarea' },
+          },
+          {
+            type: 'string',
+            name: 'ogTitle',
+            label: 'OG: Title',
+          },
+          {
+            type: 'string',
+            name: 'ogDescription',
+            label: 'OG: Description',
+            ui: { component: 'textarea' },
+          },
           { type: 'string', name: 'email', label: 'Email' },
           { type: 'string', name: 'github', label: 'GitHub URL' },
           { type: 'string', name: 'linkedin', label: 'LinkedIn URL' },

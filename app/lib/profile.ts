@@ -8,6 +8,9 @@ export const profile = {
   workplace: profileData.workplace,
   workplaceUrl: profileData.workplaceUrl,
   bio: profileData.bio,
+  siteDescription: profileData.siteDescription,
+  ogTitle: profileData.ogTitle,
+  ogDescription: profileData.ogDescription,
   contact: {
     email: profileData.email,
     github: profileData.github,
