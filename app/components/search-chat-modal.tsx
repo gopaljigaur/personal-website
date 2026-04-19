@@ -355,11 +355,11 @@ export function SearchChatModal({
   useEffect(() => {
     if (!open) return
     const y = window.scrollY
-    // Reset container position explicitly — stale offsetTop from a prior open
-    // would otherwise persist since we bypass React state for VP tracking.
+    // Scroll to top so iOS collapses its bottom toolbar, maximising vp.height.
+    window.scrollTo(0, 0)
     const el = vpContainerRef.current
     if (el) el.style.top = '0px'
-    document.body.style.cssText = `position:fixed;top:-${y}px;width:100%;overflow:hidden`
+    document.body.style.cssText = `position:fixed;top:0;width:100%;overflow:hidden`
     return () => {
       document.body.style.cssText = ''
       window.scrollTo(0, y)
