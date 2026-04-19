@@ -1,7 +1,7 @@
 const rows = [
-  { titleW: 'w-28', urlW: 'w-48' },
-  { titleW: 'w-36', urlW: 'w-56' },
-  { titleW: 'w-24', urlW: 'w-64' },
+  { titleW: 'w-1/4', urlW: 'w-2/5' },
+  { titleW: 'w-1/3', urlW: 'w-1/2' },
+  { titleW: 'w-1/4', urlW: 'w-3/5' },
 ]
 
 export default function Loading() {
@@ -9,11 +9,11 @@ export default function Loading() {
     <ul className="space-y-4">
       {rows.map((row, i) => (
         <li key={i} className="block text-sm">
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <div
               className={`h-4 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800 ${row.titleW}`}
             />
-            <div className="mx-2 h-4 w-2 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800" />
+            <div className="h-4 w-3 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800" />
             <div
               className={`h-4 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800 ${row.urlW}`}
             />

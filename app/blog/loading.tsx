@@ -1,22 +1,17 @@
-export default function Loading() {
-  const tagWidths = ['w-16', 'w-20', 'w-12', 'w-24', 'w-16', 'w-20', 'w-14']
-  const titleWidths = ['w-48', 'w-64', 'w-40', 'w-56', 'w-52', 'w-44']
+const titleWidths = ['w-3/5', 'w-4/5', 'w-1/2', 'w-2/3', 'w-3/4', 'w-3/5']
+const tagWidths = ['w-12', 'w-16', 'w-20', 'w-14', 'w-24', 'w-16']
 
+export default function Loading() {
   return (
     <div className="min-w-0">
-      {/* Tag pills row — matches flex flex-nowrap gap-2 mb-6 relative */}
-      <div className="relative mb-6">
-        <div className="flex flex-nowrap gap-2 overflow-hidden">
-          {tagWidths.map((w, i) => (
-            <div
-              key={i}
-              className={`h-5 shrink-0 animate-pulse rounded-full bg-neutral-100 dark:bg-neutral-800 ${w}`}
-            />
-          ))}
-        </div>
+      <div className="mb-6 flex flex-wrap gap-2">
+        {tagWidths.map((w, i) => (
+          <div
+            key={i}
+            className={`h-5 shrink-0 animate-pulse rounded-full bg-neutral-100 dark:bg-neutral-800 ${w}`}
+          />
+        ))}
       </div>
-
-      {/* Post rows — matches mb-4 flex flex-col > flex w-full flex-col md:flex-row */}
       <div>
         {titleWidths.map((w, i) => (
           <div key={i} className="mb-4 flex flex-col space-y-1">

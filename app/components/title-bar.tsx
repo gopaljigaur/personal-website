@@ -1,6 +1,6 @@
 'use client'
 
-import { LuX, LuMinus, LuMaximize2, LuSquare } from 'react-icons/lu'
+import { LuX, LuMinus, LuCopy, LuSquare } from 'react-icons/lu'
 
 export function TitleBar({
   onClose,
@@ -17,10 +17,12 @@ export function TitleBar({
   title?: string
   className?: string
 }) {
-  const isMac =
-    typeof navigator !== 'undefined' && /mac/i.test(navigator.platform)
+  const isApple =
+    typeof navigator !== 'undefined' &&
+    (/mac|iphone|ipad|ipod/i.test(navigator.userAgent) ||
+      (/Mac/i.test(navigator.platform) && navigator.maxTouchPoints > 0))
 
-  if (isMac) {
+  if (isApple) {
     return (
       <div className="group inline-flex items-center gap-2.5 px-3 py-2">
         <button
@@ -108,7 +110,7 @@ export function TitleBar({
           aria-label="Expand"
           className="flex w-11 cursor-pointer items-center justify-center text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
         >
-          {expanded ? <LuMaximize2 size={12} /> : <LuSquare size={12} />}
+          {expanded ? <LuCopy size={12} /> : <LuSquare size={12} />}
         </button>
         <button
           onClick={onClose}
