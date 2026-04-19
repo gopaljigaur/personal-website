@@ -357,8 +357,18 @@ export function SearchChatModal({
     const y = window.scrollY
     window.scrollTo(0, 0)
     const el = vpContainerRef.current
-    if (el) el.style.top = '0px'
-    return () => window.scrollTo(0, y)
+    if (el) {
+      el.style.top = '0px'
+      el.style.height = '100dvh'
+    }
+    // Prevent background scroll without position:fixed (which keeps iOS chrome expanded)
+    document.documentElement.style.overscrollBehavior = 'none'
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.documentElement.style.overscrollBehavior = ''
+      document.body.style.overflow = ''
+      window.scrollTo(0, y)
+    }
   }, [open])
 
   useEffect(() => {
@@ -369,15 +379,17 @@ export function SearchChatModal({
     return () => mq.removeEventListener('change', handler)
   }, [])
 
-  // Track visualViewport.offsetTop (iOS shifts the viewport when keyboard opens)
-  // and pin the container to it. Height is handled by CSS h-dvh which updates
-  // natively as iOS collapses/expands its toolbars and keyboard.
+  // Track both vp.offsetTop and vp.height directly on the DOM.
+  // dvh does not resize on iOS Safari when the keyboard opens — only
+  // visualViewport.height reliably reflects the keyboard-adjusted size.
   useEffect(() => {
     const vp = window.visualViewport
     if (!vp) return
     const update = () => {
       const el = vpContainerRef.current
-      if (el) el.style.top = `${vp.offsetTop}px`
+      if (!el) return
+      el.style.top = `${vp.offsetTop}px`
+      el.style.height = `${vp.height}px`
     }
     update()
     vp.addEventListener('resize', update)
