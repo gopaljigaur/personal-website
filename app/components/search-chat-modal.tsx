@@ -501,7 +501,7 @@ export function SearchChatModal({
 
   return (
     <div
-      className={`fixed right-0 left-0 z-50 flex items-start justify-center ${expanded ? 'pt-[5vh]' : 'pt-[15vh]'}`}
+      className={`fixed right-0 left-0 z-50 flex items-start justify-center ${expanded ? 'pt-[2vh] sm:pt-[5vh]' : 'pt-[5vh] sm:pt-[15vh]'}`}
       style={{ top: 0, height: vpHeight ?? '100dvh' }}
       onClick={() => {
         setOpen(false)
@@ -514,7 +514,7 @@ export function SearchChatModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="border-b border-neutral-200 dark:border-neutral-800">
+        <div className="shrink-0 border-b border-neutral-200 dark:border-neutral-800">
           <TitleBar
             onClose={() => {
               setOpen(false)
@@ -548,9 +548,7 @@ export function SearchChatModal({
         </div>
 
         {/* Content area */}
-        <div
-          className={`shrink overflow-y-auto ${expanded ? 'h-[70vh]' : 'h-96'}`}
-        >
+        <div className="min-h-0 flex-1 overflow-y-auto">
           {tab === 'search' && (
             <ul
               className={`py-2 ${showNudge ? 'flex h-full items-center justify-center' : ''}`}
