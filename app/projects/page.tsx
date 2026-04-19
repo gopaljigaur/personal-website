@@ -1,7 +1,6 @@
 import { ProjectsWithFilter } from 'app/components/projects'
 import { projects } from 'app/projects/data'
 import ProjectsClient from './projects-client'
-import { client } from '../../tina/__generated__/client'
 
 export const metadata = {
   title: 'Projects',
@@ -22,6 +21,7 @@ export default async function Page(props: {
 
   if (process.env.NODE_ENV === 'development') {
     try {
+      const { client } = await import('../../tina/__generated__/client')
       const tinaData = await client.queries.projects({
         relativePath: 'projects.json',
       })
