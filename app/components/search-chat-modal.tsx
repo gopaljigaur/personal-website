@@ -292,6 +292,7 @@ export function SearchChatModal({
   const [tab, setTab] = useState<Tab>('search')
   const [vpTop, setVpTop] = useState(0)
   const [vpHeight, setVpHeight] = useState<number | null>(null)
+  const vpContainerRef = useRef<HTMLDivElement>(null)
 
   // Search state
   const [query, setQuery] = useState('')
@@ -356,6 +357,13 @@ export function SearchChatModal({
     const vp = window.visualViewport
     if (!vp) return
     const update = () => {
+      // Update DOM directly so the container tracks the visual viewport
+      // synchronously, without waiting for React to re-render. This prevents
+      // the modal from lagging behind during keyboard animation on iOS.
+      if (vpContainerRef.current) {
+        vpContainerRef.current.style.top = `${vp.offsetTop}px`
+        vpContainerRef.current.style.height = `${vp.height}px`
+      }
       setVpTop(vp.offsetTop)
       setVpHeight(vp.height)
     }
@@ -527,6 +535,7 @@ export function SearchChatModal({
        * the modal works correctly in all cases.
        */}
       <div
+        ref={vpContainerRef}
         className="fixed inset-x-0 z-50 flex flex-col items-center p-2 sm:py-[8vh]"
         style={{ top: vpTop, height: vpHeight ?? '100dvh' }}
         onClick={close}
