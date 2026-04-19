@@ -1,8 +1,10 @@
 export function Callout({
   children,
+  content,
   type = 'note',
 }: {
-  children: React.ReactNode
+  children?: React.ReactNode
+  content?: string
   type?: 'note' | 'warning' | 'tip'
 }) {
   const config = {
@@ -23,7 +25,7 @@ export function Callout({
     <div
       className={`my-4 rounded px-4 py-3 text-sm text-neutral-400 ${styles}`}
     >
-      {children}
+      {content ?? children}
     </div>
   )
 }

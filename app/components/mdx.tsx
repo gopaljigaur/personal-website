@@ -5,6 +5,7 @@ import React from 'react'
 import { Code, OpenGistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
+import { slugify } from 'app/blog/utils.shared'
 
 function Table({ data }) {
   const headers = data.headers.map((header, index) => (
@@ -49,17 +50,6 @@ function CustomLink(props) {
 
 function RoundedImage(props) {
   return <Image alt={props.alt} className="rounded-lg" {...props} />
-}
-
-function slugify(str) {
-  return str
-    .toString()
-    .toLowerCase()
-    .trim() // Remove whitespace from both ends of a string
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/&/g, '-and-') // Replace & with 'and'
-    .replace(/[^\w\-]+/g, '') // Remove all non-word characters except for -
-    .replace(/--+/g, '-') // Replace multiple - with single -
 }
 
 function createHeading(level) {

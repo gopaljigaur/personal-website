@@ -9,61 +9,114 @@
     "meta": { "flags": ["experimentalData"] },
     "collections": [
       {
-        "name": "misc",
-        "label": "Misc Links",
+        "name": "profile",
+        "label": "Profile",
         "path": "content",
         "format": "json",
         "ui": { "allowedActions": { "create": false, "delete": false } },
-        "match": { "include": "misc" },
+        "match": { "include": "profile" },
         "fields": [
           {
-            "type": "object",
-            "name": "links",
-            "label": "Links",
-            "list": true,
-            "ui": {},
-            "fields": [
-              {
-                "type": "string",
-                "name": "title",
-                "label": "Title",
-                "isTitle": true,
-                "required": true,
-                "namespace": ["misc", "links", "title"],
-                "searchable": true,
-                "uid": false
-              },
-              {
-                "type": "string",
-                "name": "url",
-                "label": "URL",
-                "required": true,
-                "namespace": ["misc", "links", "url"],
-                "searchable": true,
-                "uid": false
-              },
-              {
-                "type": "string",
-                "name": "note",
-                "label": "Note",
-                "ui": { "component": "textarea" },
-                "namespace": ["misc", "links", "note"],
-                "searchable": true,
-                "uid": false
-              }
-            ],
-            "namespace": ["misc", "links"],
+            "type": "string",
+            "name": "name",
+            "label": "Name",
+            "isTitle": true,
+            "required": true,
+            "namespace": ["profile", "name"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
+            "name": "title",
+            "label": "Title",
+            "required": true,
+            "namespace": ["profile", "title"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
+            "name": "location",
+            "label": "Location",
+            "namespace": ["profile", "location"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
+            "name": "role",
+            "label": "Role",
+            "namespace": ["profile", "role"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
+            "name": "workplace",
+            "label": "Workplace",
+            "namespace": ["profile", "workplace"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
+            "name": "workplaceUrl",
+            "label": "Workplace URL",
+            "namespace": ["profile", "workplaceUrl"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
+            "name": "bio",
+            "label": "Bio",
+            "ui": { "component": "textarea" },
+            "namespace": ["profile", "bio"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
+            "name": "email",
+            "label": "Email",
+            "namespace": ["profile", "email"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
+            "name": "github",
+            "label": "GitHub URL",
+            "namespace": ["profile", "github"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
+            "name": "linkedin",
+            "label": "LinkedIn URL",
+            "namespace": ["profile", "linkedin"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
+            "name": "resume",
+            "label": "Resume URL",
+            "namespace": ["profile", "resume"],
             "searchable": true,
             "uid": false
           }
         ],
-        "namespace": ["misc"]
+        "namespace": ["profile"]
       },
       {
         "name": "blog",
         "label": "Blog Posts",
         "path": "app/blog/posts",
         "format": "mdx",
+        "ui": {},
         "fields": [
           {
             "type": "string",
@@ -116,6 +169,69 @@
             "name": "body",
             "label": "Body",
             "isBody": true,
+            "templates": [
+              {
+                "name": "VibeSimulator",
+                "label": "Vibe Simulator",
+                "fields": [
+                  {
+                    "type": "string",
+                    "name": "placeholder",
+                    "label": "Placeholder",
+                    "namespace": [
+                      "blog",
+                      "body",
+                      "VibeSimulator",
+                      "placeholder"
+                    ],
+                    "searchable": true,
+                    "uid": false
+                  }
+                ],
+                "namespace": ["blog", "body", "VibeSimulator"]
+              },
+              {
+                "name": "Callout",
+                "label": "Callout",
+                "fields": [
+                  {
+                    "type": "string",
+                    "name": "type",
+                    "label": "Type",
+                    "options": ["note", "warning", "tip"],
+                    "namespace": ["blog", "body", "Callout", "type"],
+                    "searchable": true,
+                    "uid": false
+                  },
+                  {
+                    "type": "string",
+                    "name": "content",
+                    "label": "Content",
+                    "ui": { "component": "textarea" },
+                    "namespace": ["blog", "body", "Callout", "content"],
+                    "searchable": true,
+                    "uid": false
+                  }
+                ],
+                "namespace": ["blog", "body", "Callout"]
+              },
+              {
+                "name": "OpenGistCode",
+                "label": "GitHub Gist",
+                "fields": [
+                  {
+                    "type": "string",
+                    "name": "url",
+                    "label": "Gist URL",
+                    "required": true,
+                    "namespace": ["blog", "body", "OpenGistCode", "url"],
+                    "searchable": true,
+                    "uid": false
+                  }
+                ],
+                "namespace": ["blog", "body", "OpenGistCode"]
+              }
+            ],
             "namespace": ["blog", "body"],
             "searchable": true,
             "parser": { "type": "mdx" },
@@ -123,6 +239,147 @@
           }
         ],
         "namespace": ["blog"]
+      },
+      {
+        "name": "projects",
+        "label": "Projects",
+        "path": "content",
+        "format": "json",
+        "ui": { "allowedActions": { "create": false, "delete": false } },
+        "match": { "include": "projects" },
+        "fields": [
+          {
+            "type": "object",
+            "name": "projects",
+            "label": "Projects",
+            "list": true,
+            "ui": {},
+            "fields": [
+              {
+                "type": "string",
+                "name": "title",
+                "label": "Title",
+                "isTitle": true,
+                "required": true,
+                "namespace": ["projects", "projects", "title"],
+                "searchable": true,
+                "uid": false
+              },
+              {
+                "type": "string",
+                "name": "summary",
+                "label": "Summary",
+                "required": true,
+                "ui": { "component": "textarea" },
+                "namespace": ["projects", "projects", "summary"],
+                "searchable": true,
+                "uid": false
+              },
+              {
+                "type": "image",
+                "name": "image",
+                "label": "Image",
+                "namespace": ["projects", "projects", "image"],
+                "searchable": false,
+                "uid": false
+              },
+              {
+                "type": "string",
+                "name": "techStack",
+                "label": "Tech Stack",
+                "list": true,
+                "namespace": ["projects", "projects", "techStack"],
+                "searchable": true,
+                "uid": false
+              },
+              {
+                "type": "object",
+                "name": "links",
+                "label": "Links",
+                "list": true,
+                "ui": {},
+                "fields": [
+                  {
+                    "type": "string",
+                    "name": "label",
+                    "label": "Label",
+                    "required": true,
+                    "namespace": ["projects", "projects", "links", "label"],
+                    "searchable": true,
+                    "uid": false
+                  },
+                  {
+                    "type": "string",
+                    "name": "href",
+                    "label": "URL",
+                    "required": true,
+                    "namespace": ["projects", "projects", "links", "href"],
+                    "searchable": true,
+                    "uid": false
+                  }
+                ],
+                "namespace": ["projects", "projects", "links"],
+                "searchable": true,
+                "uid": false
+              }
+            ],
+            "namespace": ["projects", "projects"],
+            "searchable": true,
+            "uid": false
+          }
+        ],
+        "namespace": ["projects"]
+      },
+      {
+        "name": "misc",
+        "label": "Misc Links",
+        "path": "content",
+        "format": "json",
+        "ui": { "allowedActions": { "create": false, "delete": false } },
+        "match": { "include": "misc" },
+        "fields": [
+          {
+            "type": "object",
+            "name": "links",
+            "label": "Links",
+            "list": true,
+            "ui": {},
+            "fields": [
+              {
+                "type": "string",
+                "name": "title",
+                "label": "Title",
+                "isTitle": true,
+                "required": true,
+                "namespace": ["misc", "links", "title"],
+                "searchable": true,
+                "uid": false
+              },
+              {
+                "type": "string",
+                "name": "url",
+                "label": "URL",
+                "required": true,
+                "namespace": ["misc", "links", "url"],
+                "searchable": true,
+                "uid": false
+              },
+              {
+                "type": "string",
+                "name": "note",
+                "label": "Note",
+                "ui": { "component": "textarea" },
+                "namespace": ["misc", "links", "note"],
+                "searchable": true,
+                "uid": false
+              }
+            ],
+            "namespace": ["misc", "links"],
+            "searchable": true,
+            "uid": false
+          }
+        ],
+        "namespace": ["misc"]
       }
     ],
     "config": {
@@ -133,7 +390,7 @@
     "DocumentConnection": {
       "type": "DocumentConnection",
       "resolveType": "multiCollectionDocumentList",
-      "collections": ["misc", "blog"]
+      "collections": ["profile", "blog", "projects", "misc"]
     },
     "Node": { "type": "Node", "resolveType": "nodeDocument" },
     "DocumentNode": {
@@ -142,17 +399,17 @@
       "createDocument": "create",
       "updateDocument": "update"
     },
-    "Misc": {
-      "type": "Misc",
+    "Profile": {
+      "type": "Profile",
       "resolveType": "collectionDocument",
-      "collection": "misc",
-      "createMisc": "create",
-      "updateMisc": "update"
+      "collection": "profile",
+      "createProfile": "create",
+      "updateProfile": "update"
     },
-    "MiscConnection": {
-      "type": "MiscConnection",
+    "ProfileConnection": {
+      "type": "ProfileConnection",
       "resolveType": "collectionDocumentList",
-      "collection": "misc"
+      "collection": "profile"
     },
     "Blog": {
       "type": "Blog",
@@ -165,6 +422,30 @@
       "type": "BlogConnection",
       "resolveType": "collectionDocumentList",
       "collection": "blog"
+    },
+    "Projects": {
+      "type": "Projects",
+      "resolveType": "collectionDocument",
+      "collection": "projects",
+      "createProjects": "create",
+      "updateProjects": "update"
+    },
+    "ProjectsConnection": {
+      "type": "ProjectsConnection",
+      "resolveType": "collectionDocumentList",
+      "collection": "projects"
+    },
+    "Misc": {
+      "type": "Misc",
+      "resolveType": "collectionDocument",
+      "collection": "misc",
+      "createMisc": "create",
+      "updateMisc": "update"
+    },
+    "MiscConnection": {
+      "type": "MiscConnection",
+      "resolveType": "collectionDocumentList",
+      "collection": "misc"
     }
   },
   "graphql": {
@@ -627,7 +908,7 @@
           },
           {
             "kind": "FieldDefinition",
-            "name": { "kind": "Name", "value": "misc" },
+            "name": { "kind": "Name", "value": "profile" },
             "arguments": [
               {
                 "kind": "InputValueDefinition",
@@ -642,13 +923,13 @@
               "kind": "NonNullType",
               "type": {
                 "kind": "NamedType",
-                "name": { "kind": "Name", "value": "Misc" }
+                "name": { "kind": "Name", "value": "Profile" }
               }
             }
           },
           {
             "kind": "FieldDefinition",
-            "name": { "kind": "Name", "value": "miscConnection" },
+            "name": { "kind": "Name", "value": "profileConnection" },
             "arguments": [
               {
                 "kind": "InputValueDefinition",
@@ -695,7 +976,7 @@
                 "name": { "kind": "Name", "value": "filter" },
                 "type": {
                   "kind": "NamedType",
-                  "name": { "kind": "Name", "value": "MiscFilter" }
+                  "name": { "kind": "Name", "value": "ProfileFilter" }
                 }
               }
             ],
@@ -703,7 +984,7 @@
               "kind": "NonNullType",
               "type": {
                 "kind": "NamedType",
-                "name": { "kind": "Name", "value": "MiscConnection" }
+                "name": { "kind": "Name", "value": "ProfileConnection" }
               }
             }
           },
@@ -788,6 +1069,170 @@
                 "name": { "kind": "Name", "value": "BlogConnection" }
               }
             }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "projects" },
+            "arguments": [
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "relativePath" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "String" }
+                }
+              }
+            ],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "Projects" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "projectsConnection" },
+            "arguments": [
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "before" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "String" }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "after" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "String" }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "first" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "Float" }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "last" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "Float" }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "sort" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "String" }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "filter" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "ProjectsFilter" }
+                }
+              }
+            ],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "ProjectsConnection" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "misc" },
+            "arguments": [
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "relativePath" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "String" }
+                }
+              }
+            ],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "Misc" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "miscConnection" },
+            "arguments": [
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "before" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "String" }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "after" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "String" }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "first" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "Float" }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "last" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "Float" }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "sort" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "String" }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "filter" },
+                "type": {
+                  "kind": "NamedType",
+                  "name": { "kind": "Name", "value": "MiscFilter" }
+                }
+              }
+            ],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "MiscConnection" }
+              }
+            }
           }
         ]
       },
@@ -797,10 +1242,10 @@
         "fields": [
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "misc" },
+            "name": { "kind": "Name", "value": "profile" },
             "type": {
               "kind": "NamedType",
-              "name": { "kind": "Name", "value": "MiscFilter" }
+              "name": { "kind": "Name", "value": "ProfileFilter" }
             }
           },
           {
@@ -809,6 +1254,22 @@
             "type": {
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "BlogFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "projects" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "ProjectsFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "misc" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "MiscFilter" }
             }
           }
         ]
@@ -1060,17 +1521,43 @@
         "name": { "kind": "Name", "value": "DocumentNode" },
         "directives": [],
         "types": [
-          { "kind": "NamedType", "name": { "kind": "Name", "value": "Misc" } },
+          {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "Profile" }
+          },
           { "kind": "NamedType", "name": { "kind": "Name", "value": "Blog" } },
+          {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "Projects" }
+          },
+          { "kind": "NamedType", "name": { "kind": "Name", "value": "Misc" } },
           { "kind": "NamedType", "name": { "kind": "Name", "value": "Folder" } }
         ]
       },
       {
         "kind": "ObjectTypeDefinition",
-        "interfaces": [],
+        "interfaces": [
+          { "kind": "NamedType", "name": { "kind": "Name", "value": "Node" } },
+          {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "Document" }
+          }
+        ],
         "directives": [],
-        "name": { "kind": "Name", "value": "MiscLinks" },
+        "name": { "kind": "Name", "value": "Profile" },
         "fields": [
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "name" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "String" }
+              }
+            }
+          },
           {
             "kind": "FieldDefinition",
             "name": { "kind": "Name", "value": "title" },
@@ -1085,49 +1572,83 @@
           },
           {
             "kind": "FieldDefinition",
-            "name": { "kind": "Name", "value": "url" },
-            "arguments": [],
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": { "kind": "Name", "value": "String" }
-              }
-            }
-          },
-          {
-            "kind": "FieldDefinition",
-            "name": { "kind": "Name", "value": "note" },
+            "name": { "kind": "Name", "value": "location" },
             "arguments": [],
             "type": {
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "String" }
             }
-          }
-        ]
-      },
-      {
-        "kind": "ObjectTypeDefinition",
-        "interfaces": [
-          { "kind": "NamedType", "name": { "kind": "Name", "value": "Node" } },
-          {
-            "kind": "NamedType",
-            "name": { "kind": "Name", "value": "Document" }
-          }
-        ],
-        "directives": [],
-        "name": { "kind": "Name", "value": "Misc" },
-        "fields": [
+          },
           {
             "kind": "FieldDefinition",
-            "name": { "kind": "Name", "value": "links" },
+            "name": { "kind": "Name", "value": "role" },
             "arguments": [],
             "type": {
-              "kind": "ListType",
-              "type": {
-                "kind": "NamedType",
-                "name": { "kind": "Name", "value": "MiscLinks" }
-              }
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "workplace" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "workplaceUrl" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "bio" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "email" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "github" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "linkedin" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "resume" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
             }
           },
           {
@@ -1211,8 +1732,16 @@
       },
       {
         "kind": "InputObjectTypeDefinition",
-        "name": { "kind": "Name", "value": "MiscLinksFilter" },
+        "name": { "kind": "Name", "value": "ProfileFilter" },
         "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "name" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
           {
             "kind": "InputValueDefinition",
             "name": { "kind": "Name", "value": "title" },
@@ -1223,7 +1752,7 @@
           },
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "url" },
+            "name": { "kind": "Name", "value": "location" },
             "type": {
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "StringFilter" }
@@ -1231,24 +1760,66 @@
           },
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "note" },
+            "name": { "kind": "Name", "value": "role" },
             "type": {
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "StringFilter" }
             }
-          }
-        ]
-      },
-      {
-        "kind": "InputObjectTypeDefinition",
-        "name": { "kind": "Name", "value": "MiscFilter" },
-        "fields": [
+          },
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "links" },
+            "name": { "kind": "Name", "value": "workplace" },
             "type": {
               "kind": "NamedType",
-              "name": { "kind": "Name", "value": "MiscLinksFilter" }
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "workplaceUrl" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "bio" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "email" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "github" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "linkedin" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "resume" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
             }
           }
         ]
@@ -1257,7 +1828,7 @@
         "kind": "ObjectTypeDefinition",
         "interfaces": [],
         "directives": [],
-        "name": { "kind": "Name", "value": "MiscConnectionEdges" },
+        "name": { "kind": "Name", "value": "ProfileConnectionEdges" },
         "fields": [
           {
             "kind": "FieldDefinition",
@@ -1277,7 +1848,7 @@
             "arguments": [],
             "type": {
               "kind": "NamedType",
-              "name": { "kind": "Name", "value": "Misc" }
+              "name": { "kind": "Name", "value": "Profile" }
             }
           }
         ]
@@ -1291,7 +1862,7 @@
           }
         ],
         "directives": [],
-        "name": { "kind": "Name", "value": "MiscConnection" },
+        "name": { "kind": "Name", "value": "ProfileConnection" },
         "fields": [
           {
             "kind": "FieldDefinition",
@@ -1325,7 +1896,7 @@
               "kind": "ListType",
               "type": {
                 "kind": "NamedType",
-                "name": { "kind": "Name", "value": "MiscConnectionEdges" }
+                "name": { "kind": "Name", "value": "ProfileConnectionEdges" }
               }
             }
           }
@@ -1539,30 +2110,80 @@
       },
       {
         "kind": "InputObjectTypeDefinition",
-        "name": { "kind": "Name", "value": "RichTextFilter" },
+        "name": { "kind": "Name", "value": "BlogBodyVibeSimulatorFilter" },
         "fields": [
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "startsWith" },
+            "name": { "kind": "Name", "value": "placeholder" },
             "type": {
               "kind": "NamedType",
-              "name": { "kind": "Name", "value": "String" }
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "BlogBodyCalloutFilter" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "type" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
             }
           },
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "eq" },
+            "name": { "kind": "Name", "value": "content" },
             "type": {
               "kind": "NamedType",
-              "name": { "kind": "Name", "value": "String" }
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "BlogBodyOpenGistCodeFilter" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "url" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "BlogBodyFilter" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "VibeSimulator" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "BlogBodyVibeSimulatorFilter" }
             }
           },
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "exists" },
+            "name": { "kind": "Name", "value": "Callout" },
             "type": {
               "kind": "NamedType",
-              "name": { "kind": "Name", "value": "Boolean" }
+              "name": { "kind": "Name", "value": "BlogBodyCalloutFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "OpenGistCode" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "BlogBodyOpenGistCodeFilter" }
             }
           }
         ]
@@ -1616,7 +2237,7 @@
             "name": { "kind": "Name", "value": "body" },
             "type": {
               "kind": "NamedType",
-              "name": { "kind": "Name", "value": "RichTextFilter" }
+              "name": { "kind": "Name", "value": "BlogBodyFilter" }
             }
           }
         ]
@@ -1694,6 +2315,550 @@
               "type": {
                 "kind": "NamedType",
                 "name": { "kind": "Name", "value": "BlogConnectionEdges" }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "ObjectTypeDefinition",
+        "interfaces": [],
+        "directives": [],
+        "name": { "kind": "Name", "value": "ProjectsProjectsLinks" },
+        "fields": [
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "label" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "String" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "href" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "String" }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "ObjectTypeDefinition",
+        "interfaces": [],
+        "directives": [],
+        "name": { "kind": "Name", "value": "ProjectsProjects" },
+        "fields": [
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "title" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "String" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "summary" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "String" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "image" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "techStack" },
+            "arguments": [],
+            "type": {
+              "kind": "ListType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "String" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "links" },
+            "arguments": [],
+            "type": {
+              "kind": "ListType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "ProjectsProjectsLinks" }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "ObjectTypeDefinition",
+        "interfaces": [
+          { "kind": "NamedType", "name": { "kind": "Name", "value": "Node" } },
+          {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "Document" }
+          }
+        ],
+        "directives": [],
+        "name": { "kind": "Name", "value": "Projects" },
+        "fields": [
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "projects" },
+            "arguments": [],
+            "type": {
+              "kind": "ListType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "ProjectsProjects" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "id" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "ID" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "_sys" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "SystemInfo" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "_values" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "JSON" }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "ProjectsProjectsLinksFilter" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "label" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "href" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "ProjectsProjectsFilter" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "title" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "summary" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "image" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "ImageFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "techStack" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "links" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "ProjectsProjectsLinksFilter" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "ProjectsFilter" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "projects" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "ProjectsProjectsFilter" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "ObjectTypeDefinition",
+        "interfaces": [],
+        "directives": [],
+        "name": { "kind": "Name", "value": "ProjectsConnectionEdges" },
+        "fields": [
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "cursor" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "String" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "node" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "Projects" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "ObjectTypeDefinition",
+        "interfaces": [
+          {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "Connection" }
+          }
+        ],
+        "directives": [],
+        "name": { "kind": "Name", "value": "ProjectsConnection" },
+        "fields": [
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "pageInfo" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "PageInfo" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "totalCount" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "Float" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "edges" },
+            "arguments": [],
+            "type": {
+              "kind": "ListType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "ProjectsConnectionEdges" }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "ObjectTypeDefinition",
+        "interfaces": [],
+        "directives": [],
+        "name": { "kind": "Name", "value": "MiscLinks" },
+        "fields": [
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "title" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "String" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "url" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "String" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "note" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "ObjectTypeDefinition",
+        "interfaces": [
+          { "kind": "NamedType", "name": { "kind": "Name", "value": "Node" } },
+          {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "Document" }
+          }
+        ],
+        "directives": [],
+        "name": { "kind": "Name", "value": "Misc" },
+        "fields": [
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "links" },
+            "arguments": [],
+            "type": {
+              "kind": "ListType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "MiscLinks" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "id" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "ID" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "_sys" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "SystemInfo" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "_values" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "JSON" }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "MiscLinksFilter" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "title" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "url" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "note" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "MiscFilter" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "links" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "MiscLinksFilter" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "ObjectTypeDefinition",
+        "interfaces": [],
+        "directives": [],
+        "name": { "kind": "Name", "value": "MiscConnectionEdges" },
+        "fields": [
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "cursor" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "String" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "node" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "Misc" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "ObjectTypeDefinition",
+        "interfaces": [
+          {
+            "kind": "NamedType",
+            "name": { "kind": "Name", "value": "Connection" }
+          }
+        ],
+        "directives": [],
+        "name": { "kind": "Name", "value": "MiscConnection" },
+        "fields": [
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "pageInfo" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "PageInfo" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "totalCount" },
+            "arguments": [],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "Float" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "edges" },
+            "arguments": [],
+            "type": {
+              "kind": "ListType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "MiscConnectionEdges" }
               }
             }
           }
@@ -1903,7 +3068,7 @@
           },
           {
             "kind": "FieldDefinition",
-            "name": { "kind": "Name", "value": "updateMisc" },
+            "name": { "kind": "Name", "value": "updateProfile" },
             "arguments": [
               {
                 "kind": "InputValueDefinition",
@@ -1923,7 +3088,7 @@
                   "kind": "NonNullType",
                   "type": {
                     "kind": "NamedType",
-                    "name": { "kind": "Name", "value": "MiscMutation" }
+                    "name": { "kind": "Name", "value": "ProfileMutation" }
                   }
                 }
               }
@@ -1932,13 +3097,13 @@
               "kind": "NonNullType",
               "type": {
                 "kind": "NamedType",
-                "name": { "kind": "Name", "value": "Misc" }
+                "name": { "kind": "Name", "value": "Profile" }
               }
             }
           },
           {
             "kind": "FieldDefinition",
-            "name": { "kind": "Name", "value": "createMisc" },
+            "name": { "kind": "Name", "value": "createProfile" },
             "arguments": [
               {
                 "kind": "InputValueDefinition",
@@ -1958,7 +3123,7 @@
                   "kind": "NonNullType",
                   "type": {
                     "kind": "NamedType",
-                    "name": { "kind": "Name", "value": "MiscMutation" }
+                    "name": { "kind": "Name", "value": "ProfileMutation" }
                   }
                 }
               }
@@ -1967,7 +3132,7 @@
               "kind": "NonNullType",
               "type": {
                 "kind": "NamedType",
-                "name": { "kind": "Name", "value": "Misc" }
+                "name": { "kind": "Name", "value": "Profile" }
               }
             }
           },
@@ -2040,6 +3205,146 @@
                 "name": { "kind": "Name", "value": "Blog" }
               }
             }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "updateProjects" },
+            "arguments": [
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "relativePath" },
+                "type": {
+                  "kind": "NonNullType",
+                  "type": {
+                    "kind": "NamedType",
+                    "name": { "kind": "Name", "value": "String" }
+                  }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "params" },
+                "type": {
+                  "kind": "NonNullType",
+                  "type": {
+                    "kind": "NamedType",
+                    "name": { "kind": "Name", "value": "ProjectsMutation" }
+                  }
+                }
+              }
+            ],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "Projects" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "createProjects" },
+            "arguments": [
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "relativePath" },
+                "type": {
+                  "kind": "NonNullType",
+                  "type": {
+                    "kind": "NamedType",
+                    "name": { "kind": "Name", "value": "String" }
+                  }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "params" },
+                "type": {
+                  "kind": "NonNullType",
+                  "type": {
+                    "kind": "NamedType",
+                    "name": { "kind": "Name", "value": "ProjectsMutation" }
+                  }
+                }
+              }
+            ],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "Projects" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "updateMisc" },
+            "arguments": [
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "relativePath" },
+                "type": {
+                  "kind": "NonNullType",
+                  "type": {
+                    "kind": "NamedType",
+                    "name": { "kind": "Name", "value": "String" }
+                  }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "params" },
+                "type": {
+                  "kind": "NonNullType",
+                  "type": {
+                    "kind": "NamedType",
+                    "name": { "kind": "Name", "value": "MiscMutation" }
+                  }
+                }
+              }
+            ],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "Misc" }
+              }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "createMisc" },
+            "arguments": [
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "relativePath" },
+                "type": {
+                  "kind": "NonNullType",
+                  "type": {
+                    "kind": "NamedType",
+                    "name": { "kind": "Name", "value": "String" }
+                  }
+                }
+              },
+              {
+                "kind": "InputValueDefinition",
+                "name": { "kind": "Name", "value": "params" },
+                "type": {
+                  "kind": "NonNullType",
+                  "type": {
+                    "kind": "NamedType",
+                    "name": { "kind": "Name", "value": "MiscMutation" }
+                  }
+                }
+              }
+            ],
+            "type": {
+              "kind": "NonNullType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "Misc" }
+              }
+            }
           }
         ]
       },
@@ -2049,10 +3354,10 @@
         "fields": [
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "misc" },
+            "name": { "kind": "Name", "value": "profile" },
             "type": {
               "kind": "NamedType",
-              "name": { "kind": "Name", "value": "MiscMutation" }
+              "name": { "kind": "Name", "value": "ProfileMutation" }
             }
           },
           {
@@ -2061,6 +3366,22 @@
             "type": {
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "BlogMutation" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "projects" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "ProjectsMutation" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "misc" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "MiscMutation" }
             }
           },
           {
@@ -2079,10 +3400,10 @@
         "fields": [
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "misc" },
+            "name": { "kind": "Name", "value": "profile" },
             "type": {
               "kind": "NamedType",
-              "name": { "kind": "Name", "value": "MiscMutation" }
+              "name": { "kind": "Name", "value": "ProfileMutation" }
             }
           },
           {
@@ -2092,13 +3413,37 @@
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "BlogMutation" }
             }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "projects" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "ProjectsMutation" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "misc" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "MiscMutation" }
+            }
           }
         ]
       },
       {
         "kind": "InputObjectTypeDefinition",
-        "name": { "kind": "Name", "value": "MiscLinksMutation" },
+        "name": { "kind": "Name", "value": "ProfileMutation" },
         "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "name" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
           {
             "kind": "InputValueDefinition",
             "name": { "kind": "Name", "value": "title" },
@@ -2109,7 +3454,7 @@
           },
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "url" },
+            "name": { "kind": "Name", "value": "location" },
             "type": {
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "String" }
@@ -2117,27 +3462,66 @@
           },
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "note" },
+            "name": { "kind": "Name", "value": "role" },
             "type": {
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "String" }
             }
-          }
-        ]
-      },
-      {
-        "kind": "InputObjectTypeDefinition",
-        "name": { "kind": "Name", "value": "MiscMutation" },
-        "fields": [
+          },
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "links" },
+            "name": { "kind": "Name", "value": "workplace" },
             "type": {
-              "kind": "ListType",
-              "type": {
-                "kind": "NamedType",
-                "name": { "kind": "Name", "value": "MiscLinksMutation" }
-              }
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "workplaceUrl" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "bio" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "email" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "github" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "linkedin" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "resume" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
             }
           }
         ]
@@ -2195,6 +3579,147 @@
             "type": {
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "JSON" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "ProjectsProjectsLinksMutation" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "label" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "href" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "ProjectsProjectsMutation" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "title" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "summary" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "image" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "techStack" },
+            "type": {
+              "kind": "ListType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "String" }
+              }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "links" },
+            "type": {
+              "kind": "ListType",
+              "type": {
+                "kind": "NamedType",
+                "name": {
+                  "kind": "Name",
+                  "value": "ProjectsProjectsLinksMutation"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "ProjectsMutation" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "projects" },
+            "type": {
+              "kind": "ListType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "ProjectsProjectsMutation" }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "MiscLinksMutation" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "title" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "url" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "note" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "InputObjectTypeDefinition",
+        "name": { "kind": "Name", "value": "MiscMutation" },
+        "fields": [
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "links" },
+            "type": {
+              "kind": "ListType",
+              "type": {
+                "kind": "NamedType",
+                "name": { "kind": "Name", "value": "MiscLinksMutation" }
+              }
             }
           }
         ]

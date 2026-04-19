@@ -1,5 +1,7 @@
 import { ProjectsWithFilter } from 'app/components/projects'
 import { projects } from 'app/projects/data'
+import ProjectsClient from './projects-client'
+import { client } from '../../tina/__generated__/client'
 
 export const metadata = {
   title: 'Projects',
@@ -17,6 +19,25 @@ export default async function Page(props: {
         .map((t) => decodeURIComponent(t.trim()))
         .filter(Boolean)
     : []
+
+  if (process.env.NODE_ENV === 'development') {
+    try {
+      const tinaData = await client.queries.projects({
+        relativePath: 'projects.json',
+      })
+      return (
+        <ProjectsClient
+          query={tinaData.query}
+          variables={tinaData.variables}
+          data={tinaData.data}
+          activeTags={activeTags}
+        />
+      )
+    } catch {
+      // TinaCMS server not running — fall through to static rendering
+    }
+  }
+
   const allTags = [
     ...new Set(projects.flatMap((p) => p.techStack ?? [])),
   ].sort()

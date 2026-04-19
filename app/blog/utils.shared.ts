@@ -1,5 +1,15 @@
 // Pure utilities — safe to import in both server and client components
 
+export function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/&/g, '-and-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')
+}
+
 export type Metadata = {
   title: string
   publishedAt: string
