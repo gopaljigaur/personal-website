@@ -21,12 +21,10 @@ export const metadata: Metadata = {
     default: 'Gopalji Gaur',
     template: '%s | Gopalji Gaur',
   },
-  description:
-    'Gopalji Gaur. Machine Learning Engineer. Builder and innovator. Based in Germany.',
+  description: profile.siteDescription,
   openGraph: {
-    title: 'Gopalji Gaur',
-    description:
-      'Gopalji Gaur. Machine Learning Engineer. Builder and innovator. Based in Germany.',
+    title: profile.ogTitle ?? profile.name,
+    description: profile.ogDescription ?? profile.siteDescription,
     url: baseUrl,
     siteName: 'Gopalji Gaur',
     locale: 'en_US',
