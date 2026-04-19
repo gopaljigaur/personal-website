@@ -512,6 +512,17 @@ export function SearchChatModal({
     setExpanded(false)
   }
 
+  // Derive modal position from visual viewport so flex-1 works in all cases.
+  // marginTop: 8% of vpHeight, capped at 72px (gives breathing room without wasting space when keyboard shrinks the viewport).
+  // height: fills remaining space, capped at 576px so it doesn't become a full-screen panel on desktop.
+  const vpMarginTop = vpHeight
+    ? Math.round(Math.min(vpHeight * 0.08, 72))
+    : null
+  const vpModalHeight =
+    vpHeight !== null && vpMarginTop !== null
+      ? Math.min(vpHeight - vpMarginTop - 16, 576)
+      : null
+
   return (
     <>
       <div
@@ -519,12 +530,17 @@ export function SearchChatModal({
         onClick={close}
       />
       <div
-        className={`fixed right-0 left-0 z-50 flex items-start justify-center ${expanded ? 'pt-[2vh] sm:pt-[5vh]' : 'pt-[5vh] sm:pt-[15vh]'}`}
+        className="fixed right-0 left-0 z-50 flex items-start justify-center"
         style={{ top: vpTop, height: vpHeight ?? '100dvh' }}
         onClick={close}
       >
         <div
-          className={`relative mx-4 flex max-h-[calc(100%-2rem)] flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl transition-[max-width] duration-200 dark:border-neutral-800 dark:bg-neutral-900 ${expanded ? 'w-full max-w-3xl' : 'w-full max-w-lg'}`}
+          className={`relative mx-4 flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl transition-[max-width] duration-200 dark:border-neutral-800 dark:bg-neutral-900 ${expanded ? 'w-full max-w-3xl' : 'w-full max-w-lg'}`}
+          style={
+            vpModalHeight !== null
+              ? { marginTop: vpMarginTop!, height: vpModalHeight }
+              : { marginTop: '8vh', maxHeight: '32rem' }
+          }
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
