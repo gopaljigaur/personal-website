@@ -290,6 +290,7 @@ export function SearchChatModal({
   const [open, setOpen] = useState(false)
   const [expanded, setExpanded] = useState(false)
   const [tab, setTab] = useState<Tab>('search')
+  const [vpHeight, setVpHeight] = useState<number | null>(null)
 
   // Search state
   const [query, setQuery] = useState('')
@@ -349,6 +350,15 @@ export function SearchChatModal({
       setSearchItems(null)
     }
   }, [open])
+
+  useEffect(() => {
+    const vp = window.visualViewport
+    if (!vp) return
+    const update = () => setVpHeight(vp.height)
+    update()
+    vp.addEventListener('resize', update)
+    return () => vp.removeEventListener('resize', update)
+  }, [])
 
   useEffect(() => {
     setSelected(0)
@@ -491,7 +501,8 @@ export function SearchChatModal({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-start justify-center ${expanded ? 'pt-[5vh]' : 'pt-[15vh]'}`}
+      className={`fixed right-0 left-0 z-50 flex items-start justify-center ${expanded ? 'pt-[5vh]' : 'pt-[15vh]'}`}
+      style={{ top: 0, height: vpHeight ?? '100dvh' }}
       onClick={() => {
         setOpen(false)
         setExpanded(false)
@@ -499,7 +510,7 @@ export function SearchChatModal({
     >
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
       <div
-        className={`relative mx-4 flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl transition-[max-width] duration-200 dark:border-neutral-800 dark:bg-neutral-900 ${expanded ? 'w-full max-w-3xl' : 'w-full max-w-lg'}`}
+        className={`relative mx-4 flex max-h-[calc(100%-2rem)] flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl transition-[max-width] duration-200 dark:border-neutral-800 dark:bg-neutral-900 ${expanded ? 'w-full max-w-3xl' : 'w-full max-w-lg'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -536,9 +547,9 @@ export function SearchChatModal({
           </div>
         </div>
 
-        {/* Content area — fixed height, never grows */}
+        {/* Content area */}
         <div
-          className={`shrink-0 overflow-y-auto ${expanded ? 'h-[70vh]' : 'h-96'}`}
+          className={`shrink overflow-y-auto ${expanded ? 'h-[70vh]' : 'h-96'}`}
         >
           {tab === 'search' && (
             <ul
