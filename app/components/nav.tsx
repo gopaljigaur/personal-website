@@ -113,7 +113,7 @@ export function Navbar() {
     <aside className="mb-16 -ml-[8px] tracking-tight">
       <div className="lg:sticky lg:top-20">
         <nav
-          className="fade navrow:flex-row navrow:items-center relative flex flex-col items-start px-0 pb-0"
+          className="fade navrow:flex-row navrow:items-center navrow:gap-0 relative flex flex-col items-start gap-3 px-0 pb-0"
           id="nav"
         >
           <div className="navrow:order-1 order-2 flex flex-row space-x-0">
