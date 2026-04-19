@@ -512,42 +512,27 @@ export function SearchChatModal({
     setExpanded(false)
   }
 
-  // When the visual viewport is small the keyboard is likely open — use minimal
-  // margins and fill the full available space so the modal stays usable.
-  const isSmallViewport = vpHeight !== null && vpHeight < 500
-  const vpMarginTop =
-    vpHeight !== null
-      ? isSmallViewport
-        ? 4
-        : Math.round(Math.min(vpHeight * 0.08, 72))
-      : null
-  const vpModalHeight =
-    vpHeight !== null && vpMarginTop !== null
-      ? expanded
-        ? Math.min(vpHeight - vpMarginTop - 4, 820) // expanded: grow tall too
-        : isSmallViewport
-          ? vpHeight - vpMarginTop - 4 // keyboard open: fill visual viewport
-          : Math.min(vpHeight - vpMarginTop - 16, 576) // desktop: cap height
-      : null
-
   return (
     <>
       <div
         className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
         onClick={close}
       />
+      {/*
+       * Container tracks the visual viewport exactly (top + height from JS).
+       * Padding provides the margins — p-2 on mobile, py-[8vh] on desktop.
+       * The modal uses flex-1 to fill whatever space remains after padding,
+       * capped by max-h on desktop. A flex item resolved by flex-grow has a
+       * definite height even when clamped by max-h, so flex-1 min-h-0 inside
+       * the modal works correctly in all cases.
+       */}
       <div
-        className="fixed right-0 left-0 z-50 flex items-start justify-center"
+        className="fixed inset-x-0 z-50 flex flex-col items-center p-2 sm:py-[8vh]"
         style={{ top: vpTop, height: vpHeight ?? '100dvh' }}
         onClick={close}
       >
         <div
-          className={`relative mx-4 flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl transition-[max-width] duration-200 dark:border-neutral-800 dark:bg-neutral-900 ${expanded ? 'w-full max-w-3xl' : 'w-full max-w-lg'}`}
-          style={
-            vpModalHeight !== null
-              ? { marginTop: vpMarginTop!, height: vpModalHeight }
-              : { marginTop: '8vh', maxHeight: '32rem' }
-          }
+          className={`flex w-full flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl transition-[max-width] duration-200 dark:border-neutral-800 dark:bg-neutral-900 ${expanded ? 'max-w-3xl' : 'max-w-lg sm:max-h-[36rem]'}`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
