@@ -1,16 +1,21 @@
 'use client'
 
 import Giscus from '@giscus/react'
+import { useTheme } from 'next-themes'
 import { useState, useEffect } from 'react'
 
 export default function Comments() {
-  const [currentDomain, setCurrentDomain] = useState('')
-  useEffect(() => {
-    setCurrentDomain(window.location.origin)
-  }, [])
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
+
+  const theme = !mounted ? 'light' : resolvedTheme === 'dark' ? 'dark' : 'light'
+
   return (
     <div className="mt-20 mb-10">
       <Giscus
+        key={theme}
         id="comments"
         repo="gopaljigaur/personal-website"
         repoId="R_kgDONy5ahw"
@@ -21,7 +26,7 @@ export default function Comments() {
         reactionsEnabled="0"
         emitMetadata="0"
         inputPosition="top"
-        theme={`${currentDomain}/comments.css`}
+        theme={theme}
         lang="en"
         loading="lazy"
       />
