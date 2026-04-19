@@ -350,6 +350,21 @@ export function SearchChatModal({
       setQuery('')
       setSelected(0)
       setSearchItems(null)
+      // Prevent iOS from scrolling the body when keyboard opens inside a fixed
+      // modal — body scroll makes visualViewport.offsetTop non-zero which breaks
+      // the container positioning. Standard iOS body-scroll-lock pattern.
+      const y = window.scrollY
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${y}px`
+      document.body.style.width = '100%'
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.width = ''
+        document.body.style.overflow = ''
+        window.scrollTo(0, y)
+      }
     }
   }, [open])
 
@@ -549,7 +564,11 @@ export function SearchChatModal({
             <TitleBar
               onClose={close}
               expanded={expanded}
-              onExpand={() => setExpanded((e) => !e)}
+              onExpand={
+                window.innerWidth >= 640
+                  ? () => setExpanded((e) => !e)
+                  : undefined
+              }
             />
             <div className="px-3 pt-2 pb-3">
               <div className="flex h-9 w-full items-center justify-center rounded-lg bg-neutral-100 p-[3px] text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
