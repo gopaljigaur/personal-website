@@ -5,7 +5,7 @@
     "build": "pnpm embed && next build",
     "start": "next start",
     "prepare": "[ -z \"$CI\" ] && husky || true",
-    "embed": "tsx scripts/generate-embeddings.ts"
+    "embed": "tsx --env-file=.env --env-file=.env.local scripts/generate-embeddings.ts"
   },
   "dependencies": {
     "@giscus/react": "^3.1.0",

@@ -8,7 +8,6 @@ import { RelatedPosts } from 'app/components/related-posts'
 import { getBlogPosts, extractHeadings, getRelatedPosts } from 'app/blog/utils'
 import { formatDate } from 'app/blog/utils.shared'
 import { baseUrl } from 'app/sitemap'
-import { client } from '../../../tina/__generated__/client'
 import BlogPostClient from './blog-post-client'
 
 export async function generateStaticParams() {
@@ -61,6 +60,7 @@ export default async function Blog(props: { params: any }) {
 
   if (process.env.NODE_ENV === 'development') {
     try {
+      const { client } = await import('../../../tina/__generated__/client')
       const tinaData = await client.queries.blog({
         relativePath: `${params.slug}.mdx`,
       })
