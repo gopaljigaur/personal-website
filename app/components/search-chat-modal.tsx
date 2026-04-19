@@ -292,6 +292,7 @@ export function SearchChatModal({
   const [tab, setTab] = useState<Tab>('search')
   const [vpTop, setVpTop] = useState(0)
   const [vpHeight, setVpHeight] = useState<number | null>(null)
+  const [isDesktop, setIsDesktop] = useState(false)
   const vpContainerRef = useRef<HTMLDivElement>(null)
 
   // Search state
@@ -350,23 +351,29 @@ export function SearchChatModal({
       setQuery('')
       setSelected(0)
       setSearchItems(null)
-      // Prevent iOS from scrolling the body when keyboard opens inside a fixed
-      // modal — body scroll makes visualViewport.offsetTop non-zero which breaks
-      // the container positioning. Standard iOS body-scroll-lock pattern.
-      const y = window.scrollY
-      document.body.style.position = 'fixed'
-      document.body.style.top = `-${y}px`
-      document.body.style.width = '100%'
-      document.body.style.overflow = 'hidden'
-      return () => {
-        document.body.style.position = ''
-        document.body.style.top = ''
-        document.body.style.width = ''
-        document.body.style.overflow = ''
-        window.scrollTo(0, y)
-      }
     }
   }, [open])
+
+  // Body scroll lock: prevents iOS from scrolling the page when the keyboard
+  // opens inside a fixed modal, which would make visualViewport.offsetTop
+  // non-zero and misalign the container.
+  useEffect(() => {
+    if (!open) return
+    const y = window.scrollY
+    document.body.style.cssText = `position:fixed;top:-${y}px;width:100%;overflow:hidden`
+    return () => {
+      document.body.style.cssText = ''
+      window.scrollTo(0, y)
+    }
+  }, [open])
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 640px)')
+    setIsDesktop(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   useEffect(() => {
     const vp = window.visualViewport
@@ -564,11 +571,7 @@ export function SearchChatModal({
             <TitleBar
               onClose={close}
               expanded={expanded}
-              onExpand={
-                window.innerWidth >= 640
-                  ? () => setExpanded((e) => !e)
-                  : undefined
-              }
+              onExpand={isDesktop ? () => setExpanded((e) => !e) : undefined}
             />
             <div className="px-3 pt-2 pb-3">
               <div className="flex h-9 w-full items-center justify-center rounded-lg bg-neutral-100 p-[3px] text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
