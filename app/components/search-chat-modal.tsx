@@ -644,7 +644,7 @@ export function SearchChatModal({
                     onClick={() => setTab(t)}
                     className={`relative inline-flex h-full flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-transparent px-2 text-sm font-medium whitespace-nowrap transition-all ${
                       tab === t
-                        ? 'bg-white text-neutral-900 shadow-sm dark:border-neutral-600 dark:bg-neutral-600 dark:text-neutral-100'
+                        ? 'bg-white text-neutral-900 shadow-sm dark:border-neutral-700 dark:bg-neutral-700 dark:text-neutral-100'
                         : 'text-neutral-900/60 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
                     }`}
                   >

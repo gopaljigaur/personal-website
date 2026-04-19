@@ -26,7 +26,7 @@ export function Shortcut({ combo, className = '' }: Props) {
       {keys.map((k) => (
         <kbd
           key={k}
-          className="rounded border border-neutral-300 bg-neutral-100 px-1.5 py-0.5 text-[13px] leading-none font-medium text-neutral-500 dark:border-neutral-500 dark:bg-neutral-600 dark:text-neutral-300"
+          className="rounded border border-neutral-300 bg-transparent px-1.5 py-0.5 text-[13px] leading-none font-medium text-neutral-500 dark:border-neutral-50/15 dark:text-neutral-300"
         >
           {k}
         </kbd>

@@ -78,6 +78,32 @@
           },
           {
             "type": "string",
+            "name": "siteDescription",
+            "label": "Description",
+            "ui": { "component": "textarea" },
+            "namespace": ["profile", "siteDescription"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
+            "name": "ogTitle",
+            "label": "OG: Title",
+            "namespace": ["profile", "ogTitle"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
+            "name": "ogDescription",
+            "label": "OG: Description",
+            "ui": { "component": "textarea" },
+            "namespace": ["profile", "ogDescription"],
+            "searchable": true,
+            "uid": false
+          },
+          {
+            "type": "string",
             "name": "email",
             "label": "Email",
             "namespace": ["profile", "email"],
@@ -1617,6 +1643,33 @@
           },
           {
             "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "siteDescription" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "ogTitle" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
+            "name": { "kind": "Name", "value": "ogDescription" },
+            "arguments": [],
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "FieldDefinition",
             "name": { "kind": "Name", "value": "email" },
             "arguments": [],
             "type": {
@@ -1785,6 +1838,30 @@
           {
             "kind": "InputValueDefinition",
             "name": { "kind": "Name", "value": "bio" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "siteDescription" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "ogTitle" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "StringFilter" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "ogDescription" },
             "type": {
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "StringFilter" }
@@ -3487,6 +3564,30 @@
           {
             "kind": "InputValueDefinition",
             "name": { "kind": "Name", "value": "bio" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "siteDescription" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "ogTitle" },
+            "type": {
+              "kind": "NamedType",
+              "name": { "kind": "Name", "value": "String" }
+            }
+          },
+          {
+            "kind": "InputValueDefinition",
+            "name": { "kind": "Name", "value": "ogDescription" },
             "type": {
               "kind": "NamedType",
               "name": { "kind": "Name", "value": "String" }
