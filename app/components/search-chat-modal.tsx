@@ -356,8 +356,9 @@ export function SearchChatModal({
   useEffect(() => {
     if (!open) return
     const y = window.scrollY
-    window.scrollTo(0, 0)
-    document.body.style.cssText = `position:fixed;top:0;width:100%;overflow:hidden`
+    const maxY = document.documentElement.scrollHeight - window.innerHeight
+    window.scrollTo(0, maxY)
+    document.body.style.cssText = `position:fixed;top:-${maxY}px;width:100%;overflow:hidden`
     return () => {
       document.body.style.cssText = ''
       window.scrollTo(0, y)
