@@ -26,7 +26,19 @@ export function TableOfContents({ headings }: { headings: Heading[] }) {
       if (el) observer.observe(el)
     })
 
-    return () => observer.disconnect()
+    const lastId = headings[headings.length - 1].id
+    const onScroll = () => {
+      const atBottom =
+        window.scrollY + window.innerHeight >=
+        document.documentElement.scrollHeight - 40
+      if (atBottom) setActiveId(lastId)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [headings])
 
   if (headings.length < 2) return null

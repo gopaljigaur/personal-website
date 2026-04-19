@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
-import { ChatButton } from './chat-widget'
+import { LuSun, LuMoon, LuSearch } from 'react-icons/lu'
 
 const navItems = {
   '/': { name: 'home' },
@@ -26,38 +26,7 @@ function ThemeToggle() {
       aria-label="Toggle dark mode"
       className="flex h-8 w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
     >
-      {resolvedTheme === 'dark' ? (
-        // Sun icon
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-        </svg>
-      ) : (
-        // Moon icon
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        </svg>
-      )}
+      {resolvedTheme === 'dark' ? <LuSun size={16} /> : <LuMoon size={16} />}
     </button>
   )
 }
@@ -69,25 +38,12 @@ function SearchButton() {
       aria-label="Open command palette"
       className="flex h-8 w-8 cursor-pointer items-center justify-center text-neutral-500 transition-colors hover:text-neutral-900 focus-visible:text-neutral-900 focus-visible:outline-none dark:text-neutral-400 dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="11" cy="11" r="8" />
-        <path d="m21 21-4.35-4.35" />
-      </svg>
+      <LuSearch size={16} />
     </button>
   )
 }
 
-export function Navbar({ chatEnabled }: { chatEnabled?: boolean }) {
+export function Navbar() {
   return (
     <aside className="mb-16 -ml-[8px] tracking-tight">
       <div className="lg:sticky lg:top-20">
@@ -108,7 +64,6 @@ export function Navbar({ chatEnabled }: { chatEnabled?: boolean }) {
           </div>
           <div className="navrow:order-2 navrow:block navrow:min-w-4 navrow:flex-1 order-3 hidden" />
           <div className="navrow:order-3 navrow:ml-0 navrow:gap-1 order-1 ml-2 flex items-center gap-3 sm:gap-2">
-            {chatEnabled && <ChatButton />}
             <SearchButton />
             <ThemeToggle />
           </div>

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import DOMPurify from 'dompurify'
+import { TitleBar } from 'app/components/title-bar'
 
 type Message = {
   role: 'user' | 'ai' | 'system'
@@ -246,26 +247,8 @@ export function VibeSimulator() {
       <div className="grid gap-4 md:grid-cols-2">
         {/* Chat Interface */}
         <div className="flex h-125 flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
-          <div className="border-b border-neutral-200 bg-neutral-50 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <div className="flex gap-1.5">
-                  <div className="h-3 w-3 rounded-full bg-red-500" />
-                  <div className="h-3 w-3 rounded-full bg-yellow-500" />
-                  <div className="h-3 w-3 rounded-full bg-green-500" />
-                </div>
-                <span className="ml-2 text-xs font-medium">AI Vibe Coder</span>
-              </div>
-              {hasInitialApp && (
-                <button
-                  onClick={handleReset}
-                  className="rounded border border-neutral-300 px-2 py-1 text-xs transition-all hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
-                  title="Start new app"
-                >
-                  Reset
-                </button>
-              )}
-            </div>
+          <div className="border-b border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900">
+            <TitleBar title="AI Vibe Coder" />
           </div>
 
           <div className="flex-1 overflow-y-auto p-4">
@@ -322,6 +305,15 @@ export function VibeSimulator() {
 
           <div className="border-t border-neutral-200 p-3 dark:border-neutral-800">
             <div className="flex min-w-0 gap-2">
+              {hasInitialApp && (
+                <button
+                  onClick={handleReset}
+                  title="Start new app"
+                  className="cursor-pointer rounded-lg border border-neutral-300 px-3 py-2 text-sm transition-all hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                >
+                  Reset
+                </button>
+              )}
               <input
                 type="text"
                 value={input}
@@ -337,7 +329,7 @@ export function VibeSimulator() {
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isTyping}
-                className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-all hover:opacity-90 disabled:opacity-50 dark:bg-neutral-100 dark:text-black"
+                className="cursor-pointer rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-100 dark:text-black"
               >
                 Send
               </button>
@@ -347,8 +339,8 @@ export function VibeSimulator() {
 
         {/* Preview Pane */}
         <div className="flex h-125 flex-col overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900">
-          <div className="border-b border-neutral-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950">
-            <div className="flex items-center justify-between">
+          <div className="border-b border-neutral-200 bg-white px-4 dark:border-neutral-800 dark:bg-neutral-950">
+            <div className="flex h-9 items-center justify-between">
               <span className="text-xs font-medium">Live Preview</span>
               {messages.length > 0 && (
                 <span className="text-xs text-green-600 dark:text-green-400">

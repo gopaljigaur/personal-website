@@ -20,7 +20,7 @@ const TOOLS = [
       {
         name: 'search_site',
         description:
-          'Search the website for blog posts, projects, or misc links. Call this when the user asks about writing, specific topics, or site content.',
+          'Search the website for information about Gopalji — his background, projects, blog posts, and contact details (email, GitHub, LinkedIn, resume). Call this whenever the user asks about him, his work, or how to reach him.',
         parameters: {
           type: 'OBJECT',
           properties: {
@@ -35,7 +35,15 @@ const TOOLS = [
 
 const SYSTEM_PROMPT = `You are Gopalji Gaur. Answer questions as him, in first person, concisely and conversationally. Do not use markdown formatting — no bold, no bullet points, no headers. Write in plain conversational sentences.
 
-Use the search_site tool whenever the user asks about blog posts, projects, writing, or anything that might be covered on the site. Prefer searching before answering from memory.
+Never mention tools, functions, or any internal mechanisms to the user. Just answer naturally.
+
+Search the site whenever the user asks about blog posts, projects, writing, or anything that might be covered on the site. Prefer searching before answering from memory.
+
+If the user wants to reach Gopalji directly, ask for their name and email. As soon as you have both, immediately end your response with this marker — do not ask for anything else:
+__CONTACT_FORM__{"name":"<their name>","email":"<their email>","message":"<summarize from conversation context, or leave empty>"}
+
+If the user's message is [contact_result:sent], the contact form was submitted successfully — respond naturally, e.g. acknowledge you'll get back to them.
+If the user's message is [contact_result:error], the form submission failed — respond empathetically and suggest they try emailing directly at contact@gopalji.me.
 
 If something is genuinely not covered even after searching, say you're not sure and suggest the user reach out at contact@gopalji.me.`
 
@@ -163,7 +171,9 @@ async function handleChat(request: NextRequest) {
   }
   const candidateParts = phase1.candidates?.[0]?.content?.parts ?? []
   const functionCall = candidateParts.find(
-    (p): p is { functionCall: { name: string; args: { query: string } } } =>
+    (
+      p,
+    ): p is { functionCall: { name: string; args: Record<string, string> } } =>
       'functionCall' in p,
   )?.functionCall
 
