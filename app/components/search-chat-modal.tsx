@@ -291,7 +291,6 @@ export function SearchChatModal({
   const [expanded, setExpanded] = useState(false)
   const [tab, setTab] = useState<Tab>('search')
   const [isDesktop, setIsDesktop] = useState(false)
-  const [debugInfo, setDebugInfo] = useState('')
   const vpContainerRef = useRef<HTMLDivElement>(null)
 
   // Search state
@@ -391,9 +390,6 @@ export function SearchChatModal({
       if (!el) return
       el.style.top = `${vp.offsetTop}px`
       el.style.height = `${vp.height}px`
-      setDebugInfo(
-        `top:${vp.offsetTop.toFixed(0)} h:${vp.height.toFixed(0)} iH:${window.innerHeight}`,
-      )
     }
     update()
     vp.addEventListener('resize', update)
@@ -563,22 +559,6 @@ export function SearchChatModal({
           className={`flex w-full flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-2xl transition-[max-width,max-height] duration-200 dark:border-neutral-800 dark:bg-neutral-900 ${expanded ? 'max-w-3xl sm:max-h-[56rem]' : 'max-w-lg sm:max-h-[36rem]'}`}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* DEBUG — remove before ship */}
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              background: 'red',
-              color: 'white',
-              fontSize: 10,
-              padding: '2px 4px',
-              zIndex: 9999,
-              pointerEvents: 'none',
-            }}
-          >
-            {debugInfo}
-          </div>
           {/* Header */}
           <div className="shrink-0 border-b border-neutral-200 dark:border-neutral-800">
             <TitleBar
