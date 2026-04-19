@@ -2,12 +2,11 @@ import './global.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Navbar } from './components/nav'
-import { ChatWidget } from './components/chat-widget'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Footer from './components/footer'
 import { Providers } from './components/providers'
-import { CommandPalette } from './components/command-palette'
+import { SearchChatModal } from './components/search-chat-modal'
 import { getBlogPosts } from './blog/utils'
 import { projects } from './projects/data'
 import { baseUrl } from './sitemap'
@@ -67,12 +66,11 @@ export default function RootLayout({
       >
         <Providers>
           <main className="mt-8 flex min-w-0 flex-auto flex-col px-2 md:px-0">
-            <Navbar chatEnabled={!!process.env.GEMINI_API_KEY} />
+            <Navbar />
             <ViewTransition>{children}</ViewTransition>
           </main>
           <Footer />
-          {!!process.env.GEMINI_API_KEY && <ChatWidget />}
-          <CommandPalette
+          <SearchChatModal
             posts={posts}
             projects={projects.map((p) => ({
               title: p.title,
