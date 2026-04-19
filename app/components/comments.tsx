@@ -6,11 +6,17 @@ import { useState, useEffect } from 'react'
 
 export default function Comments() {
   const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const [origin, setOrigin] = useState('')
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    setOrigin(window.location.origin)
+  }, [])
 
-  const theme = !mounted ? 'light' : resolvedTheme === 'dark' ? 'dark' : 'light'
+  const theme = !origin
+    ? 'light'
+    : resolvedTheme === 'dark'
+      ? `${origin}/comments-dark.css`
+      : `${origin}/comments.css`
 
   return (
     <div className="mt-20 mb-10">
