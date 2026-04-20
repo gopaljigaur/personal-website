@@ -5,7 +5,10 @@ import React from 'react'
 import { Code, OpenGistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
+import { PostPreviewLink } from 'app/components/post-preview-link'
+import { LinkPreview } from 'app/components/link-preview'
 import { slugify } from 'app/blog/utils.shared'
+import { getBlogPosts } from 'app/blog/utils'
 
 function Table({ data }) {
   const headers = data.headers.map((header, index) => (
@@ -31,6 +34,28 @@ function Table({ data }) {
 
 function CustomLink(props) {
   const href = props?.href || ''
+
+  const blogMatch = href.match(/^\/blog\/([^/]+)$/)
+  if (blogMatch) {
+    const slug = blogMatch[1]
+    const post = getBlogPosts().find((p) => p.slug === slug)
+    if (post) {
+      return (
+        <PostPreviewLink
+          href={href}
+          post={{
+            title: post.metadata.title,
+            publishedAt: post.metadata.publishedAt,
+            image: post.metadata.image,
+            tags: post.metadata.tags,
+          }}
+        >
+          {props.children}
+        </PostPreviewLink>
+      )
+    }
+  }
+
   if (href.startsWith('/')) {
     return (
       <Link href={href} {...props}>
@@ -42,6 +67,10 @@ function CustomLink(props) {
   if (href.startsWith('#')) {
     // eslint-disable-next-line  jsx-a11y/anchor-has-content
     return <a {...props} />
+  }
+
+  if (href.startsWith('http')) {
+    return <LinkPreview href={href}>{props.children}</LinkPreview>
   }
 
   // eslint-disable-next-line  jsx-a11y/anchor-has-content

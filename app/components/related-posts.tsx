@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { PostPreviewLink } from 'app/components/post-preview-link'
 import type { BlogPost } from 'app/blog/utils.shared'
 import { formatDate } from 'app/blog/utils.shared'
 
@@ -11,15 +11,21 @@ export function RelatedPosts({ posts }: { posts: BlogPost[] }) {
       <ul className="space-y-3">
         {posts.map((post) => (
           <li key={post.slug}>
-            <Link
+            <PostPreviewLink
               href={`/blog/${post.slug}`}
-              className="group flex flex-col transition-colors hover:text-neutral-900 dark:hover:text-neutral-100"
+              post={{
+                title: post.metadata.title,
+                publishedAt: post.metadata.publishedAt,
+                image: post.metadata.image,
+                tags: post.metadata.tags,
+              }}
+              className="inline-flex flex-col transition-colors hover:text-neutral-900 dark:hover:text-neutral-100"
             >
               <span className="font-medium">{post.metadata.title}</span>
               <span className="text-muted-inv text-sm">
                 {formatDate(post.metadata.publishedAt)}
               </span>
-            </Link>
+            </PostPreviewLink>
           </li>
         ))}
       </ul>

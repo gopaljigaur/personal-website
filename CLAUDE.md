@@ -84,6 +84,38 @@ Custom breakpoints: `navrow` at 28rem (nav layout switch), `smplus` at 43rem.
 
 All `--color-*` theme variables are usable as Tailwind utilities — e.g. `text-dark-primary`, `bg-dark-background`. Prefer these over `[var(--color-*)]` arbitrary syntax.
 
+### Link preview system
+
+Hovering external links shows an OG preview card; hovering internal blog links shows a post preview card. Both use a shared hook and portal component:
+
+- `app/components/use-preview-card.tsx` — `usePreviewCard(cardWidth)` hook (positioning, show delay, scroll-to-hide) + `PreviewCardPortal` (renders into `document.body` via `createPortal` to avoid invalid HTML nesting inside `<p>` tags)
+- `app/components/link-preview.tsx` — external links; fetches OG data from `/api/og-preview`, shows instantly with favicon+domain, upgrades with image/title/desc when data arrives
+- `app/components/post-preview-link.tsx` — internal blog links; shows hero image, title, date, tags from props
+- `app/api/og-preview/route.ts` — scrapes OG metadata server-side; KV-cached 7 days (`og:{sha256_16}`); rate-limited 60/hr per IP (`rl:og:{ip}`); SSRF-blocked private IPs
+- Module-level `ogCache: Map` in `link-preview.tsx` shares fetched data across component instances on the same page
+
+Cards are `pointer-events-none`, hidden on mobile (`hidden md:block`), positioned above the link (flips below when near top of viewport).
+
+### TinaCMS heading IDs (critical gotcha)
+
+TinaCMS passes context-provider-wrapped React elements as `children` to custom heading components — plain text extraction does NOT work. Heading components in `blog-post-client.tsx` use `useLayoutEffect` to **imperatively set `el.id`** from `el.textContent` after mount (no `useState`, no second render). This must run before the TOC's `useEffect` sets up the IntersectionObserver.
+
+```tsx
+useLayoutEffect(() => {
+  const el = ref.current
+  if (!el) return
+  const slug = slugify(el.textContent ?? '')
+  el.id = slug
+  el.querySelector('a.anchor')?.setAttribute('href', `#${slug}`)
+}, [])
+```
+
+This issue only affects the TinaCMS dev path. The MDX/production path (`mdx.tsx`) receives plain strings as children and works normally.
+
+### Blog post client — allPosts prop
+
+`BlogPostClient` receives `allPosts: BlogPost[]` from `page.tsx` (server component) to enable proper blog-to-blog link previews. The `tinaComponents` object (including the `a:` handler) is built inside the component via `useMemo([allPosts])` so it can look up post metadata for `/blog/[slug]` links.
+
 ### MDX custom components
 
 Used in blog posts (`app/blog/posts/*.mdx`) and registered in both `app/components/mdx.tsx` (static path) and `app/blog/[slug]/blog-post-client.tsx` (TinaCMS path):
@@ -98,6 +130,8 @@ Used in blog posts (`app/blog/posts/*.mdx`) and registered in both `app/componen
 | ------------------------------------------------ | ------------------------------------------------------------------------ |
 | `GEMINI_API_KEY`                                 | Required — Gemini API for chat, search, embeddings                       |
 | `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `KV_URL` | Vercel KV for rate limiting and caching (optional — degrades gracefully) |
+
+KV key namespaces: `rl:{ip}` chat rate limit, `rl:gc:{ip}` generate-code, `rl:og:{ip}` OG preview; `cache:{hash}` chat responses, `og:{hash}` OG metadata (7d TTL).
 
 ### next.config.ts highlights
 
