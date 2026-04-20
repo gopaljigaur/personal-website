@@ -869,12 +869,20 @@ export function SearchChatModal({
                 <input
                   ref={chatInputRef}
                   value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
+                  onChange={(e) => setChatInput(e.target.value.slice(0, 500))}
                   onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && send()}
                   placeholder="Ask something..."
                   disabled={loading}
+                  maxLength={500}
                   className="min-w-0 flex-1 bg-transparent text-base text-neutral-900 outline-none placeholder:text-neutral-400 disabled:opacity-50 sm:text-sm dark:text-neutral-100"
                 />
+                {chatInput.length >= 400 && (
+                  <span
+                    className={`shrink-0 text-xs ${chatInput.length >= 480 ? 'text-red-500' : 'text-neutral-400'}`}
+                  >
+                    {chatInput.length}/500
+                  </span>
+                )}
                 <button
                   onClick={() => send()}
                   disabled={!chatInput.trim() || loading}
