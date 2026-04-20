@@ -317,7 +317,8 @@ export function VibeSimulator() {
               <input
                 type="text"
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={(e) => setInput(e.target.value.slice(0, 500))}
+                maxLength={500}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder={
                   hasInitialApp
