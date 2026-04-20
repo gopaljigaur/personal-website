@@ -20,6 +20,7 @@ export function VibeSimulator() {
   const [buildProgress, setBuildProgress] = useState<string[]>([])
   const [isBuilding, setIsBuilding] = useState(false)
   const [hasInitialApp, setHasInitialApp] = useState(false)
+  const [inputFlashing, setInputFlashing] = useState(false)
 
   const buildSteps = [
     'Analyzing request',
@@ -314,26 +315,31 @@ export function VibeSimulator() {
                   Reset
                 </button>
               )}
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value.slice(0, 500))}
-                maxLength={500}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder={
-                  hasInitialApp
-                    ? 'Describe changes...'
-                    : 'Type what you want to build...'
-                }
-                className="min-w-0 flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-base focus:ring-2 focus:ring-neutral-900 focus:outline-none sm:text-sm dark:border-neutral-700 dark:bg-neutral-900 dark:focus:ring-neutral-100"
-              />
-              {input.length >= 400 && (
+              <div className="relative min-w-0 flex-1">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => {
+                    if (e.target.value.length > 500) {
+                      setInputFlashing(true)
+                      setTimeout(() => setInputFlashing(false), 1050)
+                    }
+                    setInput(e.target.value.slice(0, 500))
+                  }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                  placeholder={
+                    hasInitialApp
+                      ? 'Describe changes...'
+                      : 'Type what you want to build...'
+                  }
+                  className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-base focus:ring-2 focus:ring-neutral-900 focus:outline-none sm:text-sm dark:border-neutral-700 dark:bg-neutral-900 dark:focus:ring-neutral-100"
+                />
                 <span
-                  className={`shrink-0 self-center text-xs ${input.length >= 480 ? 'text-red-500' : 'text-neutral-400'}`}
+                  className={`absolute -top-2 right-2 bg-white px-0.5 text-xs leading-none transition-[color,opacity] duration-300 dark:bg-neutral-950 ${input.length >= 400 ? 'opacity-100' : 'pointer-events-none opacity-0'} ${inputFlashing ? 'animate-flash' : ''} ${input.length >= 480 ? 'text-red-400' : 'text-neutral-400'}`}
                 >
                   {input.length}/500
                 </span>
-              )}
+              </div>
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isTyping}

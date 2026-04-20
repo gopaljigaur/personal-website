@@ -198,7 +198,7 @@ function InlineContactForm({
   if (result !== null) {
     return (
       <p
-        className={`mt-1 text-xs ${result === 'sent' ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}
+        className={`mt-1 text-xs ${result === 'sent' ? 'text-green-600 dark:text-green-400' : 'text-red-400 dark:text-red-400'}`}
       >
         {result === 'sent'
           ? 'Message sent.'
@@ -275,7 +275,7 @@ function InlineNewsletterSubscribe({
   if (result !== null) {
     return (
       <p
-        className={`mt-1 text-xs ${result === 'subscribed' ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}
+        className={`mt-1 text-xs ${result === 'subscribed' ? 'text-green-600 dark:text-green-400' : 'text-red-400 dark:text-red-400'}`}
       >
         {result === 'subscribed' ? 'Subscribed!' : 'Failed — try again.'}
       </p>
@@ -345,6 +345,7 @@ export function SearchChatModal({
   // Chat state
   const [messages, setMessages] = useState<Message[]>([])
   const [chatInput, setChatInput] = useState('')
+  const [chatInputFlashing, setChatInputFlashing] = useState(false)
   const [loading, setLoading] = useState(false)
   const chatInputRef = useRef<HTMLInputElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -841,7 +842,7 @@ export function SearchChatModal({
           </div>
 
           {/* Input area — fixed height, same on both tabs */}
-          <div className="flex h-[52px] shrink-0 items-center gap-2 border-t border-neutral-200 px-4 dark:border-neutral-800">
+          <div className="relative flex h-[52px] shrink-0 items-center gap-2 border-t border-neutral-200 px-4 dark:border-neutral-800">
             {tab === 'search' && (
               <>
                 <input
@@ -869,20 +870,23 @@ export function SearchChatModal({
                 <input
                   ref={chatInputRef}
                   value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value.slice(0, 500))}
+                  onChange={(e) => {
+                    if (e.target.value.length > 500) {
+                      setChatInputFlashing(true)
+                      setTimeout(() => setChatInputFlashing(false), 1450)
+                    }
+                    setChatInput(e.target.value.slice(0, 500))
+                  }}
                   onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && send()}
                   placeholder="Ask something..."
                   disabled={loading}
-                  maxLength={500}
                   className="min-w-0 flex-1 bg-transparent text-base text-neutral-900 outline-none placeholder:text-neutral-400 disabled:opacity-50 sm:text-sm dark:text-neutral-100"
                 />
-                {chatInput.length >= 400 && (
-                  <span
-                    className={`shrink-0 text-xs ${chatInput.length >= 480 ? 'text-red-500' : 'text-neutral-400'}`}
-                  >
-                    {chatInput.length}/500
-                  </span>
-                )}
+                <span
+                  className={`absolute -top-2 right-4 bg-white px-0.5 text-xs leading-none transition-[color,opacity] duration-300 dark:bg-neutral-900 ${chatInput.length >= 400 ? 'opacity-100' : 'pointer-events-none opacity-0'} ${chatInputFlashing ? 'animate-flash' : ''} ${chatInput.length >= 480 ? 'text-red-400' : 'text-neutral-400'}`}
+                >
+                  {chatInput.length}/500
+                </span>
                 <button
                   onClick={() => send()}
                   disabled={!chatInput.trim() || loading}
