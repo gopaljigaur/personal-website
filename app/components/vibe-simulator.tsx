@@ -304,6 +304,13 @@ export function VibeSimulator() {
           </div>
 
           <div className="border-t border-neutral-200 p-3 dark:border-neutral-800">
+            {input.length >= 400 && (
+              <div
+                className={`mb-1.5 text-right text-xs ${input.length >= 480 ? 'text-red-500' : 'text-neutral-400'}`}
+              >
+                {input.length}/500
+              </div>
+            )}
             <div className="flex min-w-0 gap-2">
               {hasInitialApp && (
                 <button
