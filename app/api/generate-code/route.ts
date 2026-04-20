@@ -97,11 +97,21 @@ Example format for app-building requests:
     )
 
     if (!response.ok) {
-      throw new Error('Failed to generate preview')
+      const errBody = await response.text().catch(() => '')
+      console.error('[generate-code] Gemini error:', response.status, errBody)
+      throw new Error('Gemini upstream error')
     }
 
     const data = await response.json()
-    const html = data.candidates[0].content.parts[0].text
+    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text
+    if (!rawText) {
+      console.error(
+        '[generate-code] Empty Gemini response:',
+        JSON.stringify(data),
+      )
+      throw new Error('Empty response from Gemini')
+    }
+    const html = rawText
       .replace(/```html\n?/g, '')
       .replace(/```\n?/g, '')
       .trim()
