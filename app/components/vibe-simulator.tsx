@@ -309,7 +309,7 @@ export function VibeSimulator() {
                 <button
                   onClick={handleReset}
                   title="Start new app"
-                  className="cursor-pointer rounded-lg border border-neutral-300 px-3 py-2 text-sm transition-all hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="shrink-0 cursor-pointer rounded-lg border border-neutral-300 px-3 py-2 text-sm transition-all hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   Reset
                 </button>
@@ -324,12 +324,12 @@ export function VibeSimulator() {
                     ? 'Describe changes...'
                     : 'Type what you want to build...'
                 }
-                className="flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-base focus:ring-2 focus:ring-neutral-900 focus:outline-none sm:text-sm dark:border-neutral-700 dark:bg-neutral-900 dark:focus:ring-neutral-100"
+                className="min-w-0 flex-1 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-base focus:ring-2 focus:ring-neutral-900 focus:outline-none sm:text-sm dark:border-neutral-700 dark:bg-neutral-900 dark:focus:ring-neutral-100"
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isTyping}
-                className="cursor-pointer rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-100 dark:text-black"
+                className="shrink-0 cursor-pointer rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-100 dark:text-black"
               >
                 Send
               </button>
