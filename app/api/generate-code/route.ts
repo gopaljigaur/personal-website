@@ -1,14 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { kv } from '@vercel/kv'
+
+const MAX_PROMPT_LENGTH = 500
+const RATE_LIMIT = 10 // requests per IP per hour
+
+async function checkRateLimit(ip: string): Promise<boolean> {
+  try {
+    const key = `rl:gc:${ip}`
+    const count = await kv.incr(key)
+    if (count === 1) await kv.expire(key, 3600)
+    return count <= RATE_LIMIT
+  } catch {
+    return true
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const ip =
+      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+      'anonymous'
+    if (!(await checkRateLimit(ip)))
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+
     const { prompt, theme } = await request.json()
 
     if (!prompt) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 })
     }
 
-    // Use provided theme or fallback to defaults
+    const trimmedPrompt = String(prompt).slice(0, MAX_PROMPT_LENGTH)
     const bgColor = theme?.bg || '#030608'
     const textColor = theme?.text || '#e1ecf3'
 
@@ -24,7 +45,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Call Google Gemini to generate HTML mockup or reject non-app requests
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
@@ -37,7 +57,7 @@ export async function POST(request: NextRequest) {
                 {
                   text: `You are an app mockup generator. First, determine if this is a request to BUILD/CREATE/MAKE an application or UI.
 
-Request: "${prompt}"
+Request: "${trimmedPrompt}"
 
 If this is NOT an app-building request (e.g., "what is taj mahal?", "how does sorting work?", "explain react"), respond with:
 <div class="p-6 text-center text-neutral-400"><div class="text-sm">This doesn't look like an app-building request. Try something like "build a todo app" or "create a dashboard".</div></div>
