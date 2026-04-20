@@ -104,7 +104,12 @@ Example format for app-building requests:
     }
 
     const data = await response.json()
-    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text
+    const rawText = data.candidates?.[0]?.content?.parts
+      ?.filter(
+        (p: { text?: string; thought?: boolean }) => p.text && !p.thought,
+      )
+      ?.map((p: { text: string }) => p.text)
+      ?.join('')
     if (!rawText) {
       console.error(
         '[generate-code] Empty Gemini response:',
