@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { ArrowIcon } from 'app/components/footer'
+import { LinkPreview } from 'app/components/link-preview'
 
 export function StatusCard() {
   return (
@@ -18,15 +18,10 @@ export function StatusCard() {
           Workplace
         </div>
         <div className="status-item__value text-neutral-950 dark:text-neutral-100">
-          <Link
-            href={'https://www.everest-systems.com/'}
-            className=""
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <LinkPreview href="https://www.everest-systems.com/">
             <span className="mr-2">Everest Systems</span>
             <ArrowIcon />
-          </Link>
+          </LinkPreview>
         </div>
       </div>
     </div>

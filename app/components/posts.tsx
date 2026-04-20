@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { TagPill } from 'app/components/tag-pill'
+import { PostPreviewLink } from 'app/components/post-preview-link'
 import { formatDate } from 'app/blog/utils.shared'
 import type { BlogPost } from 'app/blog/utils.shared'
 
@@ -58,20 +59,26 @@ export function BlogPostsWithFilter({
       )}
       <div>
         {sorted.map((post) => (
-          <Link
+          <PostPreviewLink
             key={post.slug}
-            className="mb-4 flex flex-col space-y-1"
             href={`/blog/${post.slug}`}
+            post={{
+              title: post.metadata.title,
+              publishedAt: post.metadata.publishedAt,
+              image: post.metadata.image,
+              tags: post.metadata.tags,
+            }}
+            className="mb-4 flex flex-col space-y-1"
           >
             <div className="flex w-full flex-col space-x-0 md:flex-row md:space-x-2">
-              <p className="w-35 shrink-0 text-neutral-600 tabular-nums dark:text-neutral-400">
+              <p className="w-40 shrink-0 whitespace-nowrap text-neutral-600 tabular-nums dark:text-neutral-400">
                 {formatDate(post.metadata.publishedAt, false)}
               </p>
               <p className="text-primary-inv tracking-tight">
                 {post.metadata.title}
               </p>
             </div>
-          </Link>
+          </PostPreviewLink>
         ))}
       </div>
     </div>

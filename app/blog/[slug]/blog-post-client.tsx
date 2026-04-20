@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useRef, useLayoutEffect } from 'react'
 import { useTina } from 'tinacms/dist/react'
 import { TinaMarkdown } from 'tinacms/dist/rich-text'
 import Image from 'next/image'
@@ -13,31 +13,27 @@ import { formatDate, slugify } from 'app/blog/utils.shared'
 import { Code, OpenGistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
+import { LinkPreview } from 'app/components/link-preview'
+import { PostPreviewLink } from 'app/components/post-preview-link'
 import type { BlogPost, Heading } from 'app/blog/utils.shared'
 
 const baseUrl = 'https://gopalji.me'
 
-function getTextContent(children: React.ReactNode): string {
-  if (typeof children === 'string') return children
-  if (typeof children === 'number') return String(children)
-  if (Array.isArray(children)) return children.map(getTextContent).join('')
-  if (React.isValidElement(children))
-    return getTextContent(
-      (children.props as { children?: React.ReactNode }).children,
-    )
-  return ''
-}
-
 function createHeading(level: number) {
   const Heading = ({ children }: { children: React.ReactNode }) => {
-    const text = getTextContent(children)
-    const slug = slugify(text)
-    return React.createElement(`h${level}`, { id: slug }, [
-      React.createElement('a', {
-        href: `#${slug}`,
-        key: `link-${slug}`,
-        className: 'anchor',
-      }),
+    const ref = useRef<HTMLHeadingElement>(null)
+
+    useLayoutEffect(() => {
+      const el = ref.current
+      if (!el) return
+      const slug = slugify(el.textContent ?? '')
+      el.id = slug
+      const anchor = el.querySelector('a.anchor')
+      if (anchor) anchor.setAttribute('href', `#${slug}`)
+    }, [])
+
+    return React.createElement(`h${level}`, { ref }, [
+      React.createElement('a', { key: 'anchor', className: 'anchor' }),
       children,
     ])
   }
@@ -64,19 +60,10 @@ function extractHeadingsFromBody(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const tinaComponents: Record<string, any> = {
+const baseTinaComponents: Record<string, any> = {
   ...Object.fromEntries(
     Array.from({ length: 6 }, (_, i) => [`h${i + 1}`, createHeading(i + 1)]),
   ),
-  a: ({ url, children }: { url: string; children: React.ReactNode }) => {
-    if (url?.startsWith('/')) return <Link href={url}>{children}</Link>
-    if (url?.startsWith('#')) return <a href={url}>{children}</a>
-    return (
-      <a href={url} target="_blank" rel="noopener noreferrer">
-        {children}
-      </a>
-    )
-  },
   img: ({ url, alt }: { url: string; alt?: string }) => (
     <Image
       src={url}
@@ -109,6 +96,7 @@ interface BlogPostClientProps {
   data: any
   related: BlogPost[]
   slug: string
+  allPosts: BlogPost[]
 }
 
 export default function BlogPostClient({
@@ -117,9 +105,50 @@ export default function BlogPostClient({
   data,
   related,
   slug,
+  allPosts,
 }: BlogPostClientProps) {
   const { data: tinaData } = useTina({ query, variables, data })
   const post = tinaData.blog
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tinaComponents: Record<string, any> = useMemo(
+    () => ({
+      ...baseTinaComponents,
+      a: ({ url, children }: { url: string; children: React.ReactNode }) => {
+        if (url?.startsWith('/blog/') && url.split('/').length === 3) {
+          const linkedPost = allPosts.find((p) => url === `/blog/${p.slug}`)
+          return (
+            <PostPreviewLink
+              href={url}
+              post={
+                linkedPost
+                  ? {
+                      title: linkedPost.metadata.title,
+                      publishedAt: linkedPost.metadata.publishedAt,
+                      image: linkedPost.metadata.image,
+                      tags: linkedPost.metadata.tags,
+                    }
+                  : { title: String(children), publishedAt: '' }
+              }
+            >
+              {children}
+            </PostPreviewLink>
+          )
+        }
+        if (url?.startsWith('/')) return <Link href={url}>{children}</Link>
+        if (url?.startsWith('#')) return <a href={url}>{children}</a>
+        if (url?.startsWith('http'))
+          return <LinkPreview href={url}>{children}</LinkPreview>
+        return (
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            {children}
+          </a>
+        )
+      },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }),
+    [allPosts],
+  )
   const headings = useMemo(
     () => extractHeadingsFromBody(post.body),
     [post.body],

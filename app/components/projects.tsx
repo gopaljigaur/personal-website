@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowIcon } from 'app/components/footer'
 import { TagPill } from 'app/components/tag-pill'
+import { LinkPreview } from 'app/components/link-preview'
 import type { Project } from 'app/projects/data'
 
 function tagHref(tag: string, activeTags: string[]) {
@@ -32,16 +33,14 @@ function ProjectCard({ project }: { project: Project }) {
       {project.links && project.links.length > 0 && (
         <div className="mt-4 flex gap-4 text-sm">
           {project.links.map(({ label, href }) => (
-            <a
+            <LinkPreview
               key={label}
               href={href}
-              target="_blank"
-              rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
             >
               <ArrowIcon />
               {label}
-            </a>
+            </LinkPreview>
           ))}
         </div>
       )}

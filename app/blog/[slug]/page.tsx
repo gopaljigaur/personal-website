@@ -73,6 +73,7 @@ export default async function Blog(props: { params: any }) {
           data={tinaData.data}
           related={related}
           slug={params.slug}
+          allPosts={allPosts}
         />
       )
     } catch {
