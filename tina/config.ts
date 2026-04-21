@@ -133,7 +133,7 @@ export default defineConfig({
                 ],
               },
               {
-                name: 'OpenGistCode',
+                name: 'GistCode',
                 label: 'GitHub Gist',
                 fields: [
                   {

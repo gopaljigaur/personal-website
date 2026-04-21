@@ -10,7 +10,7 @@ import Comments from 'app/components/comments'
 import { TableOfContents } from 'app/components/toc'
 import { RelatedPosts } from 'app/components/related-posts'
 import { formatDate, slugify } from 'app/blog/utils.shared'
-import { Code, OpenGistCode } from 'app/components/code'
+import { Code, GistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
 import { LinkPreview } from 'app/components/link-preview'
@@ -86,7 +86,7 @@ const baseTinaComponents: Record<string, any> = {
     type?: 'note' | 'warning' | 'tip'
     content?: string
   }) => <Callout type={type}>{content}</Callout>,
-  OpenGistCode: ({ url }: { url: string }) => <OpenGistCode url={url} />,
+  GistCode: ({ url }: { url: string }) => <GistCode url={url} />,
 }
 
 interface BlogPostClientProps {

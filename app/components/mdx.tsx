@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
-import { Code, OpenGistCode } from 'app/components/code'
+import { Code, GistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
 import { PostPreviewLink } from 'app/components/post-preview-link'
@@ -116,7 +116,7 @@ const components = {
   table: Table,
   VibeSimulator,
   Callout,
-  OpenGistCode,
+  GistCode,
 }
 
 export function CustomMDX(props) {

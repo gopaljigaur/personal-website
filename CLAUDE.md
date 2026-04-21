@@ -133,7 +133,7 @@ This issue only affects the TinaCMS dev path. The MDX/production path (`mdx.tsx`
 
 Used in blog posts (`app/blog/posts/*.mdx`) and registered in both `app/components/mdx.tsx` (static path) and `app/blog/[slug]/blog-post-client.tsx` (TinaCMS path):
 
-- `<OpenGistCode url="..." />` — fetches and renders a GitHub Gist with syntax highlighting
+- `<GistCode url="..." />` — fetches and renders a GitHub Gist with syntax highlighting
 - `<VibeSimulator />` — interactive AI app builder widget
 - `<Callout type="note|warning|tip" content="..." />` — styled callout. Use the `content` prop (not children) so it works in both the static MDX path and TinaCMS's template renderer.
 
