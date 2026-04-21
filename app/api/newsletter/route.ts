@@ -2,7 +2,6 @@ import { Resend } from 'resend'
 import { NextRequest, NextResponse } from 'next/server'
 import { kv } from '@vercel/kv'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const RATE_LIMIT = 5 // per IP per hour
 
 async function checkRateLimit(ip: string): Promise<boolean> {
@@ -17,6 +16,11 @@ async function checkRateLimit(ip: string): Promise<boolean> {
 }
 
 export async function POST(req: NextRequest) {
+  if (!process.env.RESEND_API_KEY)
+    return NextResponse.json({ error: 'Service unavailable' }, { status: 503 })
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+
   const ip =
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'anonymous'
   if (!(await checkRateLimit(ip)))
