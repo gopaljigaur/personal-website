@@ -9,14 +9,14 @@ import { jsx, jsxs } from 'react/jsx-runtime'
 import { GoCopy, GoCheck, GoArrowUpRight } from 'react-icons/go'
 import type { Root, RootContent } from 'hast'
 
-interface OpenGistCodeProps {
+interface GistCodeProps {
   url: string
 }
 
 interface GistFile {
   filename: string
   content: string
-  type: string
+  language: string
 }
 
 interface GistData {
@@ -79,15 +79,11 @@ export function Code({ children, ...props }) {
 }
 
 const fetchGistCode = async (url: string) => {
-  // Parse URL to get the hash fragment (e.g., #file-test-py)
   const urlParts = url.split('#')
   const baseUrl = urlParts[0]
-  const fileHash = urlParts[1] // e.g., "file-test-py"
+  const fileHash = urlParts[1]
 
-  // Fetch the JSON (base URL + .json)
-  const jsonUrl = `${baseUrl}.json`
-
-  const response = await fetch(jsonUrl)
+  const response = await fetch(`/api/gist?url=${encodeURIComponent(baseUrl)}`)
 
   if (!response.ok) {
     throw new Error(`Failed to fetch: ${response.status}`)
@@ -119,7 +115,7 @@ const fetchGistCode = async (url: string) => {
   }
 }
 
-export function OpenGistCode({ url }: OpenGistCodeProps) {
+export function GistCode({ url }: GistCodeProps) {
   const { data, error, isLoading } = useSWR(url, fetchGistCode, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
@@ -172,7 +168,9 @@ export function OpenGistCode({ url }: OpenGistCodeProps) {
           </div>
           {/* Code block */}
           <pre className="!m-0 !rounded-none">
-            <Code language={file.type.toLowerCase()}>{file.content}</Code>
+            <Code language={(file.language ?? 'text').toLowerCase()}>
+              {file.content}
+            </Code>
           </pre>
         </div>
       ))}

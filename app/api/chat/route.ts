@@ -9,10 +9,45 @@ const MAX_MESSAGES = 10 // keep last 10 messages (5 turns)
 const RATE_LIMIT = 20 // requests per IP per hour
 const CACHE_TTL = 86400 // 24 hours in seconds
 
-const GEMINI_URL = (streaming: boolean) =>
-  `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:${
+const GEMINI_MODELS = [
+  'gemini-3-flash-preview',
+  'gemini-2.5-flash',
+  'gemini-3.1-flash-lite-preview',
+]
+
+const geminiUrl = (model: string, streaming: boolean) =>
+  `https://generativelanguage.googleapis.com/v1beta/models/${model}:${
     streaming ? 'streamGenerateContent?alt=sse&' : 'generateContent?'
   }key=${process.env.GEMINI_API_KEY}`
+
+// Retry on quota/overload errors, fail fast on bad requests
+const RETRYABLE = new Set([429, 500, 503])
+
+async function geminiJson(body: unknown): Promise<Response> {
+  for (const model of GEMINI_MODELS) {
+    const res = await fetch(geminiUrl(model, false), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (res.ok) return res
+    if (!RETRYABLE.has(res.status)) return res
+  }
+  return new Response('All models unavailable', { status: 503 })
+}
+
+async function geminiStream(body: unknown): Promise<Response> {
+  for (const model of GEMINI_MODELS) {
+    const res = await fetch(geminiUrl(model, true), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (res.ok) return res
+    if (!RETRYABLE.has(res.status)) return res
+  }
+  return new Response('All models unavailable', { status: 503 })
+}
 
 const TOOLS = [
   {
@@ -188,14 +223,10 @@ async function handleChat(request: NextRequest) {
   }
 
   // Phase 1: non-streaming — detect tool call
-  const phase1Res = await fetch(GEMINI_URL(false), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-      contents: messages,
-      tools: TOOLS,
-    }),
+  const phase1Res = await geminiJson({
+    system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+    contents: messages,
+    tools: TOOLS,
   })
 
   if (!phase1Res.ok) return new Response('Upstream error', { status: 502 })
@@ -266,13 +297,9 @@ async function handleChat(request: NextRequest) {
   ]
 
   // Phase 2: stream to client, accumulate for cache
-  const phase2Res = await fetch(GEMINI_URL(true), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-      contents: contentsWithTool,
-    }),
+  const phase2Res = await geminiStream({
+    system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+    contents: contentsWithTool,
   })
 
   if (!phase2Res.ok) return new Response('Upstream error', { status: 502 })

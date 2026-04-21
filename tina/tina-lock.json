@@ -242,7 +242,7 @@
                 "namespace": ["blog", "body", "Callout"]
               },
               {
-                "name": "OpenGistCode",
+                "name": "GistCode",
                 "label": "GitHub Gist",
                 "fields": [
                   {
@@ -250,12 +250,12 @@
                     "name": "url",
                     "label": "Gist URL",
                     "required": true,
-                    "namespace": ["blog", "body", "OpenGistCode", "url"],
+                    "namespace": ["blog", "body", "GistCode", "url"],
                     "searchable": true,
                     "uid": false
                   }
                 ],
-                "namespace": ["blog", "body", "OpenGistCode"]
+                "namespace": ["blog", "body", "GistCode"]
               }
             ],
             "namespace": ["blog", "body"],
@@ -2223,7 +2223,7 @@
       },
       {
         "kind": "InputObjectTypeDefinition",
-        "name": { "kind": "Name", "value": "BlogBodyOpenGistCodeFilter" },
+        "name": { "kind": "Name", "value": "BlogBodyGistCodeFilter" },
         "fields": [
           {
             "kind": "InputValueDefinition",
@@ -2257,10 +2257,10 @@
           },
           {
             "kind": "InputValueDefinition",
-            "name": { "kind": "Name", "value": "OpenGistCode" },
+            "name": { "kind": "Name", "value": "GistCode" },
             "type": {
               "kind": "NamedType",
-              "name": { "kind": "Name", "value": "BlogBodyOpenGistCodeFilter" }
+              "name": { "kind": "Name", "value": "BlogBodyGistCodeFilter" }
             }
           }
         ]
