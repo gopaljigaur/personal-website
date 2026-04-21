@@ -19,8 +19,6 @@ function ThemeToggle() {
 
   useEffect(() => setMounted(true), [])
 
-  if (!mounted) return <div className="h-[30px] w-[3.25rem]" />
-
   const isDark = resolvedTheme === 'dark'
 
   return (
@@ -35,7 +33,8 @@ function ThemeToggle() {
           { icon: <LuMoon size={12} />, value: 'dark' },
         ] as const
       ).map(({ icon, value }) => {
-        const active = isDark ? value === 'dark' : value === 'light'
+        const active =
+          mounted && (isDark ? value === 'dark' : value === 'light')
         return (
           <span
             key={value}
