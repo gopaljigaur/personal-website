@@ -45,7 +45,6 @@ next-env.d.ts
 /content/embeddings.json
 
 *.lock
-pnpm-lock.yaml
 .env*.local
 
 .playwright-mcp
