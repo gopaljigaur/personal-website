@@ -17,12 +17,12 @@ export function Shortcut({ combo, className = '' }: Props) {
     setModifier(isMac ? '⌘' : 'Ctrl')
   }, [])
 
-  if (!modifier) return null
-
-  const keys = [modifier, ...(Array.isArray(combo) ? combo : [combo])]
+  const keys = [modifier ?? '⌘', ...(Array.isArray(combo) ? combo : [combo])]
 
   return (
-    <span className={`inline-flex items-center gap-0.5 ${className}`}>
+    <span
+      className={`inline-flex items-center gap-0.5 transition-opacity duration-150 ${modifier ? 'opacity-100' : 'opacity-0'} ${className}`}
+    >
       {keys.map((k) => (
         <kbd
           key={k}

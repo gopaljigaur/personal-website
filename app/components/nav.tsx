@@ -19,15 +19,14 @@ function ThemeToggle() {
 
   useEffect(() => setMounted(true), [])
 
-  if (!mounted) return <div className="h-[30px] w-[3.25rem]" />
-
-  const isDark = resolvedTheme === 'dark'
+  const isDark = mounted ? resolvedTheme === 'dark' : false
 
   return (
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       aria-label="Toggle dark mode"
       className="flex cursor-pointer items-center gap-0.5 rounded-md bg-neutral-100 px-1 py-1 transition-colors focus-visible:outline-none dark:bg-neutral-800"
+      suppressHydrationWarning
     >
       {(
         [
@@ -35,11 +34,13 @@ function ThemeToggle() {
           { icon: <LuMoon size={12} />, value: 'dark' },
         ] as const
       ).map(({ icon, value }) => {
-        const active = isDark ? value === 'dark' : value === 'light'
+        const active =
+          mounted && (isDark ? value === 'dark' : value === 'light')
         return (
           <span
             key={value}
-            className={`flex items-center justify-center rounded px-1.5 py-1 transition-colors ${
+            suppressHydrationWarning
+            className={`flex items-center justify-center rounded px-1.5 py-1 transition-colors duration-150 ${
               active
                 ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-700 dark:text-neutral-100'
                 : 'text-neutral-400 dark:text-neutral-300'
@@ -81,7 +82,7 @@ function SearchButton() {
         {MODES.map((m, i) => (
           <span
             key={m.label}
-            className={`absolute transition-opacity duration-300 ${i === modeIdx ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute transition-opacity duration-150 ${i === modeIdx ? 'opacity-100' : 'opacity-0'}`}
           >
             {m.icon === 'ai' ? (
               <LuSparkles size={12} />
@@ -95,7 +96,7 @@ function SearchButton() {
         {MODES.map((m, i) => (
           <span
             key={m.label}
-            className={`absolute inset-0 flex items-center transition-opacity duration-300 ${i === modeIdx ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-0 flex items-center transition-opacity duration-150 ${i === modeIdx ? 'opacity-100' : 'opacity-0'}`}
           >
             {m.label}
           </span>
