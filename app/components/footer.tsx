@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { profile } from 'app/lib/profile'
 
@@ -86,6 +87,15 @@ export default function Footer() {
               <ArrowIcon />
               <span className="ml-2">newsletter</span>
             </button>
+          </li>
+          <li>
+            <Link
+              href="/colophon"
+              className="flex items-center transition-all hover:text-neutral-800 focus-visible:text-neutral-800 focus-visible:outline-none dark:hover:text-neutral-100 dark:focus-visible:text-neutral-100"
+            >
+              <ArrowIcon />
+              <span className="ml-2">colophon</span>
+            </Link>
           </li>
         </ul>
       </div>

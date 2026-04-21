@@ -9,9 +9,21 @@ pnpm dev          # Start dev server (Next.js + TinaCMS visual editor)
 pnpm build        # Generate embeddings, then Next.js build
 pnpm start        # Run production server
 pnpm embed        # Pre-compute Gemini embeddings (requires GEMINI_API_KEY)
+pnpm test         # Run unit + integration tests (Vitest)
+pnpm test:watch   # Vitest in watch mode
+pnpm test:coverage # Coverage report
+pnpm test:e2e     # E2E tests (Playwright, requires dev server)
 ```
 
 Linting is enforced via Husky pre-commit hooks (Prettier + lint-staged). No separate lint command — Prettier runs automatically on commit.
+
+### Testing
+
+- **Unit tests**: `tests/unit/` — pure functions (`slugify`, `formatDate`, `extractHeadings`, `getRelatedPosts`, `decodeHtml`, `extractOg`, `dot`)
+- **Integration tests**: `tests/integration/` — API route handlers with mocked dependencies (`@vercel/kv`, `fetch`)
+- **E2E tests**: `tests/e2e/` — Playwright tests for blog TOC, tag filtering, link preview hover behavior
+- CI runs unit+integration on every PR via `.github/workflows/ci.yml`; E2E runs against a production build
+- Pure functions extracted to shared modules for testability: `decodeHtml`/`extractOg` → `app/lib/og-utils.ts`, `dot` exported from `app/lib/search.ts`
 
 ## Architecture
 
@@ -93,6 +105,7 @@ Hovering external links shows an OG preview card; hovering internal blog links s
 - `app/components/post-preview-link.tsx` — internal blog links; shows hero image, title, date, tags from props
 - `app/api/og-preview/route.ts` — scrapes OG metadata server-side; KV-cached 7 days (`og:{sha256_16}`); rate-limited 60/hr per IP (`rl:og:{ip}`); SSRF-blocked private IPs
 - Module-level `ogCache: Map` in `link-preview.tsx` shares fetched data across component instances on the same page
+- Outside `.prose` context, wrap `<LinkPreview>` in `<span className="prose">` so `.prose a` styles apply naturally — do NOT replicate the styles inline
 
 Cards are `pointer-events-none`, hidden on mobile (`hidden md:block`), positioned above the link (flips below when near top of viewport).
 
@@ -140,4 +153,5 @@ KV key namespaces: `rl:{ip}` chat rate limit, `rl:gc:{ip}` generate-code, `rl:og
 - View transitions enabled (experimental)
 - `/admin` redirects to `/admin/index.html` (TinaCMS admin panel)
 - `/cv` redirects to `/cv/ml`; `/cv/ml`, `/cv/research`, `/cv/ai`, `/cv/software`, `/cv/data` each redirect to their respective PDF
+- `/colophon` — static page listing the tech stack; linked from footer and command palette
 - CORS headers for Giscus comments CSS

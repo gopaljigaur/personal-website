@@ -46,6 +46,7 @@ const PAGES: Item[] = [
   { group: 'Pages', title: 'Blog', href: '/blog' },
   { group: 'Pages', title: 'Projects', href: '/projects' },
   { group: 'Pages', title: 'Misc', href: '/misc' },
+  { group: 'Pages', title: 'Colophon', href: '/colophon' },
 ]
 
 const GROUP_STYLE: Record<Group, string> = {

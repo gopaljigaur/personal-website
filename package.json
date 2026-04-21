@@ -5,7 +5,11 @@
     "build": "pnpm embed && next build",
     "start": "next start",
     "prepare": "[ -z \"$CI\" ] && husky || true",
-    "embed": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/generate-embeddings.ts"
+    "embed": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/generate-embeddings.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@giscus/react": "^3.1.0",
@@ -39,11 +43,13 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
+    "@playwright/test": "^1.59.1",
     "@tinacms/cli": "^2.2.2",
     "@types/hast": "^3.0.4",
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@vitest/coverage-v8": "^4.1.4",
     "eslint": "^9.38.0",
     "eslint-config-next": "^16.2.4",
     "eslint-config-prettier": "^10.1.8",
@@ -57,6 +63,8 @@
     "tailwindcss": "^4.2.2",
     "tinacms": "^3.7.2",
     "tsx": "^4.19.2",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "vite": "^8.0.9",
+    "vitest": "^4.1.4"
   }
 }
