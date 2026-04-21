@@ -47,11 +47,12 @@ pnpm test:e2e     # E2E tests (Playwright)
 
 ### Environment Variables
 
-| Variable                               | Required | Purpose                                      |
-| -------------------------------------- | -------- | -------------------------------------------- |
-| `GEMINI_API_KEY`                       | Yes      | Chat, search, embeddings                     |
-| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | No       | Rate limiting + response caching (Vercel KV) |
-| `RESEND_API_KEY`                       | No       | Contact form + newsletter emails             |
+| Variable                                                                        | Required | Purpose                                                                       |
+| ------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------- |
+| `GEMINI_API_KEY`                                                                | Yes      | Chat, search, embeddings                                                      |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `KV_URL`, `KV_REST_API_READ_ONLY_TOKEN` | No       | Rate limiting + response caching — set automatically by Vercel KV integration |
+| `RESEND_API_KEY`                                                                | No       | Contact form + newsletter emails                                              |
+| `CRON_SECRET`                                                                   | No       | Authenticates cron job endpoint + HMAC-signs unsubscribe tokens               |
 
 ### Deployment
 
