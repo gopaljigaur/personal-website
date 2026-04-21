@@ -1,4 +1,4 @@
-import { MainBanner } from 'app/components/banner'
+import { MainBanner } from 'app/components/main-banner'
 import { profile } from 'app/lib/profile'
 import { NewsletterSection } from 'app/components/newsletter-section'
 import HomeClient from './home-client'

@@ -1,7 +1,7 @@
 'use client'
 
 import { useTina } from 'tinacms/dist/react'
-import { MainBanner } from 'app/components/banner'
+import { MainBanner } from 'app/components/main-banner'
 import { NewsletterSection } from 'app/components/newsletter-section'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
