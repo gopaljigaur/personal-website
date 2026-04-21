@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { createHmac } from 'crypto'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 function verifyToken(email: string, token: string): boolean {
   const expected = createHmac('sha256', process.env.CRON_SECRET ?? '')
     .update(email)
@@ -12,6 +10,11 @@ function verifyToken(email: string, token: string): boolean {
 }
 
 export async function GET(req: NextRequest) {
+  if (!process.env.RESEND_API_KEY)
+    return new NextResponse('Service unavailable.', { status: 503 })
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+
   const { searchParams } = req.nextUrl
   const email = searchParams.get('e')
   const token = searchParams.get('t')
