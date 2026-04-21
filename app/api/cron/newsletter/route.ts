@@ -4,7 +4,6 @@ import { kv } from '@vercel/kv'
 import { createHmac } from 'crypto'
 import { getBlogPosts } from 'app/blog/utils'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const KV_KEY = 'nl:last_sent_slug'
 const SITE_URL = 'https://gopalji.me'
 
@@ -12,6 +11,11 @@ export const runtime = 'nodejs'
 export const maxDuration = 60
 
 export async function GET(req: NextRequest) {
+  if (!process.env.RESEND_API_KEY)
+    return NextResponse.json({ error: 'Service unavailable' }, { status: 503 })
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+
   const auth = req.headers.get('authorization')
   if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
