@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { kv } from '@vercel/kv'
 import { createHash } from 'crypto'
+import { extractOg } from 'app/lib/og-utils'
 
 const CACHE_TTL = 60 * 60 * 24 * 7 // 7 days
 const RATE_LIMIT = 60 // per IP per hour
@@ -18,55 +19,6 @@ async function checkRateLimit(ip: string): Promise<boolean> {
   } catch {
     return true
   }
-}
-
-function decodeHtml(str: string): string {
-  return str
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
-}
-
-function extractOg(html: string, baseUrl: string) {
-  const get = (pattern: RegExp) => {
-    const val = pattern.exec(html)?.[1]?.trim() ?? null
-    return val ? decodeHtml(val) : null
-  }
-
-  const title =
-    get(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i) ??
-    get(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i) ??
-    get(/<title[^>]*>([^<]+)<\/title>/i)
-
-  const description =
-    get(
-      /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i,
-    ) ??
-    get(
-      /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:description["']/i,
-    ) ??
-    get(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i) ??
-    get(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i)
-
-  let image =
-    get(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ??
-    get(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i)
-
-  // Resolve relative image URLs
-  if (image && !image.startsWith('http')) {
-    try {
-      image = new URL(image, baseUrl).href
-    } catch {
-      image = null
-    }
-  }
-
-  return { title, description, image }
 }
 
 export async function GET(request: NextRequest) {

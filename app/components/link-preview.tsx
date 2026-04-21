@@ -13,7 +13,6 @@ type OgData = {
 }
 
 const ogCache = new Map<string, OgData>()
-const inFlight = new Set<string>()
 
 export function LinkPreview({
   href,
@@ -61,8 +60,6 @@ export function LinkPreview({
         setData(ogCache.get(href)!)
         return
       }
-      if (inFlight.has(href)) return
-      inFlight.add(href)
       try {
         const res = await fetch(
           `/api/og-preview?url=${encodeURIComponent(href)}`,
@@ -72,10 +69,7 @@ export function LinkPreview({
           ogCache.set(href, d)
           setData(d)
         }
-      } catch {
-      } finally {
-        inFlight.delete(href)
-      }
+      } catch {}
     }, 1000)
     return () => clearTimeout(t)
   }, [visible, href])
@@ -133,12 +127,13 @@ export function LinkPreview({
         </div>
         <div className="p-3">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+            <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
               <Image
                 src={data?.favicon ?? faviconUrl}
                 alt=""
-                width={14}
-                height={14}
+                width={24}
+                height={24}
+                className="h-full w-full object-cover"
                 unoptimized
               />
             </div>
