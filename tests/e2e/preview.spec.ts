@@ -45,8 +45,9 @@ test.describe('Link preview', () => {
     await externalLink.hover()
     await page.waitForTimeout(1100)
 
-    // Move away
+    // Move away and wait for 150ms opacity transition to complete
     await page.mouse.move(0, 0)
+    await page.waitForTimeout(300)
     const card = page.locator('[class*="fixed"][class*="z-50"]').first()
     await expect(card).not.toBeVisible()
   })
