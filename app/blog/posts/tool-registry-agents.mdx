@@ -1,0 +1,71 @@
+---
+title: 'The Tool Registry Is the Heart of Your Agent — Treat It That Way'
+publishedAt: '2026-04-22'
+summary: 'Most AI agent frameworks treat the tool layer as a config file. That single mistake explains why agents work in demos and collapse at tool number eight in production.'
+tags:
+  - ai
+  - agents
+  - mcp
+  - llm
+  - tools
+---
+
+Somewhere around tool number eight, the agent starts hallucinating function names.
+
+Not the model. Not the orchestration. Your agent starts calling `create_entry_record` — a function that doesn't exist — because you added three more MCP servers last Tuesday, and the tool list grew past the point where the LLM can reliably distinguish between `add_sales_contact`, `log_interaction`, and `record_outreach`. The tool descriptions were written in ten minutes as docstrings. Nobody thought of them as a retrieval surface. Now an agent is calling phantom functions and your on-call engineer is blaming GPT.
+
+I've spent several months building [Cyclops](https://github.com/gopaljigaur/cyclops), a lightweight agent framework with a focus on explicit tool registry management, and the single most consistent lesson is this: **the tool registry is the most important architectural decision in an agent system, and almost every framework treats it as an afterthought.**
+
+## What frameworks actually ship
+
+LangChain wraps tools in a `Tool` object and injects their descriptions into a big prompt block. LangGraph gives you more control over state transitions but the tool exposure surface works the same way — serialize everything, send everything, hope the model figures out which one to call. The OpenAI Agents SDK (released March 11, 2025, as the production successor to Swarm) is genuinely cleaner than its predecessors, but still operates on the flat-list mental model: you define tools, the SDK includes them all in every call, forever.
+
+This worked when demos had three tools. Production agents have thirty.
+
+A [2025 paper analyzing MCP tool descriptions](https://arxiv.org/html/2602.14878v1) across the public ecosystem found that 97.1% of tool descriptions contain at least one quality issue, with more than half having unclear purpose statements. The tools themselves aren't broken. The descriptions — which are the only signal the LLM has when deciding which capability to invoke — are almost universally deficient. Frameworks hide this behind abstraction. You ship, it works in testing, and you never audit the thing the model is actually reading.
+
+## Three ways the tool layer breaks in production
+
+When you present a model with too many tools simultaneously, three distinct failure modes appear. I've hit all three.
+
+The first is incorrect tool selection: the model picks something adjacent but semantically close enough that nothing crashes. You have `get_user_profile` and `fetch_user_data` in the registry with subtly different scopes. The model picks based on token similarity. It returns data — just the wrong data. No exception raised. This one is invisible until a human notices the output is wrong.
+
+The second is parameter hallucination. The model calls the right tool with invented arguments. Your `search_documents` schema expects `date_start` and `date_end`; the model passes `{"time_range": "last_quarter"}` because that phrasing appeared in the task description. With strict Structured Outputs enforcement (available since `gpt-4o`), this becomes a schema validation error. Without it, the field gets silently ignored, or your tool crashes, or you get results filtered to nothing.
+
+The third is tool interference. When tools have overlapping semantic territory, the model chains them incorrectly or skips ones that should run. Watching Cyclops call a summarization tool mid-retrieval — because the retrieved document chunk mentioned "summary needed" — was clarifying. The model wasn't confused about the task. It was confused about which capabilities mapped to which parts of the task, because two tools had descriptions that overlapped in that corner case.
+
+Old `gpt-4` had less than 40% schema compliance when tool schemas weren't enforced. Modern models have improved enormously on parameter hallucination specifically. `gpt-4o` with Structured Outputs achieves 100% schema-valid outputs. But that only solves problem two. Incorrect selection and interference are semantic problems — constrained decoding can't fix them because the model is choosing correctly within the schema, just picking the wrong tool in the first place.
+
+## A registry is not a list
+
+Here's the shift: a tool registry isn't a list — it's a queryable, runtime-aware index of capabilities.
+
+In Cyclops, tools don't get injected wholesale into every agent prompt. The registry holds them. When the orchestrator needs to act, it queries the registry given the current task context, retrieves a scoped subset — typically five to eight tools — and that's what the LLM sees. Selection accuracy goes up. Token budget for descriptions shrinks. And tool descriptions become something you actively maintain, because they're the retrieval key, not just documentation nobody reads.
+
+This is the same insight that made dense retrieval work for RAG. You don't dump your knowledge base into the context window. You retrieve relevant chunks. Your tool registry is a knowledge base of capabilities. Treat it with the engineering rigor you'd give a vector index.
+
+MCP makes this pattern structurally cleaner. Tools live in servers, servers can be queried at runtime, and tool lists can be dynamically scoped. [MCP-Zero](https://arxiv.org/html/2506.01056v3), published in 2025, goes further: instead of pulling a full tool manifest at agent startup, the agent actively requests tools when it needs them. Most MCP client implementations I've seen still pull the full list at connection time and inject all of it. They're using MCP as a fancier config file. The protocol supports something much more useful — they just haven't built it yet.
+
+In Cyclops, each tool registration includes the function signature, a semantic description, usage examples, and an explicit anti-pattern section: descriptions of what the tool should _not_ be used for. That last part sounds like over-engineering until you've watched an agent reach for `summarize_text` when it should reason directly, because the description said nothing to rule that case out.
+
+## The description is the implementation
+
+This took me the longest to fully accept: **when building an agent, the tool description matters more than the tool implementation.**
+
+A buggy tool that the agent calls at the right time with the right intent is recoverable. You fix the bug, redeploy. A well-implemented tool with an ambiguous description causes the agent to overuse it, underuse it, or combine it incorrectly — and that failure mode is much harder to diagnose because nothing throws an exception. The system produces wrong answers confidently.
+
+Anthropic's [Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) research gets close to this point — the most successful agent implementations use simple, composable patterns — but doesn't push far enough on the tool layer specifically. "Simple" isn't about fewer lines of orchestration code. It's about unambiguous signal at every model decision point, and choosing which tool to call is the biggest decision an agent makes in a loop.
+
+LiteLLM's MCP gateway gets this partially right by accident. It enforces access control at the tool level — a team or API key only sees the tools it's authorized to use — which happens to solve tool overload for multi-tenant scenarios as a side effect of authorization scoping. The right answer to the wrong question.
+
+## What to actually do about this
+
+Write tool descriptions like API documentation for someone who's never seen your codebase. Then add a second paragraph explaining which adjacent tools this one is easily confused with, and why a developer should reach for this one instead of those. It feels tedious the first time. By tool fifteen, you will be grateful you did it.
+
+Instrument tool selection explicitly. Log which tools the agent considered — not just which one it called. Without visibility into the selection process, you're debugging failures blindly: you see the wrong tool was called but can't tell whether the model was uncertain between candidates or confidently wrong. These require completely different interventions.
+
+If you have more than ten tools registered, put a retrieval layer in front of the registry. This is not optional at scale — it's load-bearing architecture. The frameworks that survive the current consolidation will be the ones that build a first-class registry with retrieval semantics, not the ones with the most orchestration features.
+
+Most current frameworks have the architecture inverted. They put significant engineering into the orchestration layer — how agents hand off to each other, how state flows between steps, how retries and timeouts work — while treating tool management as boilerplate. The orchestration layer matters. But agents fail at the tool boundary more often than they fail at the orchestration boundary.
+
+The tool descriptions in your current agent: when did you last read them? Not the code — the strings the model actually reads. That's probably the right place to start.
