@@ -10,12 +10,10 @@ export default function ProjectsClient({
   query,
   variables,
   data,
-  activeTags,
 }: {
   query: string
   variables: Record<string, unknown>
   data: any
-  activeTags: string[]
 }) {
   const { data: tinaData } = useTina({ query, variables, data })
   const projects: Project[] = tinaData.projects.projects ?? []
@@ -24,11 +22,5 @@ export default function ProjectsClient({
     [projects],
   )
 
-  return (
-    <ProjectsWithFilter
-      projects={projects}
-      allTags={allTags}
-      activeTags={activeTags}
-    />
-  )
+  return <ProjectsWithFilter projects={projects} allTags={allTags} />
 }

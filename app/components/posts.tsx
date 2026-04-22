@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { TagPill } from 'app/components/tag-pill'
 import { PostPreviewLink } from 'app/components/post-preview-link'
 import { formatDate } from 'app/blog/utils.shared'
@@ -16,12 +19,19 @@ function tagHref(tag: string, activeTags: string[]) {
 export function BlogPostsWithFilter({
   posts,
   allTags,
-  activeTags,
 }: {
   posts: BlogPost[]
   allTags: string[]
-  activeTags: string[]
 }) {
+  const searchParams = useSearchParams()
+  const tagsParam = searchParams.get('tags') ?? ''
+  const activeTags = tagsParam
+    ? tagsParam
+        .split(',')
+        .map((t) => decodeURIComponent(t.trim()))
+        .filter(Boolean)
+    : []
+
   const filtered =
     activeTags.length > 0
       ? posts.filter((p) =>

@@ -1,5 +1,8 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { ArrowIcon } from 'app/components/footer'
 import { TagPill } from 'app/components/tag-pill'
 import { LinkPreview } from 'app/components/link-preview'
@@ -51,12 +54,19 @@ function ProjectCard({ project }: { project: Project }) {
 export function ProjectsWithFilter({
   projects,
   allTags,
-  activeTags,
 }: {
   projects: Project[]
   allTags: string[]
-  activeTags: string[]
 }) {
+  const searchParams = useSearchParams()
+  const tagsParam = searchParams.get('tags') ?? ''
+  const activeTags = tagsParam
+    ? tagsParam
+        .split(',')
+        .map((t) => decodeURIComponent(t.trim()))
+        .filter(Boolean)
+    : []
+
   const filtered =
     activeTags.length > 0
       ? projects.filter((p) => p.techStack?.some((t) => activeTags.includes(t)))
