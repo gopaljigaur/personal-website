@@ -1,7 +1,7 @@
 ---
 title: 'The Benchmark That Rewards Memorization Over Consistency'
 publishedAt: '2026-04-22'
-summary: "DINO-I scores favor fine-tuned models that memorized a subject's texture — but texture memory is not subject consistency, and that confusion is holding back the field."
+summary: "DINO-I scores favor fine-tuned models that memorized a subject's texture, but texture memory is not subject consistency, and that confusion is holding back the field."
 tags:
   - machine-learning
   - diffusion-models
@@ -10,9 +10,9 @@ tags:
   - research
 ---
 
-The number was good. Better than good — our [DINO-I](https://arxiv.org/abs/2104.14294) score for [StorySync](https://arxiv.org/abs/2508.03735) was competitive with methods that had done per-subject fine-tuning, meaning they had literally trained on the subject's images before evaluation. We had not. We were comparing a method that sees your character for the first time at inference against methods that spent minutes or hours pre-memorizing them. And the gap was smaller than it should have been.
+The number was good. Better than good: our [DINO-I](https://arxiv.org/abs/2104.14294) score for [StorySync](https://arxiv.org/abs/2508.03735) was competitive with methods that had done per-subject fine-tuning, meaning they had literally trained on the subject's images before evaluation. We had not. We were comparing a method that sees your character for the first time at inference against methods that spent minutes or hours pre-memorizing them. And the gap was smaller than it should have been.
 
-That bothered me — but not for the reason you would expect.
+That bothered me, but not for the reason you would expect.
 
 It bothered me because we should have lost by more. DINO-I measures feature-level cosine similarity between a [DINOv2](https://dinov2.metademolab.com/)-encoded reference and generated images. It rewards texture reproduction: deep wrinkles on a face, exact fur pattern on a dog, specific stitch pattern on a jacket. Fine-tuning methods win this metric because they have seen those textures before. They are not being *consistent*; they are being *reproductive*. The distinction matters enormously, and the field is collapsing it.
 
@@ -26,7 +26,7 @@ The workflow that fine-tuned methods require:
 2. Run [DreamBooth](https://dreambooth.github.io/) or train a [LoRA](https://arxiv.org/abs/2106.09685) for several minutes to several hours
 3. Generate
 
-That works. The DINO-I scores are strong. But now you want a second character. Another fine-tune. A third character interacting with the first two. You are now managing three separate model checkpoints and hoping they compose correctly — which they frequently do not, because fine-tuning shifts model weights in ways that interfere when you try to merge or interpolate multiple LoRAs at inference.
+That works. The DINO-I scores are strong. But now you want a second character. Another fine-tune. A third character interacting with the first two. You are now managing three separate model checkpoints and hoping they compose correctly, which they frequently do not, because fine-tuning shifts model weights in ways that interfere when you try to merge or interpolate multiple LoRAs at inference.
 
 [FreeFuse](https://arxiv.org/abs/2510.23515) and similar work on LoRA fusion at test time exist precisely because this composition problem is so painful. The fact that a whole sub-field is dedicated to stitching fine-tuned adapters back together is a sign that the paradigm has a seam being papered over.
 
@@ -36,9 +36,9 @@ But run the standard benchmarks and training-free methods look worse. This is wh
 
 ## The attention leakage problem
 
-Cross-image attention sharing — the mechanism underlying most training-free consistency methods including StorySync — works by letting image patches attend to corresponding patches in a reference image during the diffusion denoising process. The intuition is right: you are letting the model "see" the reference while it generates. In practice, the mechanism has a sharp failure mode.
+Cross-image attention sharing (the mechanism underlying most training-free consistency methods including StorySync) works by letting image patches attend to corresponding patches in a reference image during the diffusion denoising process. The intuition is right: you are letting the model "see" the reference while it generates. In practice, the mechanism has a sharp failure mode.
 
-[Storybooth](https://arxiv.org/abs/2504.05800) named it precisely: **self-attention leakage**. When you have two subjects — say, a dog and a duck — and apply naive cross-frame attention sharing, the dog's tokens start attending to duck tokens because the attention mechanism does not respect subject boundaries. The dog picks up duck features. Both characters become visual averages of each other.
+[Storybooth](https://arxiv.org/abs/2504.05800) named it precisely: **self-attention leakage**. When you have two subjects (say, a dog and a duck) and apply naive cross-frame attention sharing, the dog's tokens start attending to duck tokens because the attention mechanism does not respect subject boundaries. The dog picks up duck features. Both characters become visual averages of each other.
 
 This is not a fringe case. It is the dominant failure mode at scale:
 
@@ -50,18 +50,18 @@ Storybooth's bounded cross-frame attention addresses this by constraining which 
 
 <StatCallout
   stat="107%"
-  label="improvement in character consistency over standard Stable Diffusion — and 31% over other leading training-free methods — by constraining cross-frame attention to subject boundaries"
+  label="improvement in character consistency over standard Stable Diffusion, and 31% over other leading training-free methods, by constraining cross-frame attention to subject boundaries"
   source="Storybooth, arxiv.org/abs/2504.05800"
   sourceUrl="https://arxiv.org/abs/2504.05800"
 />
 
-Our approach in StorySync was different: masked cross-image attention that localizes interaction to subject regions via segmentation masks, combined with a Regional Feature Harmonization step that explicitly reconciles fine-grained details within constrained regions. The Base Layout Interpolation component handles the opposite problem — keeping generated images from collapsing into clones of the reference, preserving compositional diversity.
+Our approach in StorySync was different: masked cross-image attention that localizes interaction to subject regions via segmentation masks, combined with a Regional Feature Harmonization step that explicitly reconciles fine-grained details within constrained regions. The Base Layout Interpolation component handles the opposite problem: keeping generated images from collapsing into clones of the reference, preserving compositional diversity.
 
 The tradeoff is real. You are buying diversity and zero-shot flexibility at the cost of some texture precision. DINO-I punishes this. Human evaluators, in my experience, care less about exact texture reproduction and more about *recognizability*: does this character feel like the same character? Those are different questions.
 
 ## Why benchmarks reward the wrong thing
 
-[IP-Adapter](https://ip-adapter.github.io/) is instructive. It is a popular lightweight alternative to full fine-tuning — an adapter that lets you condition generation on a reference image without per-subject training. Fast, flexible, results that look consistent at a glance. But IP-Adapter-Plus fails at text alignment when you compose it with complex prompts. The subject stays consistent; the scene goes wrong.
+[IP-Adapter](https://ip-adapter.github.io/) is instructive. It is a popular lightweight alternative to full fine-tuning: an adapter that lets you condition generation on a reference image without per-subject training. Fast, flexible, results that look consistent at a glance. But IP-Adapter-Plus fails at text alignment when you compose it with complex prompts. The subject stays consistent; the scene goes wrong.
 
 This is the dual failure mode to what training-free methods suffer from. Both DINO-I (subject fidelity) and CLIP-T (text alignment) are coarse proxies:
 
@@ -72,19 +72,19 @@ The [DreamBlend paper](https://arxiv.org/abs/2411.19390) calls this the "Pareto 
 
 ## What FLUX changed and what it did not
 
-[FLUX.1](https://blackforestlabs.ai/flux-1/)'s architecture — a rectified flow transformer with bidirectional attention across the full token sequence — handles long-range spatial coherence better than U-Net-based models. When we ran StorySync on FLUX.1-schnell, the baseline consistency was already better before any of our modifications. The model's MM-DiT blocks naturally encourage global coherence in a way that SD1.5 or even SDXL simply do not.
+[FLUX.1](https://blackforestlabs.ai/flux-1/)'s architecture (a rectified flow transformer with bidirectional attention across the full token sequence) handles long-range spatial coherence better than U-Net-based models. When we ran StorySync on FLUX.1-schnell, the baseline consistency was already better before any of our modifications. The model's MM-DiT blocks naturally encourage global coherence in a way that SD1.5 or even SDXL simply do not.
 
 <Callout type="note" content="FLUX.1-schnell's bidirectional attention means cross-image attention sharing integrates more smoothly than on U-Net architectures, where you have to carefully select which encoder layers to intervene in. The floor is higher, but the ceiling problem remains." />
 
 But FLUX did not solve subject consistency. It raised the floor. Attention leakage still appears. The texture-vs-recognizability tradeoff still exists. Five distinct characters still need careful attention masking. A better architecture is not a substitute for a principled consistency mechanism.
 
-[FreeCus](https://arxiv.org/abs/2507.15249) (ICCV 2025) showed this clearly — built specifically for Diffusion Transformers, exploiting what they call DiT's "dynamic shifting" for fine-grained feature extraction, and still needed explicit attention sharing mechanisms to achieve consistency.
+[FreeCus](https://arxiv.org/abs/2507.15249) (ICCV 2025) showed this clearly. Built specifically for Diffusion Transformers, exploiting DiT's "dynamic shifting" for fine-grained feature extraction, it still needed explicit attention sharing mechanisms to achieve consistency.
 
 ## The question the field should be asking
 
 Every subject consistency paper benchmarks against DreamBooth, IP-Adapter, and sometimes a few other fine-tuned baselines. Training-free methods usually lose on DINO-I by a few points. The authors note this limitation, say "training-free methods trade fidelity for flexibility," and move on.
 
-The benchmark setup — one subject, clean reference images, controlled evaluation — is not the use case anyone cares about in practice. The real scenario is:
+The benchmark setup (one subject, clean reference images, controlled evaluation) is not the use case anyone cares about in practice. The real scenario is:
 
 - Five characters in a visual story
 - Diverse poses and environments across scenes
@@ -93,4 +93,4 @@ The benchmark setup — one subject, clean reference images, controlled evaluati
 
 No existing benchmark evaluates that scenario well. DINO-I does not capture multi-subject interaction quality. CLIP-T does not capture scene-level coherence across a sequence. Human evaluations are expensive and rarely standardized across papers.
 
-Until the benchmarks catch up to the actual use case, the "training-free methods keep losing" narrative will persist — even as those methods solve harder problems. That is the more honest framing for where the research frontier actually is.
+Until the benchmarks catch up to the actual use case, the "training-free methods keep losing" narrative will persist, even as those methods solve harder problems. That is the more honest framing for where the research frontier actually is.
