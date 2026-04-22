@@ -9,97 +9,113 @@ tags:
   - evaluation
 ---
 
-Three weeks after deploying a retrieval pipeline upgrade, our eval scores were up. Faithfulness: 0.84 → 0.91. Answer relevancy: 0.79 → 0.87. We shipped confidently.
+Three weeks after deploying a retrieval pipeline upgrade, our eval scores were up. Faithfulness: 0.84 to 0.91. Answer relevancy: 0.79 to 0.87. We shipped confidently.
 
 User satisfaction dropped.
 
 It took another two weeks to understand what happened. The new pipeline produced longer, more verbose answers. The LLM-as-a-judge we were using — `gpt-4o` evaluating `gpt-4o` outputs — has a documented preference for verbosity. It was rewarding length, not accuracy. Our "improvement" was the model learning to pad responses in exactly the way its own evaluator liked.
 
-This is the trap. Not that evals are useless — they're essential. But a lot of teams have replaced no evals with the *wrong* evals and declared the problem solved.
+This is the trap. Not that evals are useless — they are essential. But a lot of teams have replaced no evals with the *wrong* evals and declared the problem solved.
 
 ## The bias stack nobody warns you about
 
-LLM-as-a-judge has at least four well-documented failure modes that compound each other:
+LLM-as-a-judge has at least four well-documented failure modes that compound each other.
 
-| Bias | What it does |
-|------|-------------|
-| **Verbosity bias** | Judges consistently rate longer outputs higher, independent of correctness |
-| **Position bias** | The judge favors whichever response appears first in pairwise comparison |
-| **Self-preference** | Models recognize and prefer outputs similar to their own training distribution ([NeurIPS 2024](https://arxiv.org/abs/2404.13076)) |
-| **Anchoring** | A rubric with fixed example scores skews the entire distribution toward those anchors |
+### Verbosity bias
 
-Run all four simultaneously, with the judge model and the generation model from the same provider family, and they compound. You get an eval suite that is highly sensitive to changes that make responses more GPT-like, and blind to changes that make them factually more accurate.
+Judges consistently rate longer outputs higher, independent of correctness. This is the most common one. Add more sentences, get a better score — regardless of whether those sentences say anything useful.
 
-A research collaborator would call these confounds and control for them in the experimental design. In production, they quietly inflate your score while you demo the improvement to stakeholders.
+### Position bias
+
+The judge favors whichever response appears first in pairwise comparison. Run the same two responses in reversed order and you often get reversed scores. This makes A/B testing with LLM judges structurally unreliable.
+
+### Self-preference bias
+
+Models recognize and prefer outputs statistically similar to their own training distribution. This was confirmed in a [NeurIPS 2024 paper](https://arxiv.org/abs/2404.13076). When your judge model and your generation model come from the same provider family, you are not evaluating quality — you are measuring stylistic similarity to the judge's own outputs.
+
+### Reference score anchoring
+
+A rubric with fixed example scores systematically skews the entire distribution toward those anchors. If your rubric shows a "good" example scored 4/5, the judge will cluster scores around 4.
+
+Run all four simultaneously, with judge and generator from the same provider family, and you get an eval suite that is highly sensitive to changes that make responses more GPT-like, and blind to changes that make them factually more accurate. A research collaborator would call these confounds and control for them. In production, they quietly inflate your score while you demo the improvement to stakeholders.
 
 ## Different signal types fail differently
 
-The shortest path to trustworthy evals isn't a better LLM judge. It's layering evaluation types so their failure modes don't overlap.
+The shortest path to trustworthy evals is not a better LLM judge. It is layering evaluation types so their failure modes do not overlap.
 
 **Start with deterministic checks.** These feel almost insultingly simple — does the response contain a citation? Is the JSON parseable? Does the answer fall within expected length bounds? They catch a surprising share of regressions with zero bias. If your pipeline produces structured output, write schema validation before you write any judge prompts at all.
 
 **Add reference-based metrics where you have ground truth.** Not [ROUGE](https://aclanthology.org/W04-1013/) or BLEU — those were designed for machine translation and punish legitimate paraphrasing. Exact-match on key facts and named entities, drawn from a golden QA set, will catch factual regressions that no judge model reliably surfaces.
 
-**Use LLM-as-judge only for genuinely subjective dimensions:** tone, safety, coherence. When you do, use a cross-provider judge. If you're generating with [Gemini 2.5 Flash](https://deepmind.google/models/gemini/flash/), judge with [Claude 3.5 Sonnet](https://www.anthropic.com/claude/sonnet) or a Mistral-family model. Cross-provider judging doesn't eliminate bias but it breaks the self-preference loop that makes homogenous evaluation dangerous.
+**Use LLM-as-judge only for genuinely subjective dimensions:** tone, safety, coherence. When you do, use a cross-provider judge. If you are generating with [Gemini 2.5 Flash](https://deepmind.google/models/gemini/flash/), judge with [Claude 3.5 Sonnet](https://www.anthropic.com/claude/sonnet) or a Mistral-family model. Cross-provider judging does not eliminate bias but it breaks the self-preference loop that makes homogenous evaluation dangerous.
 
-**Keep a human eval set** — not a large one. Fifty examples, scored monthly by someone who actually uses the product. This is your calibration signal. If automated metrics move up but human scores don't, your evals have drifted from reality.
+**Keep a human eval set.** Not a large one — fifty examples, scored monthly by someone who actually uses the product. This is your calibration signal. If automated metrics move up but human scores do not, your evals have drifted from reality.
 
-A layered eval run looks something like this:
+A layered eval setup looks something like this:
 
 ```python
 results = evaluator.run(
     samples=test_set,
     checks=[
-        SchemaValidator(),           # deterministic, zero bias
-        ExactMatchOnFacts(golden_qa), # reference-based
-        CrossProviderJudge(           # subjective only
+        SchemaValidator(),              # deterministic, zero bias
+        ExactMatchOnFacts(golden_qa),   # reference-based
+        CrossProviderJudge(             # subjective dimensions only
             generator="gemini-2.5-flash",
             judge="claude-3-5-sonnet",
             dimensions=["coherence", "safety"],
         ),
-    ]
+    ],
 )
 ```
 
+Tools like [Braintrust](https://www.braintrust.dev/), [Langfuse](https://langfuse.com/), and [Weave](https://weave-docs.wandb.ai/) make it easier to track this properly. The eval infrastructure is largely solved. The eval *strategy* usually is not.
+
 ## The number that refocused my priorities
 
-[Datadog's April 2026 State of AI Engineering report](https://www.datadoghq.com/state-of-ai-engineering/) has a figure I keep returning to: **60% of LLM production failures are caused by capacity limits — rate limits and quota exhaustion.** Not hallucinations. Not eval regressions. Rate limits.
+<StatCallout
+  stat="60%"
+  label="of LLM production failures are caused by rate limits and quota exhaustion — not hallucinations, not eval regressions"
+  source="Datadog State of AI Engineering, April 2026"
+/>
 
-Most teams I've talked to spend the bulk of their evaluation engineering on output quality — faithfulness, relevance, groundedness. Meanwhile their system is silently dropping 5% of requests, retrying with exponential backoff, and occasionally cascading into a full agent workflow failure where every subsequent tool call operates on corrupted state.
+Most teams spend the bulk of their evaluation engineering on output quality: faithfulness, relevance, groundedness. Meanwhile their system is silently dropping 5% of requests, retrying with exponential backoff, and occasionally cascading into a full agent workflow failure where every subsequent tool call operates on corrupted state.
 
-Request success rate. P95 latency under load. Cost per successful query (not per token — per successful query, accounting for retries and fallbacks). Agent step completion rate across multi-turn traces. These are unglamorous metrics. They don't appear in eval framework demos. But an agent that silently fails 20% of its tool calls and continues as if it succeeded produces outputs that look coherent and are completely wrong.
+Request success rate. P95 latency under load. Cost per successful query — not per token, per *successful query*, accounting for retries and fallbacks. Agent step completion rate across multi-turn traces. These are unglamorous metrics. They do not appear in eval framework demos.
 
-<Callout type="warning" content="Your faithfulness score will not catch silent tool call failures. If your agent operates in a multi-step loop, instrument step completion rate separately from output quality. These are different signals requiring different interventions." />
+<Callout type="warning" content="An agent that silently fails 20% of its tool calls and continues as if it succeeded produces outputs that look coherent and are completely wrong. Your faithfulness score will not catch that. Instrument step completion rate separately from output quality." />
 
 ## The instinct that research gave me (and I had to unlearn)
 
-When I was working on diffusion models, variance in outputs was interesting. You'd study it, visualize the distribution, understand what drove it. High variance wasn't a bug — it was a property of the generative process worth analyzing.
+When I was working on diffusion models, variance in outputs was interesting. You would study it, visualize the distribution, understand what drove it. High variance was a property of the generative process worth analyzing.
 
 The first time I deployed an LLM eval harness with that mindset, the eval harness itself turned out to be non-deterministic. Same prompt, same model, different judge call, different score. I was tracking metrics to two decimal places that moved 0.05 between runs for reasons entirely unrelated to the system under test.
 
 The fix is straightforward once you see it:
 
+<LabeledCode type="bad" label="Non-deterministic judge: scores shift between identical runs" />
+
 ```python
-judge_response = client.chat.completions.create(
-    model="claude-3-5-sonnet-20241022",
-    temperature=0,          # critical: deterministic judge
-    seed=42,                # where supported
-    messages=[judge_prompt],
+response = judge.complete(prompt=judge_prompt)
+```
+
+<LabeledCode type="good" label="Deterministic judge: same input always produces same score" />
+
+```python
+response = judge.complete(
+    prompt=judge_prompt,
+    temperature=0,   # critical
+    seed=42,         # where supported
 )
 ```
 
-Set `temperature=0` on all judge calls, seed your test set, always evaluate on a fixed sample. The reflex to treat variance as signal rather than noise takes time to unlearn. Research gives you the luxury of enough samples that variance averages out. Production eval runs typically give you 200 examples and a nightly cron job.
+The reflex to treat variance as signal rather than noise takes time to unlearn. Research gives you the luxury of enough samples that variance averages out. Production eval runs typically give you 200 examples and a nightly cron job.
 
-Cost is the other thing research doesn't prepare you for. Running `gpt-4o` as a judge across 1,000 examples creates a perverse incentive to run evals rarely or on tiny samples, making them statistically meaningless for catching regressions. [Gemini 2.5 Flash](https://ai.google.dev/pricing) at $0.30/1M output tokens with sub-second latency changes this calculus significantly. Small, fast judge models have closed most of the quality gap against their larger counterparts, and they make continuous eval pipelines — the kind that run on every PR, not just on release day — actually feasible.
-
-Tools like [Braintrust](https://www.braintrust.dev/), [Langfuse](https://langfuse.com/), and [Weave](https://weave-docs.wandb.ai/) make it much easier to track this properly. The eval infrastructure is solved; the eval *strategy* usually isn't.
+Cost is the other thing research does not prepare you for. Running `gpt-4o` as a judge across 1,000 examples creates a perverse incentive to run evals rarely or on tiny samples, making them statistically meaningless. [Gemini 2.5 Flash](https://ai.google.dev/pricing) at $0.30/1M output tokens changes this calculus. Small, fast judge models have closed most of the quality gap, and they make continuous eval pipelines — the kind that run on every PR, not just on release day — actually feasible.
 
 ## What "good" looks like
 
-The teams that get this right treat their eval suite like production code. Version controlled, with its own tests — yes, tests for your tests, which sounds absurd until you catch a bug in a judge prompt that's been silently scoring everything wrong for a sprint. A changelog. Ownership.
+The teams that get this right treat their eval suite like production code. Version controlled. Own tests — yes, tests for your tests, which sounds absurd until you catch a bug in a judge prompt that has been silently scoring everything wrong for a sprint. A changelog. Ownership.
 
-And they audit their eval-to-production correlation quarterly. Do the examples where automated scores are high correspond to good user outcomes? If the answer is "we don't know," you don't have an eval suite. You have a false sense of control.
+They also audit their eval-to-production correlation quarterly. Do the examples where automated scores are high correspond to good user outcomes? If the answer is "we do not know," you do not have an eval suite. You have a false sense of control.
 
-> The question worth sitting with: if your eval scores went up 10% this week, what would it actually take to convince you that was real?
-
-If your honest answer is "I'd check the dashboard and trust it," you should be worried. Because somewhere, a verbosity-biased `gpt-4o` judge is nodding along while your users quietly stop using the feature.
+> If your eval scores went up 10% this week, what would it actually take to convince you that was real? If your honest answer is "I would check the dashboard and trust it" — somewhere, a verbosity-biased `gpt-4o` judge is nodding along while your users quietly stop using the feature.
