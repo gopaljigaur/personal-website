@@ -4,14 +4,17 @@ export function TagPill({
   tag,
   active,
   href,
+  onClick,
 }: {
   tag: string
   active: boolean
   href: string
+  onClick?: (e: React.MouseEvent) => void
 }) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs whitespace-nowrap transition-colors ${
         active
           ? 'btn-primary-inv'
