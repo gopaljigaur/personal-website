@@ -5,31 +5,35 @@ import React from 'react'
 import { Code, GistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
+import { StatCallout } from 'app/components/stat-callout'
+import { LabeledCode } from 'app/components/labeled-code'
 import { PostPreviewLink } from 'app/components/post-preview-link'
 import { LinkPreview } from 'app/components/link-preview'
 import { slugify } from 'app/blog/utils.shared'
 import { getBlogPosts } from 'app/blog/utils'
 
-function Table({ data }) {
-  const headers = data.headers.map((header, index) => (
-    <th key={index}>{header}</th>
-  ))
-  const rows = data.rows.map((row, index) => (
-    <tr key={index}>
-      {row.map((cell, cellIndex) => (
-        <td key={cellIndex}>{cell}</td>
-      ))}
-    </tr>
-  ))
-
-  return (
-    <table>
-      <thead>
-        <tr>{headers}</tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </table>
-  )
+function Table({ data, children }) {
+  if (data) {
+    const headers = data.headers.map((header, index) => (
+      <th key={index}>{header}</th>
+    ))
+    const rows = data.rows.map((row, index) => (
+      <tr key={index}>
+        {row.map((cell, cellIndex) => (
+          <td key={cellIndex}>{cell}</td>
+        ))}
+      </tr>
+    ))
+    return (
+      <table>
+        <thead>
+          <tr>{headers}</tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    )
+  }
+  return <table>{children}</table>
 }
 
 function CustomLink(props) {
@@ -117,6 +121,8 @@ const components = {
   VibeSimulator,
   Callout,
   GistCode,
+  StatCallout,
+  LabeledCode,
 }
 
 export function CustomMDX(props) {
