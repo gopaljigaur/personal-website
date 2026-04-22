@@ -1,5 +1,5 @@
 ---
-title: 'The Tool Registry Is the Heart of Your Agent — Treat It That Way'
+title: 'The Tool Registry Is the Heart of Your Agent: Treat It That Way'
 publishedAt: '2026-04-22'
 summary: 'Most AI agent frameworks treat the tool layer as a config file. That single mistake explains why agents work in demos and collapse at tool number eight in production.'
 tags:
@@ -55,7 +55,7 @@ Old `gpt-4` had less than 40% schema compliance when schemas were not enforced. 
 
 In Cyclops, tools do not get injected wholesale into every agent prompt. The registry holds them. When the orchestrator needs to act, it queries the registry given the current task context, retrieves a scoped subset of five to eight tools, and that is what the LLM sees. Selection accuracy goes up. Token budget for descriptions shrinks. Tool descriptions become something you actively maintain because they are the retrieval key, not documentation nobody reads.
 
-This is the same insight that made dense retrieval work for RAG. You do not dump your knowledge base into the context window. You retrieve relevant chunks. Your tool registry is a knowledge base of capabilities — treat it with the engineering rigor you would give a vector index.
+This is the same insight that made dense retrieval work for RAG. You do not dump your knowledge base into the context window. You retrieve relevant chunks. Your tool registry is a knowledge base of capabilities. Treat it with the engineering rigor you would give a vector index.
 
 [MCP](https://modelcontextprotocol.io/) makes this pattern structurally cleaner. Tools live in servers, servers can be queried at runtime, and tool lists can be dynamically scoped. [MCP-Zero](https://arxiv.org/html/2506.01056v3) (2025) goes further: instead of pulling a full manifest at agent startup, the agent actively requests tools when it needs them. Most MCP client implementations still pull the full list at connection time and inject all of it. They are using MCP as a fancier config file.
 
@@ -82,7 +82,7 @@ That `anti_patterns` field sounds like over-engineering until you have watched a
 
 **When building an agent, the tool description matters more than the tool implementation.**
 
-A buggy tool called at the right time with the right intent is recoverable — fix the bug, redeploy. A well-implemented tool with an ambiguous description causes the agent to overuse it, underuse it, or chain it incorrectly. That failure mode is much harder to diagnose because nothing throws an exception. The system produces wrong answers confidently.
+A buggy tool called at the right time with the right intent is recoverable. Fix the bug, redeploy. A well-implemented tool with an ambiguous description causes the agent to overuse it, underuse it, or chain it incorrectly. That failure mode is much harder to diagnose because nothing throws an exception. The system produces wrong answers confidently.
 
 Here is what the difference looks like in practice:
 
@@ -107,7 +107,7 @@ Do NOT use for searching users by name or email — use search_users() instead.
 """
 ```
 
-[Anthropic's Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) research gets close to this point — the most successful implementations use simple, composable patterns — but does not push far enough on the tool layer. "Simple" is not fewer lines of orchestration code. It is unambiguous signal at every model decision point, and choosing which tool to call is the biggest decision an agent makes in a loop.
+[Anthropic's Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) research gets close to this point (the most successful implementations use simple, composable patterns), but does not push far enough on the tool layer. "Simple" is not fewer lines of orchestration code. It is unambiguous signal at every model decision point, and choosing which tool to call is the biggest decision an agent makes in a loop.
 
 <Callout type="note" content="LiteLLM's MCP gateway enforces access control at the tool level: a team or API key only sees the tools it is authorized to use. This happens to solve tool overload for multi-tenant scenarios as a side effect of authorization scoping. Worth knowing about." />
 
