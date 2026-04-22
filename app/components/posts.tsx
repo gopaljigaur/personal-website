@@ -1,19 +1,15 @@
 'use client'
 
-import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import { TagPill } from 'app/components/tag-pill'
 import { PostPreviewLink } from 'app/components/post-preview-link'
 import { formatDate } from 'app/blog/utils.shared'
 import type { BlogPost } from 'app/blog/utils.shared'
 
-function tagHref(tag: string, activeTags: string[]) {
-  const next = activeTags.includes(tag)
-    ? activeTags.filter((t) => t !== tag)
-    : [...activeTags, tag]
-  return next.length === 0
-    ? '/blog'
-    : `/blog?tags=${next.map(encodeURIComponent).join(',')}`
+function tagUrl(tags: string[]) {
+  return tags.length
+    ? `/blog?tags=${tags.map(encodeURIComponent).join(',')}`
+    : '/blog'
 }
 
 export function BlogPostsWithFilter({
@@ -23,14 +19,35 @@ export function BlogPostsWithFilter({
   posts: BlogPost[]
   allTags: string[]
 }) {
-  const searchParams = useSearchParams()
-  const tagsParam = searchParams.get('tags') ?? ''
-  const activeTags = tagsParam
-    ? tagsParam
-        .split(',')
-        .map((t) => decodeURIComponent(t.trim()))
-        .filter(Boolean)
-    : []
+  const [activeTags, setActiveTags] = useState<string[]>([])
+
+  useEffect(() => {
+    const tagsParam =
+      new URLSearchParams(window.location.search).get('tags') ?? ''
+    if (tagsParam) {
+      setActiveTags(
+        tagsParam
+          .split(',')
+          .map((t) => decodeURIComponent(t.trim()))
+          .filter(Boolean),
+      )
+    }
+  }, [])
+
+  const toggleTag = (e: React.MouseEvent, tag: string) => {
+    e.preventDefault()
+    const next = activeTags.includes(tag)
+      ? activeTags.filter((t) => t !== tag)
+      : [...activeTags, tag]
+    setActiveTags(next)
+    window.history.replaceState({}, '', tagUrl(next))
+  }
+
+  const clearAll = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setActiveTags([])
+    window.history.replaceState({}, '', '/blog')
+  }
 
   const filtered =
     activeTags.length > 0
@@ -49,21 +66,27 @@ export function BlogPostsWithFilter({
     <div className="min-w-0">
       {allTags.length > 0 && (
         <div className="mb-6 flex flex-wrap gap-2">
-          {allTags.map((tag) => (
-            <TagPill
-              key={tag}
-              tag={tag}
-              active={activeTags.includes(tag)}
-              href={tagHref(tag, activeTags)}
-            />
-          ))}
+          {allTags.map((tag) => {
+            const next = activeTags.includes(tag)
+              ? activeTags.filter((t) => t !== tag)
+              : [...activeTags, tag]
+            return (
+              <TagPill
+                key={tag}
+                tag={tag}
+                active={activeTags.includes(tag)}
+                href={tagUrl(next)}
+                onClick={(e) => toggleTag(e, tag)}
+              />
+            )
+          })}
           {activeTags.length > 0 && (
-            <Link
-              href="/blog"
+            <button
+              onClick={clearAll}
               className="shrink-0 rounded-full px-2.5 py-0.5 text-xs whitespace-nowrap text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
             >
               clear all
-            </Link>
+            </button>
           )}
         </div>
       )}

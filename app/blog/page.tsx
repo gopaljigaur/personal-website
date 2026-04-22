@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { BlogPostsWithFilter } from 'app/components/posts'
 import { getBlogPosts } from 'app/blog/utils'
 
@@ -24,9 +23,5 @@ export default function Page() {
     ...new Set(posts.flatMap((p) => p.metadata.tags ?? [])),
   ].sort((a, b) => (tagFrequency[b] ?? 0) - (tagFrequency[a] ?? 0))
 
-  return (
-    <Suspense>
-      <BlogPostsWithFilter posts={posts} allTags={allTags} />
-    </Suspense>
-  )
+  return <BlogPostsWithFilter posts={posts} allTags={allTags} />
 }

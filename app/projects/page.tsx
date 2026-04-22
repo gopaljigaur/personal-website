@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { ProjectsWithFilter } from 'app/components/projects'
 import { projects } from 'app/projects/data'
 import ProjectsClient from './projects-client'
@@ -17,13 +16,11 @@ export default async function Page() {
         relativePath: 'projects.json',
       })
       return (
-        <Suspense>
-          <ProjectsClient
-            query={tinaData.query}
-            variables={tinaData.variables}
-            data={tinaData.data}
-          />
-        </Suspense>
+        <ProjectsClient
+          query={tinaData.query}
+          variables={tinaData.variables}
+          data={tinaData.data}
+        />
       )
     } catch {
       // TinaCMS server not running — fall through to static rendering
@@ -34,9 +31,5 @@ export default async function Page() {
     ...new Set(projects.flatMap((p) => p.techStack ?? [])),
   ].sort()
 
-  return (
-    <Suspense>
-      <ProjectsWithFilter projects={projects} allTags={allTags} />
-    </Suspense>
-  )
+  return <ProjectsWithFilter projects={projects} allTags={allTags} />
 }
