@@ -1,0 +1,69 @@
+---
+title: 'The Benchmark That Rewards Memorization Over Consistency'
+publishedAt: '2026-04-22'
+summary: 'DINO-I scores favor fine-tuned models that have memorized a subject's texture — but texture memory is not subject consistency, and that confusion is holding back the field.'
+tags:
+  - machine-learning
+  - diffusion-models
+  - text-to-image
+  - generative-ai
+  - research
+---
+
+The number was good. Better than good, actually — our DINO-I score for StorySync was competitive with methods that had done per-subject fine-tuning, which meant they had literally trained on the subject's images before evaluation. We hadn't. We were comparing a method that sees your character for the first time at inference against methods that spent minutes (or hours) pre-memorizing them. And the gap was smaller than it should have been.
+
+That bothered me, but not for the reason you'd expect.
+
+It bothered me because we should have lost by more. Because what DINO-I actually measures — feature-level cosine similarity between a DINOv2-encoded reference and generated images — rewards texture reproduction. Deep wrinkles on a face. Exact fur pattern on a dog. Specific stitch pattern on a jacket. Fine-tuning methods win this metric because they've seen those textures before. They're not being consistent; they're being reproductive. The distinction matters enormously, and the field is collapsing it.
+
+## What "consistent" actually means when you're building a story
+
+When I was working on [StorySync](https://arxiv.org/abs/2508.03735), the motivating use case was visual storytelling: generate a sequence of scenes with the same character — same person, same dog, same robot — across different contexts, poses, lighting conditions, and backgrounds. A children's book. A comic strip. A product shoot with ten different environments.
+
+The workflow that fine-tuned methods support looks like this: collect 15–30 images of your subject, run DreamBooth or train a LoRA for several minutes to several hours, then generate. That works. The DINO-I scores are strong. But now you want a second character. Another fine-tune. A third character interacting with the first two. You're now managing three separate model checkpoints and hoping they compose correctly — which they frequently don't, because fine-tuning shifts the model's weights in ways that interfere when you try to merge or interpolate multiple LoRAs at inference.
+
+[FreeFuse](https://arxiv.org/abs/2510.23515) and similar work on LoRA fusion at test time exist precisely because this composition problem is so painful. The fact that we need a whole sub-field dedicated to stitching fine-tuned adapters back together is a sign that the paradigm has a seam we're papering over.
+
+Training-free methods don't have this problem. They're plug-and-play by construction — StorySync works on SDXL, Kandinsky 3, and FLUX.1-schnell without touching any weights. You give it reference images at inference time and it handles the rest via masked cross-image attention sharing and Regional Feature Harmonization. The model's internal representations do the work; nothing gets baked in.
+
+But if you run the standard benchmarks, training-free methods look worse. And this is where I think the field is misleading itself.
+
+## The attention leakage problem nobody talks about clearly
+
+Cross-image attention sharing — the mechanism underlying most training-free consistency methods, including StorySync — works by letting image patches attend to corresponding patches in a reference image during the diffusion denoising process. The intuition is right: you're letting the model "see" the reference while it generates. In practice, the mechanism has a sharp failure mode.
+
+[Storybooth](https://arxiv.org/abs/2504.05800) named it precisely: self-attention leakage. When you have two subjects — say, a dog and a duck — and you apply naive cross-frame attention sharing, the dog's tokens start attending to duck tokens because the attention mechanism doesn't respect subject boundaries. The dog picks up duck features. The result looks consistent in a disturbing way: both characters become averages of each other.
+
+This isn't a fringe failure case. It's the dominant failure mode at scale, and it scales badly — two subjects is manageable, five subjects is a mess. Storybooth's bounded cross-frame attention addresses it by constraining which tokens can attend to which, and they report a 107% improvement in character consistency over standard Stable Diffusion and 31% over other leading approaches. But "leading approaches" here means previous training-free methods, not fine-tuned ones. Against DreamBooth with five subjects and proper LoRA merging, the comparison is murkier.
+
+Our approach in StorySync was different: rather than bounding attention globally, we use masked cross-image attention that localizes interaction to subject regions via segmentation masks, combined with a Regional Feature Harmonization step that explicitly reconciles fine-grained details — the texture layer that DINO-I cares about — within the constrained regions. The Base Layout Interpolation component then handles the opposite problem: keeping generated images from collapsing into clones of the reference, preserving compositional diversity.
+
+The tradeoff is real. You're buying diversity and zero-shot flexibility at the cost of some texture precision. DINO-I punishes this. Human evaluators, in my experience, care less about exact texture reproduction and more about *recognizability* — does this character feel like the same character? Those are different questions.
+
+## Why benchmarks reward the wrong thing
+
+[IP-Adapter](https://ip-adapter.github.io/) is instructive here. It's a popular lightweight alternative to full fine-tuning — an adapter trained on a large dataset that lets you condition generation on a reference image. IP-Adapter is fast, doesn't require per-subject training, and produces results that look consistent at a glance. But the research community found that IP-Adapter-Plus fails at text alignment when you try to compose it with complex prompts. The subject stays consistent; the scene goes wrong.
+
+This is the dual failure mode to what training-free methods suffer from. Both DINO-I (subject fidelity) and CLIP-T (text alignment) are coarse proxies. A method can score well on DINO-I by memorizing surface texture while quietly losing semantic coherence in complex multi-subject scenes. A method can score well on CLIP-T by ignoring subject details and just following the prompt faithfully. Getting both high is a legitimate challenge — but the benchmarks don't capture what users actually want: a character who *feels* like themselves in a scene that *looks* like the prompt described.
+
+The [DreamBlend paper](https://arxiv.org/abs/2411.19390) calls this the "Pareto front" between subject fidelity and text fidelity. The framing is honest. What frustrates me is that the community mostly reports numbers as if one axis dominates, picks the method that wins its preferred metric, and moves on. The systems that actually work in production have to navigate this tradeoff explicitly, and the benchmarks give almost no guidance for how.
+
+## What FLUX changed and what it didn't
+
+FLUX.1's architecture — a rectified flow transformer with bidirectional attention across the full token sequence — handles long-range spatial coherence better than U-Net-based models. When we ran StorySync on FLUX.1-schnell, the baseline consistency was already better before any of our modifications. The model's MM-DiT blocks naturally encourage global coherence in a way that SD1.5 or even SDXL simply don't.
+
+<Callout type="note" content="FLUX.1-schnell's bidirectional attention means that cross-image attention sharing integrates more smoothly than on U-Net architectures, where you have to carefully pick which encoder layers to intervene in." />
+
+But FLUX didn't solve subject consistency. It raised the floor. The attention leakage problem still appears. The texture-vs-recognizability tradeoff still exists. You still can't do training-free multi-subject generation with five distinct characters without careful attention masking. The architecture is better, but the problem is not solved by the architecture alone.
+
+[FreeCus](https://arxiv.org/abs/2507.15249) (ICCV 2025) showed this clearly — they built their training-free approach specifically for Diffusion Transformers, exploiting what they call DiT's "dynamic shifting" for fine-grained feature extraction, and still needed explicit attention sharing mechanisms to achieve consistency. A better architecture is not a substitute for a principled consistency mechanism.
+
+## The question the field should be asking
+
+Every subject consistency paper benchmarks against DreamBooth, IP-Adapter, and sometimes a few other fine-tuned baselines. The training-free methods usually lose on DINO-I by a few points. The authors note this limitation, say "training-free methods trade fidelity for flexibility," and move on.
+
+I think we're asking the wrong question. The benchmark setup — one subject, clean reference images, controlled evaluation — is not the use case anyone cares about in practice. The real scenario is: five characters in a visual story, diverse poses and environments, reference images that might be other generated images (so already slightly inconsistent), and a hard constraint that you cannot spend two hours on per-subject fine-tuning before generation.
+
+No existing benchmark evaluates that scenario well. DINO-I doesn't capture multi-subject interaction quality. CLIP-T doesn't capture scene-level coherence across a sequence. Human evaluations are expensive and rarely standardized across papers.
+
+Until the benchmarks catch up to the actual use case, the "training-free methods keep losing" narrative will persist — even as those methods solve harder problems. That seems like the more honest framing for where the research frontier actually is.
