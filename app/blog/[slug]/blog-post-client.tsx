@@ -13,6 +13,8 @@ import { formatDate, slugify } from 'app/blog/utils.shared'
 import { Code, GistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
+import { StatCallout } from 'app/components/stat-callout'
+import { LabeledCode } from 'app/components/labeled-code'
 import { LinkPreview } from 'app/components/link-preview'
 import { PostPreviewLink } from 'app/components/post-preview-link'
 import type { BlogPost, Heading } from 'app/blog/utils.shared'
@@ -87,6 +89,31 @@ const baseTinaComponents: Record<string, any> = {
     content?: string
   }) => <Callout type={type}>{content}</Callout>,
   GistCode: ({ url }: { url: string }) => <GistCode url={url} />,
+  StatCallout: ({
+    stat,
+    label,
+    source,
+    sourceUrl,
+  }: {
+    stat: string
+    label: string
+    source?: string
+    sourceUrl?: string
+  }) => (
+    <StatCallout
+      stat={stat}
+      label={label}
+      source={source}
+      sourceUrl={sourceUrl}
+    />
+  ),
+  LabeledCode: ({
+    type,
+    label,
+  }: {
+    type?: 'good' | 'bad' | 'note'
+    label: string
+  }) => <LabeledCode type={type} label={label} />,
 }
 
 interface BlogPostClientProps {
