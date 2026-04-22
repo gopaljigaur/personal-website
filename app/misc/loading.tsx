@@ -15,7 +15,7 @@ export default function Loading() {
             <div
               className={`bg-subtle-inv h-[0.875rem] animate-pulse rounded ${row.titleW}`}
             />
-            <div className="mx-2 h-[0.875rem] w-3 animate-pulse rounded bg-neutral-200 dark:bg-neutral-700" />
+            <span className="mx-2" />
             <div
               className={`bg-subtle-inv h-[0.875rem] animate-pulse rounded ${row.urlW}`}
             />
