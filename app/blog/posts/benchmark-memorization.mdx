@@ -59,6 +59,8 @@ Our approach in StorySync was different: masked cross-image attention that local
 
 The tradeoff is real. You are buying diversity and zero-shot flexibility at the cost of some texture precision. DINO-I punishes this. Human evaluators, in my experience, care less about exact texture reproduction and more about *recognizability*: does this character feel like the same character? Those are different questions.
 
+<ConsistencyTradeoffExplorer />
+
 ## Why benchmarks reward the wrong thing
 
 [IP-Adapter](https://ip-adapter.github.io/) is instructive. It is a popular lightweight alternative to full fine-tuning: an adapter that lets you condition generation on a reference image without per-subject training. Fast, flexible, results that look consistent at a glance. But IP-Adapter-Plus fails at text alignment when you compose it with complex prompts. The subject stays consistent; the scene goes wrong.
@@ -92,5 +94,7 @@ The benchmark setup (one subject, clean reference images, controlled evaluation)
 - A hard constraint that you cannot spend two hours on per-subject fine-tuning before generation
 
 No existing benchmark evaluates that scenario well. DINO-I does not capture multi-subject interaction quality. CLIP-T does not capture scene-level coherence across a sequence. Human evaluations are expensive and rarely standardized across papers.
+
+<BenchmarkBlindspots />
 
 Until the benchmarks catch up to the actual use case, the "training-free methods keep losing" narrative will persist, even as those methods solve harder problems. That is the more honest framing for where the research frontier actually is.
