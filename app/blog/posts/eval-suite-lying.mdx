@@ -39,6 +39,8 @@ A rubric with fixed example scores systematically skews the entire distribution 
 
 Run all four simultaneously, with judge and generator from the same provider family, and you get an eval suite that is highly sensitive to changes that make responses more GPT-like, and blind to changes that make them factually more accurate. A research collaborator would call these confounds and control for them. In production, they quietly inflate your score while you demo the improvement to stakeholders.
 
+<VerbosityBiasDemo />
+
 ## Different signal types fail differently
 
 The shortest path to trustworthy evals is not a better LLM judge. It is layering evaluation types so their failure modes do not overlap.
@@ -67,6 +69,8 @@ results = evaluator.run(
     ],
 )
 ```
+
+<EvalCoverageMatrix />
 
 Tools like [Braintrust](https://www.braintrust.dev/), [Langfuse](https://langfuse.com/), and [Weave](https://weave-docs.wandb.ai/) make it easier to track this properly. The eval infrastructure is largely solved. The eval *strategy* usually is not.
 
