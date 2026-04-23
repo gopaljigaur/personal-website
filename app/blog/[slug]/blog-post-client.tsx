@@ -15,6 +15,12 @@ import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
 import { StatCallout } from 'app/components/stat-callout'
 import { LabeledCode } from 'app/components/labeled-code'
+import { ToolDescriptionGrader } from 'app/components/tool-description-grader'
+import { ToolScaleSimulator } from 'app/components/tool-scale-simulator'
+import { VerbosityBiasDemo } from 'app/components/verbosity-bias-demo'
+import { EvalCoverageMatrix } from 'app/components/eval-coverage-matrix'
+import { ConsistencyTradeoffExplorer } from 'app/components/consistency-tradeoff-explorer'
+import { BenchmarkBlindspots } from 'app/components/benchmark-blindspots'
 import { LinkPreview } from 'app/components/link-preview'
 import { PostPreviewLink } from 'app/components/post-preview-link'
 import type { BlogPost, Heading } from 'app/blog/utils.shared'
@@ -114,6 +120,12 @@ const baseTinaComponents: Record<string, any> = {
     type?: 'good' | 'bad' | 'note'
     label: string
   }) => <LabeledCode type={type} label={label} />,
+  ToolDescriptionGrader: () => <ToolDescriptionGrader />,
+  ToolScaleSimulator: () => <ToolScaleSimulator />,
+  VerbosityBiasDemo: () => <VerbosityBiasDemo />,
+  EvalCoverageMatrix: () => <EvalCoverageMatrix />,
+  ConsistencyTradeoffExplorer: () => <ConsistencyTradeoffExplorer />,
+  BenchmarkBlindspots: () => <BenchmarkBlindspots />,
 }
 
 interface BlogPostClientProps {
