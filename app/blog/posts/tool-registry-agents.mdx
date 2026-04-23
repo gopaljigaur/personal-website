@@ -29,6 +29,8 @@ This worked when demos had three tools. Production agents have thirty.
   sourceUrl="https://arxiv.org/html/2602.14878v1"
 />
 
+<ToolScaleSimulator />
+
 The tools themselves are not broken. The descriptions are. They are the only signal the LLM has when deciding which capability to invoke, and they are almost universally deficient. Frameworks hide this behind abstraction. You ship, it works in testing, and you never audit the thing the model is actually reading.
 
 ## Three ways the tool layer breaks
@@ -139,3 +141,5 @@ The frameworks that survive the current consolidation will be the ones that buil
 Agents fail at the tool boundary more often than they fail at the orchestration boundary.
 
 The tool descriptions in your current agent: when did you last read them? Not the code. The strings the model actually reads. That is probably the right place to start.
+
+<ToolDescriptionGrader />
