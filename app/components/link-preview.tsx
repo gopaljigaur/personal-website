@@ -87,13 +87,13 @@ export function LinkPreview({
         target="_blank"
         rel="noopener noreferrer"
         className={className}
-        onMouseEnter={(e) => {
+        onMouseEnter={() => {
           setHovered(true)
-          onMouseEnter(e)
+          onMouseEnter()
         }}
-        onMouseLeave={(e) => {
+        onMouseLeave={() => {
           setHovered(false)
-          onMouseLeave(e)
+          onMouseLeave()
         }}
       >
         {children}
