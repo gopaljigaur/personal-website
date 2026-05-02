@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "tinacms dev -c \"next dev\"",
+    "dev": "[ -d node_modules ] || pnpm install && tinacms dev -c \"next dev\"",
     "build": "pnpm embed && next build",
     "start": "next start",
     "prepare": "[ -z \"$CI\" ] && husky || true",

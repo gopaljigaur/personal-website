@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { usePreviewCard, PreviewCardPortal } from './use-preview-card'
 
@@ -25,10 +25,12 @@ export function LinkPreview({
 }) {
   const { ref, pos, visible, mounted, onMouseEnter, onMouseLeave } =
     usePreviewCard(288)
+  const [hovered, setHovered] = useState(false)
   const [data, setData] = useState<OgData | null>(
     () => ogCache.get(href) ?? null,
   )
-  const [imageVisible, setImageVisible] = useState(false)
+  const [showImage, setShowImage] = useState(false)
+  const imageTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const domain = (() => {
     try {
@@ -39,42 +41,43 @@ export function LinkPreview({
   })()
   const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
 
-  // Reset image fade when card hides
+  // Fetch OG data immediately on hover so it's ready when card opens
   useEffect(() => {
-    if (!visible) setImageVisible(false)
-  }, [visible])
-
-  // Fade image in after expand
-  useEffect(() => {
-    if (data?.image) {
-      const t = setTimeout(() => setImageVisible(true), 200)
-      return () => clearTimeout(t)
+    if (!hovered) return
+    if (ogCache.has(href)) {
+      setData(ogCache.get(href)!)
+      return
     }
-  }, [data])
-
-  // Fetch OG data 1s after card shows
-  useEffect(() => {
-    if (!visible) return
-    const t = setTimeout(async () => {
-      if (ogCache.has(href)) {
-        setData(ogCache.get(href)!)
-        return
-      }
-      try {
-        const res = await fetch(
-          `/api/og-preview?url=${encodeURIComponent(href)}`,
-        )
-        if (res.ok) {
-          const d: OgData = await res.json()
+    let cancelled = false
+    fetch(`/api/og-preview?url=${encodeURIComponent(href)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((d: OgData | null) => {
+        if (!cancelled && d) {
           ogCache.set(href, d)
           setData(d)
         }
-      } catch {}
-    }, 1000)
-    return () => clearTimeout(t)
-  }, [visible, href])
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [hovered, href])
 
-  const hasContent = !!(data?.image || data?.title || data?.description)
+  // Show image section 2s after hover start
+  useEffect(() => {
+    if (hovered) {
+      imageTimer.current = setTimeout(() => setShowImage(true), 2000)
+    } else {
+      if (imageTimer.current) clearTimeout(imageTimer.current)
+      setShowImage(false)
+    }
+    return () => {
+      if (imageTimer.current) clearTimeout(imageTimer.current)
+    }
+  }, [hovered])
+
+  const hasText = !!(data?.title || data?.description)
+  const hasImage = !!(showImage && data?.image)
 
   return (
     <>
@@ -84,8 +87,14 @@ export function LinkPreview({
         target="_blank"
         rel="noopener noreferrer"
         className={className}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
+        onMouseEnter={(e) => {
+          setHovered(true)
+          onMouseEnter(e)
+        }}
+        onMouseLeave={(e) => {
+          setHovered(false)
+          onMouseLeave(e)
+        }}
       >
         {children}
       </a>
@@ -96,13 +105,11 @@ export function LinkPreview({
         width={288}
       >
         <div
-          className="overflow-hidden transition-[max-height] duration-200 ease-out"
-          style={{ maxHeight: hasContent ? '400px' : '0px' }}
+          className="overflow-hidden transition-[max-height] duration-300 ease-out"
+          style={{ maxHeight: hasImage ? '400px' : '0px' }}
         >
           {data?.image && (
-            <div
-              className={`relative h-36 w-full overflow-hidden rounded-t-xl transition-opacity duration-300 ${imageVisible ? 'opacity-100' : 'opacity-0'}`}
-            >
+            <div className="relative h-36 w-full overflow-hidden rounded-t-xl">
               <Image
                 src={data.image}
                 alt={data.title ?? ''}
