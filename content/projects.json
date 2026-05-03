@@ -1,6 +1,14 @@
 {
   "projects": [
     {
+      "title": "accli",
+      "summary": "CLI for Apple Calendar on macOS. Create, list, and delete events and calendars from the terminal.",
+      "techStack": ["javascript", "cli", "macos"],
+      "links": [
+        { "label": "GitHub", "href": "https://github.com/gopaljigaur/accli" }
+      ]
+    },
+    {
       "title": "Cyclops",
       "summary": "Lightweight AI agent framework with MCP toolkit support, LiteLLM integration, and an extensible tool registry with memory management.",
       "techStack": ["python", "ai agents", "llm"],
