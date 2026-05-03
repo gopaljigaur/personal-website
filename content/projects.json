@@ -9,11 +9,24 @@
       ]
     },
     {
+      "title": "Cyclops Code",
+      "summary": "Terminal coding agent built on Cyclops. Reads and edits files, runs shell commands, searches codebases, and fetches web content. Works with any model LiteLLM supports.",
+      "techStack": ["python", "ai agents", "cli", "llm"],
+      "links": [
+        {
+          "label": "GitHub",
+          "href": "https://github.com/gopaljigaur/cyclops-code"
+        },
+        { "label": "Docs", "href": "https://code.gopalji.me" }
+      ]
+    },
+    {
       "title": "Cyclops",
       "summary": "Lightweight AI agent framework with MCP toolkit support, LiteLLM integration, and an extensible tool registry with memory management.",
       "techStack": ["python", "ai agents", "llm"],
       "links": [
-        { "label": "GitHub", "href": "https://github.com/gopaljigaur/cyclops" }
+        { "label": "GitHub", "href": "https://github.com/gopaljigaur/cyclops" },
+        { "label": "Docs", "href": "https://cyclops.gopalji.me" }
       ]
     },
     {
