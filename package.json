@@ -20,7 +20,7 @@
     "dompurify": "^3.4.0",
     "gray-matter": "^4.0.3",
     "hast-util-to-jsx-runtime": "^2.3.6",
-    "next": "^16.2.4",
+    "next": "16.3.0-preview.6",
     "next-mdx-remote": "^6.0.0",
     "next-themes": "^0.4.6",
     "react": "19.2.5",
@@ -34,12 +34,6 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,json,css,md}": "prettier --write"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@vercel/speed-insights",
-      "sharp"
-    ]
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
