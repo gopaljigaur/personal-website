@@ -1,3 +1,7 @@
-onlyBuiltDependencies:
-  - "@vercel/speed-insights"
-  - sharp
+allowBuilds:
+  better-sqlite3: false
+  core-js: false
+  esbuild: false
+  protobufjs: false
+  sharp: true
+  unrs-resolver: false
