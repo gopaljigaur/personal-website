@@ -1,5 +1,6 @@
 {
   "private": true,
+  "packageManager": "pnpm@10.18.0",
   "scripts": {
     "dev": "[ -d node_modules ] || pnpm install && tinacms dev -c \"next dev\"",
     "build": "pnpm embed && next build",
