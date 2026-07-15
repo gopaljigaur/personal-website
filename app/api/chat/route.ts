@@ -20,8 +20,8 @@ const geminiUrl = (model: string, streaming: boolean) =>
     streaming ? 'streamGenerateContent?alt=sse&' : 'generateContent?'
   }key=${process.env.GEMINI_API_KEY}`
 
-// Retry on quota/overload errors, fail fast on bad requests
-const RETRYABLE = new Set([429, 500, 503])
+// Retry on quota/overload errors and bad/unavailable model names, fail fast on bad requests
+const RETRYABLE = new Set([404, 429, 500, 503])
 
 async function geminiJson(body: unknown): Promise<Response> {
   for (const model of GEMINI_MODELS) {
