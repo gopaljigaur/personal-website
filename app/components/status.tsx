@@ -18,8 +18,8 @@ export function StatusCard() {
           Workplace
         </div>
         <div className="status-item__value text-neutral-950 dark:text-neutral-100">
-          <LinkPreview href="https://www.everest-systems.com/">
-            <span className="mr-2">Everest Systems</span>
+          <LinkPreview href="https://lensing.ai/">
+            <span className="mr-2">Lensing</span>
             <ArrowIcon />
           </LinkPreview>
         </div>
