@@ -5,31 +5,41 @@ import React from 'react'
 import { Code, GistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
+import { StatCallout } from 'app/components/stat-callout'
+import { LabeledCode } from 'app/components/labeled-code'
+import { ToolDescriptionGrader } from 'app/components/tool-description-grader'
+import { ToolScaleSimulator } from 'app/components/tool-scale-simulator'
+import { VerbosityBiasDemo } from 'app/components/verbosity-bias-demo'
+import { EvalCoverageMatrix } from 'app/components/eval-coverage-matrix'
+import { ConsistencyTradeoffExplorer } from 'app/components/consistency-tradeoff-explorer'
+import { BenchmarkBlindspots } from 'app/components/benchmark-blindspots'
 import { PostPreviewLink } from 'app/components/post-preview-link'
 import { LinkPreview } from 'app/components/link-preview'
 import { slugify } from 'app/blog/utils.shared'
 import { getBlogPosts } from 'app/blog/utils'
 
-function Table({ data }) {
-  const headers = data.headers.map((header, index) => (
-    <th key={index}>{header}</th>
-  ))
-  const rows = data.rows.map((row, index) => (
-    <tr key={index}>
-      {row.map((cell, cellIndex) => (
-        <td key={cellIndex}>{cell}</td>
-      ))}
-    </tr>
-  ))
-
-  return (
-    <table>
-      <thead>
-        <tr>{headers}</tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </table>
-  )
+function Table({ data, children }) {
+  if (data) {
+    const headers = data.headers.map((header, index) => (
+      <th key={index}>{header}</th>
+    ))
+    const rows = data.rows.map((row, index) => (
+      <tr key={index}>
+        {row.map((cell, cellIndex) => (
+          <td key={cellIndex}>{cell}</td>
+        ))}
+      </tr>
+    ))
+    return (
+      <table>
+        <thead>
+          <tr>{headers}</tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    )
+  }
+  return <table>{children}</table>
 }
 
 function CustomLink(props) {
@@ -117,6 +127,14 @@ const components = {
   VibeSimulator,
   Callout,
   GistCode,
+  StatCallout,
+  LabeledCode,
+  ToolDescriptionGrader,
+  ToolScaleSimulator,
+  VerbosityBiasDemo,
+  EvalCoverageMatrix,
+  ConsistencyTradeoffExplorer,
+  BenchmarkBlindspots,
 }
 
 export function CustomMDX(props) {
