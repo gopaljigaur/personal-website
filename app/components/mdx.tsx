@@ -5,6 +5,8 @@ import React from 'react'
 import { Code, GistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
+import { PaperCard } from 'app/components/paper-card'
+import { AttentionShareDemo } from 'app/components/attention-share-demo'
 import { PostPreviewLink } from 'app/components/post-preview-link'
 import { LinkPreview } from 'app/components/link-preview'
 import { slugify } from 'app/blog/utils.shared'
@@ -117,6 +119,8 @@ const components = {
   VibeSimulator,
   Callout,
   GistCode,
+  PaperCard,
+  AttentionShareDemo,
 }
 
 export function CustomMDX(props) {
