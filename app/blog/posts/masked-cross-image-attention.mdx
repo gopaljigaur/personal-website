@@ -1,0 +1,51 @@
+---
+title: 'Keep the Same Character Across Images Without Retraining the Model'
+publishedAt: '2026-08-11'
+summary: 'Masked cross-image attention sharing lets a pre-trained diffusion model reuse a character across a whole image sequence, with no fine-tuning per character.'
+tags:
+  - ai
+  - research
+  - computer-vision
+---
+
+Generate the same character prompt twice through a diffusion model and you'll get two different people. Same words, sometimes even the same seed, and you still get a different face, a different outfit. For a comic panel, a picture book, or a mascot across a campaign, that's a dealbreaker: the model has no built-in notion that image 4 is supposed to show the same person as image 1.
+
+The usual fix is fine-tuning a small model per character (a LoRA, an embedding, whatever). It works, but you pay that training cost again for every new character, and it can degrade the base model's range. Masked cross-image attention sharing skips training entirely and fixes this at inference time instead.
+
+## The idea
+
+When a diffusion model generates a batch of images, each image's attention layers normally only look at that image's own pixels. Masked cross-image attention sharing changes that for one thing only: the subject.
+
+A mask marks which patches belong to the character in each image. During generation, those masked patches attend across the whole batch: image 2's subject patches can see image 1's and image 3's. Everything outside the mask (background, lighting, composition) stays exactly as independent as before.
+
+<AttentionShareDemo />
+
+Toggle it above. That's the entire mechanism in miniature: lock attention across images for the subject region, leave the rest of the model's creative freedom alone.
+
+## Why masking (not full-image attention)
+
+Sharing attention across *entire* images would drag backgrounds and poses toward each other too, and you'd lose the variety that makes a sequence interesting — different rooms, different angles, different lighting per panel. Restricting the sharing to the masked subject region is what keeps those two things separable: identity locks, scene doesn't.
+
+There's a second step on top of this — regional feature harmonization, which smooths over visually similar details the attention-sharing alone doesn't fully catch, particularly across different seeds or style settings. It runs after attention sharing and cleans up the remaining drift.
+
+## What you get from this combination
+
+- A pre-trained model, unmodified and reused as-is, with nothing to fine-tune per character
+- Multiple distinct subjects in the same scene, each attending only within its own mask
+- Consistency that holds across different seeds and visual styles, not just repeated runs of the same prompt
+
+<Callout type="note" content="This generalizes beyond a single character too. Attention-sharing works per-subject across masked patches, so a scene with two or three consistent characters is the same mechanism applied once per subject." />
+
+## The paper
+
+This was joint work with Mohammadreza Zolfaghari and Thomas Brox at the University of Freiburg and Zebracat AI, presented at GCPR 2025.
+
+<PaperCard
+  title="StorySync: Training-Free Subject Consistency in Text-to-Image Generation"
+  authors={['Gopalji Gaur', 'Mohammadreza Zolfaghari', 'Thomas Brox']}
+  venue="GCPR 2025"
+  arxivId="2508.03735"
+  projectUrl="https://storysync.gopalji.me/"
+/>
+
+The [project page](https://storysync.gopalji.me/) has the qualitative results across scenarios; the [paper](https://arxiv.org/abs/2508.03735) has the full method and evaluation.
