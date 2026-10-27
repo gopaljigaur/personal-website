@@ -9,6 +9,14 @@ import path from 'path'
 import matter from 'gray-matter'
 import { profile, profileText } from '../app/lib/profile.js'
 
+// Preview deployments should not depend on paid embedding API availability.
+// An empty index is already supported by searchSite(); production still embeds.
+if (process.env.VERCEL_ENV === 'preview') {
+  fs.writeFileSync(path.join(process.cwd(), 'content/embeddings.json'), '[]\n')
+  console.log('Preview build: skipping optional semantic-search embeddings.')
+  process.exit(0)
+}
+
 const API_KEY = process.env.GEMINI_API_KEY
 if (!API_KEY) throw new Error('GEMINI_API_KEY is not set')
 
