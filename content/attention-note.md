@@ -1,0 +1,78 @@
+# Smaller attention matrices do not necessarily mean less training memory
+
+Preview draft · Local CPU experiment, 27 October 2026. Prepared with coding assistance. This is an educational investigation of established methods, not a new attention algorithm.
+
+Splitting attention into smaller pieces looks like an obvious memory improvement. Instead of creating one large score matrix, process a few query rows at a time.
+
+That changes the size of each allocation. But training has another requirement: keeping information for the backward pass.
+
+In this experiment, query chunking made each score matrix eight times smaller at 1,024 tokens. The intermediate storage saved by autograd did not shrink.
+
+## Start with the equation
+
+For each attention head:
+
+```text
+scores  = Q K^T / sqrt(d)
+weights = softmax(scores, row-wise)
+output  = weights V
+```
+
+With N tokens, the scores have N × N elements per head. For one batch, eight heads and float32, N=1,024 means 32 MiB for one score tensor.
+
+The chunked version processes 128 query rows at a time. Each chunk still sees all permitted keys. Its score tensor needs only 4 MiB in this configuration. This changes how the computation is divided, not which keys a query can attend to.
+
+The causal mask must also use the query's position in the full sequence. Starting the mask from zero inside every chunk would silently change the operation.
+
+## Check that it computes the same thing
+
+The accompanying code compares a direct implementation and a query-chunked implementation with PyTorch's explicitly selected math backend.
+
+All 64 output-and-gradient comparisons passed. They cover float64 and float32, causal and unmasked attention, strided inputs and sequence lengths that cross a chunk boundary. Additional checks use finite differences for gradients and verify that modifying future keys and values cannot affect earlier causal outputs.
+
+Across those cases, the largest absolute output difference was about 1.43 × 10^-6. The largest absolute gradient difference was about 1.31 × 10^-6. These are observed errors for the tested cases, not bounds for every possible input.
+
+[Implementation](/experiments/attention/attention.py) · [Correctness checks](/experiments/attention/check.py) · [Per-case errors and tolerances](/experiments/attention/results/correctness.json)
+
+## What autograd keeps
+
+Saved-tensor hooks can inspect the tensors retained for backward. The measurement here counts unique underlying storage and excludes the inputs that already existed before the operation.
+
+| Unmasked attention, N=1,024 | Direct | Queries in chunks of 128 |
+| --- | ---: | ---: |
+| Calculated size of one score tensor | 32 MiB | 4 MiB |
+| Observed intermediate storage saved for backward | 32 MiB | 32 MiB |
+
+![Calculated score storage versus observed storage retained by autograd](/experiments/attention/results/storage.png)
+
+The smaller chunks still need their backward information. Ordinary autograd retains intermediates across them, so the retained storage adds up. In the causal run, both implementations retained 33 MiB, including saved mask storage.
+
+Neither row in the table is peak process or device memory. The saved-storage measurement leaves out temporary allocations, allocator overhead and other buffers. It is enough to show that the smaller per-chunk score matrix does not, by itself, establish a training-memory saving.
+
+## What happened to runtime
+
+This run used CPU only: one PyTorch thread, float32, batch size one, eight heads and head dimension 64. Each case had three warmup runs and ten measured repetitions, with methods interleaved in a seeded random order.
+
+At 1,024 tokens without a causal mask:
+
+| Implementation | Inference median | Forward + backward median |
+| --- | ---: | ---: |
+| Direct | 22.05 ms | 49.00 ms |
+| Query chunks of 128 | 28.81 ms | 62.30 ms |
+| PyTorch math backend | 27.31 ms | 47.64 ms |
+
+![CPU timing plots with the range of repeated measurements](/experiments/attention/results/latency.png)
+
+The chunked implementation was slower in this case. The smaller matrix did not automatically make the operation faster. These are exploratory local timings: other applications and rendering work could contend for CPU resources, and ten repetitions do not establish a robust hardware-performance ranking.
+
+## What this does and does not establish
+
+The useful result is the difference between a smaller individual allocation and less retained backward state. To establish total memory savings, the next experiment needs actual peak-allocation measurements. To assess GPU performance, it needs a GPU and supported fused backends.
+
+FlashAttention addresses a deeper implementation problem through IO-aware tiling and a specialized backward computation. This query-chunked Python baseline is not an implementation of FlashAttention. See the [original paper](https://arxiv.org/abs/2205.14135).
+
+For this implementation, the conclusion is narrow: chunking queries reduced the calculated size of each score tensor, but did not reduce the observed intermediate storage saved for backward.
+
+## Reproduce
+
+See the [experiment README](/experiments/attention/README.md) for commands, measured versions and definitions. The [raw benchmark file](/experiments/attention/results/benchmark.json) includes every timing sample, environment details and hashes of the source present at execution. No CUDA or MPS results are included.
