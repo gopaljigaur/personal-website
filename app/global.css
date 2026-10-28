@@ -122,6 +122,16 @@ textarea {
   line-height: 1.5;
 }
 
+/* Keep explanatory Python blocks legible with the dark Shiki theme. */
+.attention-code pre {
+  background: #171717;
+  color: #e5e5e5;
+  white-space: pre;
+  overflow-x: auto;
+  border-color: #404040;
+  padding: 1rem;
+}
+
 .prose code span {
   @apply font-medium;
 }

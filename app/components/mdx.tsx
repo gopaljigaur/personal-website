@@ -5,6 +5,7 @@ import React from 'react'
 import { Code, GistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
+import { Equation } from 'app/components/equation'
 import { PostPreviewLink } from 'app/components/post-preview-link'
 import { LinkPreview } from 'app/components/link-preview'
 import { slugify } from 'app/blog/utils.shared'
@@ -116,6 +117,7 @@ const components = {
   table: Table,
   VibeSimulator,
   Callout,
+  Equation,
   GistCode,
 }
 

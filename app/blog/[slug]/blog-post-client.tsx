@@ -13,6 +13,7 @@ import { formatDate, slugify } from 'app/blog/utils.shared'
 import { Code, GistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
 import { Callout } from 'app/components/callout'
+import { Equation } from 'app/components/equation'
 import { LinkPreview } from 'app/components/link-preview'
 import { PostPreviewLink } from 'app/components/post-preview-link'
 import type { BlogPost, Heading } from 'app/blog/utils.shared'
@@ -79,6 +80,7 @@ const baseTinaComponents: Record<string, any> = {
     </pre>
   ),
   VibeSimulator: () => <VibeSimulator />,
+  Equation,
   Callout: ({
     type,
     content,

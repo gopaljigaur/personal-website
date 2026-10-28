@@ -108,6 +108,19 @@ export default defineConfig({
             isBody: true,
             templates: [
               {
+                name: 'Equation',
+                label: 'Mathematical equation',
+                fields: [
+                  {
+                    type: 'string',
+                    name: 'formula',
+                    label: 'LaTeX formula',
+                    required: true,
+                  },
+                  { type: 'string', name: 'caption', label: 'Explanation' },
+                ],
+              },
+              {
                 name: 'VibeSimulator',
                 label: 'Vibe Simulator',
                 fields: [
