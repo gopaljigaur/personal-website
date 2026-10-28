@@ -2,7 +2,6 @@
 
 import { useTina } from 'tinacms/dist/react'
 import { MainBanner } from 'app/components/banner'
-import { TechnicalWork } from 'app/components/technical-work'
 import { NewsletterSection } from 'app/components/newsletter-section'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,7 +21,6 @@ export default function HomeClient({
     <section>
       <MainBanner name={p.name} title={p.title} location={p.location} />
       <p className="mb-4">{p.bio}</p>
-      <TechnicalWork />
       <NewsletterSection />
     </section>
   )

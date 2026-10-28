@@ -1,6 +1,5 @@
 import { MainBanner } from 'app/components/banner'
 import { profile } from 'app/lib/profile'
-import { TechnicalWork } from 'app/components/technical-work'
 import { NewsletterSection } from 'app/components/newsletter-section'
 import HomeClient from './home-client'
 export default async function Page() {
@@ -31,7 +30,6 @@ export default async function Page() {
         location={profile.location}
       />
       <p className="mb-4">{profile.bio}</p>
-      <TechnicalWork />
       <NewsletterSection />
     </section>
   )
