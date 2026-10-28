@@ -18,7 +18,7 @@ This investigation derives that requirement, implements a backward pass that rec
 
 Work with one attention head. Q and K each contain N vectors of dimension d. V contains N value vectors of dimension dᵥ. Batch and head dimensions are omitted from the equations; the implementation includes them.
 
-<Equation formula={"S = \\frac{QK^{\\mathsf T}}{\\sqrt d}+M,\\qquad P=\\operatorname{softmax}_{\\mathrm{row}}(S),\\qquad O=PV"} caption={"Scores, row-normalized probabilities, and the output."} />
+<Equation formula="S = \frac{QK^{\mathsf T}}{\sqrt d}+M,\qquad P=\operatorname{softmax}_{\mathrm{row}}(S),\qquad O=PV" caption="Scores, row-normalized probabilities, and the output." />
 
 The mask M is zero at allowed positions and negative infinity elsewhere. For causal self-attention, row i may attend only to columns j ≤ i. Every row has at least its diagonal available. Arbitrarily all-masked rows are outside this experiment.
 
@@ -30,7 +30,7 @@ A forward implementation usually produces P explicitly. That does not prove that
 
 Let G be the gradient arriving from the rest of the model: G = ∂ℒ/∂O. A bar over a variable denotes its loss gradient. Since O = PV, matrix multiplication gives two immediate derivatives:
 
-<Equation formula={"\\bar V=P^{\\mathsf T}G,\\qquad \\bar P=GV^{\\mathsf T}"} caption={"The value gradient aggregates queries; the probability gradient compares each upstream vector with each value."} />
+<Equation formula="\bar V=P^{\mathsf T}G,\qquad \bar P=GV^{\mathsf T}" caption="The value gradient aggregates queries; the probability gradient compares each upstream vector with each value." />
 
 The first expression accumulates a contribution to each value vector from every query. The second says how the loss changes if a particular attention probability changes.
 
@@ -40,21 +40,21 @@ Both use P, but neither says where P has to come from. It could be stored, or ca
 
 For a single row, let pⱼ = exp(sⱼ) / ∑ₖ exp(sₖ). The derivative with respect to one logit is:
 
-<Equation formula={"\\frac{\\partial p_j}{\\partial s_k}=p_j(\\delta_{jk}-p_k)"} caption={""} />
+<Equation formula="\frac{\partial p_j}{\partial s_k}=p_j(\delta_{jk}-p_k)" caption="" />
 
 Apply the chain rule with the incoming probability gradient. Collect the common weighted sum rather than constructing an N × N Jacobian for every row:
 
-<Equation formula={"\\bar s_k=p_k\\left(\\bar p_k-\\sum_j p_j\\bar p_j\\right)"} caption={""} />
+<Equation formula="\bar s_k=p_k\left(\bar p_k-\sum_j p_j\bar p_j\right)" caption="" />
 
 For all rows at once, the sum is kept as a column vector so it broadcasts across the keys:
 
-<Equation formula={"\\bar S=P\\odot\\left(\\bar P-\\operatorname{rowsum}(P\\odot\\bar P)\\right)"} caption={"The elementwise product is denoted by \u2299. No explicit softmax Jacobian is needed."} />
+<Equation formula="\bar S=P\odot\left(\bar P-\operatorname{rowsum}(P\odot\bar P)\right)" caption="The elementwise product is denoted by ⊙. No explicit softmax Jacobian is needed." />
 
 This expression has a useful check: each row of the score gradient sums to zero. Adding a constant to every logit in a row does not change softmax, so the loss cannot change in that direction either. The test suite checks this identity as well as agreement with autograd.
 
 The mask is fixed. A forbidden position has probability zero, so it contributes zero score gradient. After propagating through the scaled dot product:
 
-<Equation formula={"\\bar Q=\\frac{\\bar S K}{\\sqrt d},\\qquad \\bar K=\\frac{\\bar S^{\\mathsf T}Q}{\\sqrt d}"} caption={""} />
+<Equation formula="\bar Q=\frac{\bar S K}{\sqrt d},\qquad \bar K=\frac{\bar S^{\mathsf T}Q}{\sqrt d}" caption="" />
 
 We now have a complete first-order backward pass. It needs Q, K, V, G and the probabilities P. The next step is to reconstruct P without retaining the full matrix.
 
@@ -62,11 +62,11 @@ We now have a complete first-order backward pass. It needs Q, K, V, G and the pr
 
 For each query row, define its log-normalizer Lᵢ. A stable evaluation subtracts the row maximum before exponentiating:
 
-<Equation formula={"m_i=\\max_j S_{ij},\\qquad L_i=m_i+\\log\\sum_j\\exp(S_{ij}-m_i)"} caption={""} />
+<Equation formula="m_i=\max_j S_{ij},\qquad L_i=m_i+\log\sum_j\exp(S_{ij}-m_i)" caption="" />
 
 Keeping Q and K lets us calculate the scores again. Keeping one Lᵢ per row lets us recover their original normalization:
 
-<Equation formula={"P_{ij}=\\exp(S_{ij}-L_i)"} caption={""} />
+<Equation formula="P_{ij}=\exp(S_{ij}-L_i)" caption="" />
 
 This is an algebraic equality in real arithmetic. Floating-point reordering changes the last bits, which is why output and gradient comparisons use explicit tolerances rather than exact equality.
 
@@ -103,11 +103,11 @@ The custom forward runs without building an ordinary autograd graph for each int
 
 Let C be the number of query rows per chunk, and let b be bytes per element. One full probability tensor costs bN² bytes per head. A query block costs bCN, but retaining all N/C blocks still adds up to the same total:
 
-<Equation formula={"\\frac NC\\,(bCN)=bN^2"} caption={"Smaller allocations are not a reduction if they all remain live."} />
+<Equation formula="\frac NC\,(bCN)=bN^2" caption="Smaller allocations are not a reduction if they all remain live." />
 
 By contrast, the recomputing implementation retains one log-normalizer per row: bN bytes beyond the existing inputs. Including Q, K and V, the saved context occupies:
 
-<Equation formula={"b\\left[N(2d+d_v)+N\\right]"} caption={"Saved context including inputs, per head. This excludes the output, upstream gradient, gradient buffers and temporary workspace."} />
+<Equation formula="b\left[N(2d+d_v)+N\right]" caption="Saved context including inputs, per head. This excludes the output, upstream gradient, gradient buffers and temporary workspace." />
 
 The full operation is not a 32 KiB computation. Backward also needs the upstream gradient and output-gradient buffers. Its temporary score/probability work is proportional to CN, with several such tensors potentially live at once. The memory accounting must distinguish saved context, temporary workspace and total peak allocation.
 
