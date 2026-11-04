@@ -245,3 +245,15 @@ table {
     @apply bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900;
   }
 }
+
+.attention-figure {
+  margin: 2rem 0;
+}
+.attention-figure img {
+  border-radius: 0;
+  width: 100%;
+}
+.dark .attention-figure img {
+  filter: invert(1);
+  mix-blend-mode: screen;
+}

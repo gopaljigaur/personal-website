@@ -15,7 +15,7 @@ export function Equation({
     trust: false,
   })
   return (
-    <figure className="my-6 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3 text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100">
+    <figure className="my-7 text-neutral-900 dark:text-neutral-100">
       <div
         className="overflow-x-auto py-1"
         dangerouslySetInnerHTML={{ __html: markup }}

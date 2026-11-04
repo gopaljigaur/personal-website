@@ -8,13 +8,13 @@ tags:
   - attention
 ---
 
-An attention matrix can be enormous. A natural first fix is to compute it a few query rows at a time. But a loop that creates smaller matrices can still retain just as much information for training.
+Splitting attention into query chunks makes each score matrix smaller. With ordinary PyTorch autograd, though, the probability blocks remain in memory until backward. Across all the chunks, they still contain N² values per head.
 
-The interesting question is not simply how large each matrix is. **What must survive from the forward pass so that the backward pass can compute the right gradients?**
+The experiment below compares that implementation with a custom backward pass that reconstructs the probabilities. The useful difference is in what gets saved between forward and backward: 32 MiB versus 32 KiB of additional storage at 1,024 tokens in this setup. Both still need the inputs, gradients and temporary workspace.
 
-This investigation derives that requirement, implements a backward pass that reconstructs probabilities instead of keeping them, and checks the result against PyTorch. At 1,024 tokens, the additional forward-saved storage falls from **32 MiB to 32 KiB** in the tested configuration. That is a measurement of retained intermediates, not total memory or GPU peak allocation.
+Here is the derivation, followed by the implementation and measurements.
 
-## 1. Define the operation and its scope
+## Attention
 
 Work with one attention head. Q and K each contain N vectors of dimension d. V contains N value vectors of dimension dᵥ. Batch and head dimensions are omitted from the equations; the implementation includes them.
 
@@ -24,9 +24,9 @@ The mask M is zero at allowed positions and negative infinity elsewhere. For cau
 
 The implementation uses float32 or float64, no dropout, no grouped-query attention, and equal query/key sequence lengths. The output is N × dᵥ; the scores and probabilities are N × N.
 
-A forward implementation usually produces P explicitly. That does not prove that backward must keep P in memory. To find out, derive the gradients.
+The forward pass computes P explicitly. Whether it needs to remain in memory depends on the backward computation.
 
-## 2. Differentiate the weighted sum
+## Gradients through the weighted sum
 
 Let G be the gradient arriving from the rest of the model: G = ∂ℒ/∂O. A bar over a variable denotes its loss gradient. Since O = PV, matrix multiplication gives two immediate derivatives:
 
@@ -34,9 +34,9 @@ Let G be the gradient arriving from the rest of the model: G = ∂ℒ/∂O. A ba
 
 The first expression accumulates a contribution to each value vector from every query. The second says how the loss changes if a particular attention probability changes.
 
-Both use P, but neither says where P has to come from. It could be stored, or calculated again.
+The value gradient needs P. It can use either a saved copy or a recomputed block.
 
-## 3. Differentiate a softmax row
+## The softmax derivative
 
 For a single row, let pⱼ = exp(sⱼ) / ∑ₖ exp(sₖ). The derivative with respect to one logit is:
 
@@ -56,9 +56,9 @@ The mask is fixed. A forbidden position has probability zero, so it contributes 
 
 <Equation formula="\bar Q=\frac{\bar S K}{\sqrt d},\qquad \bar K=\frac{\bar S^{\mathsf T}Q}{\sqrt d}" caption="" />
 
-We now have a complete first-order backward pass. It needs Q, K, V, G and the probabilities P. The next step is to reconstruct P without retaining the full matrix.
+These expressions give the first-order gradients in terms of Q, K, V, G and P.
 
-## 4. Retain a normalization statistic instead
+## Reconstructing probabilities
 
 For each query row, define its log-normalizer Lᵢ. A stable evaluation subtracts the row maximum before exponentiating:
 
@@ -72,9 +72,8 @@ This is an algebraic equality in real arithmetic. Floating-point reordering chan
 
 In this particular baseline, each query block still visits all keys, so its normalizer could also be recomputed. Saving L avoids that reduction during backward. It is a convenient statistic, not a claim that this is the unique or absolute-minimum state.
 
-![Forward/backward comparison: ordinary autograd retains every probability block; the recomputing implementation retains Q, K, V and one log-normalizer per query.](/images/attention-memory/backward-flow.png)
 
-## 5. Turn the derivation into a backward pass
+## Blockwise backward
 
 The core computation for one query block is short. Here qi is the block of queries, gi is its upstream gradient, and lse_i contains its saved log-normalizers. The causal mask uses global row positions, not positions reset to zero at the beginning of a chunk.
 
@@ -99,7 +98,7 @@ This is an explanatory excerpt; the runnable implementation includes the mask co
 
 The custom forward runs without building an ordinary autograd graph for each intermediate. It explicitly saves Q, K, V and L. Its backward uses the equations above, reconstructing one probability block at a time. Higher-order derivatives are deliberately unsupported and blocked with `once_differentiable`.
 
-## 6. Account for memory without hiding the inputs
+## Memory accounting
 
 Let C be the number of query rows per chunk, and let b be bytes per element. One full probability tensor costs bN² bytes per head. A query block costs bCN, but retaining all N/C blocks still adds up to the same total:
 
@@ -109,19 +108,19 @@ By contrast, the recomputing implementation retains one log-normalizer per row: 
 
 <Equation formula="b\left[N(2d+d_v)+N\right]" caption="Saved context including inputs, per head. This excludes the output, upstream gradient, gradient buffers and temporary workspace." />
 
-The full operation is not a 32 KiB computation. Backward also needs the upstream gradient and output-gradient buffers. Its temporary score/probability work is proportional to CN, with several such tensors potentially live at once. The memory accounting must distinguish saved context, temporary workspace and total peak allocation.
+Backward also needs the upstream gradient and output-gradient buffers. Its temporary score/probability work is proportional to CN, with several such tensors potentially live at once. The memory accounting must distinguish saved context, temporary workspace and total peak allocation.
 
 At fixed chunk size and fixed head dimensions, the context and workspace bounds are linear in N. The arithmetic remains quadratic: every permitted query/key pair is still processed. This code chunks only the query axis; it does not implement a GPU kernel, on-chip tiling, or streaming reduction over key blocks.
 
-## 7. Check the derivation numerically
+## Numerical checks
 
 The three handwritten implementations are compared against PyTorch's explicitly selected math backend. **All 96 output-and-gradient comparisons pass.** They cover float64 and float32, causal and unmasked attention, contiguous and strided tensors, unequal value/head dimensions, and sequence lengths that cross the chunk boundary.
 
 The largest observed absolute output error and gradient error in those comparisons are both approximately **1.67 × 10⁻⁶**. Float64 uses tighter tolerances than float32; the notebook shows both.
 
-Additional checks test finite-difference gradients, the zero-row-sum identity for the softmax gradient, invariance of earlier causal outputs to future changes, query chunks of size 1 and 7, and large finite logits in float64. These are explicit checks of the mathematics, not just whether the script finishes.
+Additional checks test finite-difference gradients, the zero-row-sum identity for the softmax gradient, invariance of earlier causal outputs to future changes, query chunks of size 1 and 7, and large finite logits in float64.
 
-## 8. What was actually retained
+## Saved storage
 
 The saved-tensor measurement records unique storage retained during forward and excludes input storage that already existed. It is taken separately from timing. For batch 1, eight heads, head dimension 64, float32 and 1,024 tokens:
 
@@ -131,30 +130,38 @@ The saved-tensor measurement records unique storage retained during forward and 
 
 The Q/K/V inputs occupy another 6 MiB in this configuration. They are retained by reference, not made unnecessary by the small log-normalizer. Adding those inputs to the recomputing context gives 6.03125 MiB, before outputs, gradients and workspace.
 
+<div className="attention-figure">
+
 ![Measured saved intermediate storage grows quadratically for direct and ordinarily chunked attention, and linearly for the recomputing implementation.](/images/attention-memory/storage.png)
+
+</div>
 
 In the causal runs, the first two methods retain 33 MiB including masks; the recomputing method still retains 32 KiB of additional context and rebuilds its masks during backward. These values agree with the accounting above. They do not measure operating-system RSS or accelerator peak memory.
 
-## 9. The price of recomputation
+## Runtime
 
 On the local CPU run, at 1,024 tokens without a causal mask, median forward-plus-backward time was **34.70 ms** for the direct implementation and **69.14 ms** for the recomputing version. Ordinary query chunking took **41.49 ms**. The recomputing code saves state by doing extra work, and it is slower in this experiment.
 
+<div className="attention-figure">
+
 ![CPU training latency across sequence lengths, with median and spread of 20 repetitions.](/images/attention-memory/latency.png)
+
+</div>
 
 Measurements use one CPU thread, three warmups and 20 repetitions with interleaved method order. This is an exploratory implementation study, not a hardware-performance ranking. It says nothing about CUDA speed, where fusion and reduced memory traffic can change the tradeoff.
 
 The [FlashAttention paper](https://arxiv.org/abs/2205.14135) combines recomputation with IO-aware tiling and fused GPU execution. This Python implementation isolates the backward-storage idea; it does not reproduce that kernel or its performance.
 
-## What follows from this
+## Limits
 
 Attention probabilities are needed to evaluate the gradients, but they do not have to be stored across the forward/backward boundary. Q, K and per-row normalization information let us reconstruct them in blocks.
 
-The distinction is precise: **chunking changes the size of an allocation; recomputation changes its lifetime.** Here, the latter removes the retained quadratic intermediate at the cost of additional computation. Establishing end-to-end peak-memory savings and useful GPU performance remains a separate experiment.
+Query chunking alone leaves the saved probability storage quadratic. Recomputing those probabilities removes that retained intermediate, with extra computation during backward. Establishing end-to-end peak-memory savings and useful GPU performance remains a separate experiment.
 
-## Explore the notebook
+## Code and notebook
 
 The [experiment repository](https://github.com/gopaljigaur/attention-memory-study) contains an executable notebook that walks through the softmax derivative, the three implementations, correctness checks and the figures. It also contains the standalone scripts, pinned package versions and raw measurements needed to reproduce the results.
 
-The notebook is the guided entry point. The article remains readable without downloading anything.
+
 
 *Preview draft. New educational investigation prepared with coding assistance. Runtime: Python 3.12.10, PyTorch 2.13.0, macOS arm64; CPU only. No dropout, padding masks, grouped-query attention, float16/bfloat16 or higher-order backward support in the recomputing baseline.*
