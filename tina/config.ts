@@ -107,21 +107,6 @@ export default defineConfig({
             label: 'Body',
             isBody: true,
             templates: [
-              ...[
-                'PromotionExplorer',
-                'ArrivalExplorer',
-                'PromotionEquation',
-              ].map((name) => ({
-                name,
-                label: name,
-                fields: [
-                  {
-                    type: 'string' as const,
-                    name: 'placeholder',
-                    label: 'Placeholder',
-                  },
-                ],
-              })),
               {
                 name: 'VibeSimulator',
                 label: 'Vibe Simulator',

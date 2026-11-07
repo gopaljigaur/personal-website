@@ -12,11 +12,6 @@ import { RelatedPosts } from 'app/components/related-posts'
 import { formatDate, slugify } from 'app/blog/utils.shared'
 import { Code, GistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
-import {
-  PromotionExplorer,
-  ArrivalExplorer,
-  PromotionEquation,
-} from 'app/components/promotion-explorer'
 import { Callout } from 'app/components/callout'
 import { LinkPreview } from 'app/components/link-preview'
 import { PostPreviewLink } from 'app/components/post-preview-link'
@@ -84,9 +79,6 @@ const baseTinaComponents: Record<string, any> = {
     </pre>
   ),
   VibeSimulator: () => <VibeSimulator />,
-  PromotionExplorer: () => <PromotionExplorer />,
-  ArrivalExplorer: () => <ArrivalExplorer />,
-  PromotionEquation: () => <PromotionEquation />,
   Callout: ({
     type,
     content,
