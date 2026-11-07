@@ -1,0 +1,63 @@
+---
+title: 'When ASHA keeps too many trials'
+publishedAt: '2026-11-07'
+summary: 'A controlled NePS scheduler test produces 9 → 7 → 5 trials instead of 9 → 3 → 1. The difference comes from when previously promoted trials are removed.'
+tags:
+  - machine-learning
+  - optimization
+  - debugging
+---
+
+Nine trials finish their first training budget. With a reduction factor of three, the best three should advance. Of those, one should reach the final budget.
+
+In a controlled test of NePS's ASHA scheduler, the sequence was **9 → 7 → 5**.
+
+This is an investigation of the scheduler's decisions, using synthetic results. No models were trained. The local patch described below has not been reviewed or accepted upstream. The investigation, reproduction, and patch were developed with AI assistance.
+
+<Image src="/images/asha-promotion-order/comparison.png" alt="Controlled scheduler test with nine completed trials and reduction factor three. Upstream NePS allocates nine, seven, then five trials at budgets one, three, and nine. The local patch allocates nine, three, then one." width="1600" height="1000" />
+
+## The order of two operations
+
+ASHA, asynchronous successive halving, gives promising configurations larger training budgets. Unlike synchronous successive halving, it can make promotion decisions as results arrive.
+
+The [published algorithm](https://arxiv.org/html/1810.05934v5), Algorithm 2, first selects the top fraction of the evaluated configurations in a rung. It then removes any of those candidates that have already been promoted.
+
+The [NePS revision tested here](https://github.com/automl/neps/blob/d054d482c3ea5d184111fe47b664b4508aaaab07/neps/optimizers/utils/brackets.py) does those operations in the other order. It removes previously promoted configurations, recalculates the quota from the remaining rows, and ranks what is left.
+
+Consider nine completed configurations with distinct losses. After the best three have been promoted, six remain. The current code sees six candidates, calculates a quota of two, and promotes the best remaining one. Then five remain. The process continues until only two remain and the quota becomes zero.
+
+That is how seven of the original nine advance, even though no new results have arrived.
+
+For a fixed completed cohort of **N** trials and an integer reduction factor **η**, the current scalar selection rule keeps going while **N − p ≥ η**, where **p** is the number already promoted. When **N ≥ η**, it therefore promotes **N − η + 1** trials. Ranking the complete cohort first instead makes **⌊N / η⌋** trials eligible.
+
+This is about a fixed cohort. In a genuinely asynchronous run, a better result can arrive after an earlier trial was promoted. ASHA can then legitimately promote more than the final top fraction. A hard lifetime cap would be a different algorithm and is not the proposed fix.
+
+## Pending trials reveal another problem
+
+NePS represents pending results as `NaN` in its scheduler table. Those rows also count toward the current promotion quota.
+
+With three pending trials and a reduction factor of three, the scalar scheduler selects a trial for promotion despite having no result for it. The multi-objective path instead fails while trying to concatenate an empty set of valid results.
+
+The local patch filters pending rows before calculating the quota, ranks all completed results, and only then excludes previously promoted candidates.
+
+## What was checked
+
+The reproduction runs the actual scheduler source at revision `d054d482`, plus the locally modified version. It starts with completed results and finishes each promoted trial immediately, keeping the scheduling difference separate from training noise or worker speed.
+
+- **9 trials, reduction factor 3:** upstream `9 → 7 → 5`; patched `9 → 3 → 1`.
+- **27 trials, reduction factor 3:** upstream `27 → 25 → 23 → 21`; patched `27 → 9 → 3 → 1`.
+- **16 trials, reduction factor 4:** upstream `16 → 13 → 10`; patched `16 → 4 → 1`.
+
+The original focused checks produced ten failures and five passes. All 25 checks pass with the patch, including ten generated asynchronous completion traces checked against an independent implementation of the scalar selection rule.
+
+Those checks exercise the scheduler modules directly. They do not cover the full NePS runtime, persistence, distributed workers, or model-training outcomes. The multi-objective cases use strictly dominated chains; arbitrary nondominated fronts with stochastic ordering need separate review.
+
+The nine-trial example allocates budgets of 1, 3, and 9. Assuming perfect checkpoint continuation, the upstream trace accounts for **9 + 7 × 2 + 5 × 6 = 53** resource units. The patched trace accounts for **9 + 3 × 2 + 1 × 6 = 21**. These are hypothetical resource units calculated from the trace, not measured GPU savings.
+
+## There is history behind this behavior
+
+An [earlier issue](https://github.com/automl/neps/issues/231) argued that previously promoted configurations should be excluded before selection. [PR #232](https://github.com/automl/neps/pull/232) implemented that change. This investigation challenges that interpretation; it should not be presented as an already agreed correction.
+
+The question for upstream review is whether NePS intends to follow the published ASHA selection rule or deliberately uses a different promotion policy. The pending-result behavior also needs a clear decision.
+
+This is a local implementation finding, not a new optimization method. Its value depends on confirming the intended behavior and validating the correction in the full runtime.
