@@ -4,6 +4,11 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
 import { Code, GistCode } from 'app/components/code'
 import { VibeSimulator } from 'app/components/vibe-simulator'
+import {
+  PromotionExplorer,
+  ArrivalExplorer,
+  PromotionEquation,
+} from 'app/components/promotion-explorer'
 import { Callout } from 'app/components/callout'
 import { PostPreviewLink } from 'app/components/post-preview-link'
 import { LinkPreview } from 'app/components/link-preview'
@@ -115,6 +120,9 @@ const components = {
   code: Code,
   table: Table,
   VibeSimulator,
+  PromotionExplorer,
+  ArrivalExplorer,
+  PromotionEquation,
   Callout,
   GistCode,
 }
